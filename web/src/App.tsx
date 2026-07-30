@@ -33,7 +33,9 @@ function statusClass(status: string) {
 
 function metric(run: Run | null, key: string) {
   if (!run) return "—";
-  const value = run.metrics[key] ?? run.metrics[`test/${key}`];
+  const value = run.metrics[key]
+    ?? run.metrics[`pooled/${key}`]
+    ?? run.metrics[`test/${key}`];
   return Number.isFinite(value) ? value.toFixed(4) : "—";
 }
 
@@ -156,7 +158,9 @@ function HorizonMatrix({ summary }: { summary: NonNullable<Overview["latest_summ
               (run) => run.model === "strata_ot_horizon"
                 && run.feature_set === "operational_weather",
             )
-            .map((run) => run.component_summary?.[String(horizon)]?.weather_gate_mean)
+            .map(
+              (run) => run.component_summary?.[String(horizon)]?.weather_gate.mean,
+            )
             .filter((value): value is number => Number.isFinite(value));
           const mean = gates.length
             ? gates.reduce((total, value) => total + value, 0) / gates.length

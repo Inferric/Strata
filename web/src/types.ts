@@ -65,10 +65,10 @@ export type Overview = {
       feature_set: string;
       seed: number | null;
       component_summary?: Record<string, {
-        history_delta_mean: number;
-        weather_delta_mean: number;
-        weather_gate_mean: number;
-        weather_contribution_mean: number;
+        history_delta: { mean: number };
+        weather_delta: { mean: number };
+        weather_gate: { mean: number };
+        weather_contribution: { mean: number };
       }>;
     }>;
     checks: Record<string, boolean>;
