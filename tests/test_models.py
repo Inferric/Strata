@@ -5,6 +5,7 @@ import torch
 from strata_ot.models import (
     MLPBaseline,
     StrataOTColumn,
+    StrataOTFusionV2,
     StrataOTHorizon,
     StrataOTSurface,
 )
@@ -83,6 +84,42 @@ def test_horizon_history_arm_hard_zeros_weather_term() -> None:
     assert torch.count_nonzero(output["weather_gate"]) == 0
     assert torch.count_nonzero(output["weather_contribution"]) == 0
     assert torch.count_nonzero(output["weather_attention"]) == 0
+
+
+def test_fusion_v2_multiscale_outputs_and_parameter_budget() -> None:
+    weather_dim = 26
+    model = StrataOTFusionV2(
+        weather_dim=weather_dim,
+        hidden_dim=192,
+        num_heads=6,
+        num_experts=4,
+        fusion="film_cross_attention",
+        physics_start=8,
+    )
+    batch_size = 3
+    batch = {
+        "short_history": torch.randn(batch_size, 6, 3),
+        "short_weather": torch.randn(batch_size, 6, weather_dim),
+        "medium_history": torch.randn(batch_size, 12, 3),
+        "medium_weather": torch.randn(batch_size, 12, weather_dim),
+        "slow_history": torch.randn(batch_size, 24, 3),
+        "slow_weather": torch.randn(batch_size, 24, weather_dim),
+        "persistence": torch.full((batch_size,), -14.5),
+        "horizon_minutes": torch.tensor([5.0, 30.0, 60.0]),
+    }
+    output = model(batch)
+    assert output["location"].shape == (batch_size,)
+    assert output["quantiles"].shape == (batch_size, 3)
+    assert output["scale_weights"].shape == (batch_size, 3)
+    assert torch.allclose(
+        output["scale_weights"].sum(dim=-1),
+        torch.ones(batch_size),
+        atol=1e-5,
+    )
+    assert torch.all(output["student_t_df"] > 2)
+    assert torch.all(output["student_t_scale"] > 0)
+    parameters = sum(parameter.numel() for parameter in model.parameters())
+    assert 2_000_000 <= parameters <= 8_000_000
 
 
 def test_causal_block_does_not_read_future_tokens() -> None:

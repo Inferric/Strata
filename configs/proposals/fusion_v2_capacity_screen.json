@@ -1,0 +1,16 @@
+{
+  "proposal_id": "fusion-v2-capacity-screen",
+  "hypothesis": "A smaller 144-wide Fusion v2 will reveal whether regularized capacity improves selection stability without giving up meaningful primary RMSE.",
+  "parent_run_id": "6607bb2154734a11802721608c0031b4",
+  "dataset_manifest_id": "otbench-usna-cn2-lg-v1",
+  "split_id": "otbench-usna-lg-fusion-v2",
+  "horizon_minutes": [5, 15, 30, 60],
+  "model": {"family": "strata_ot_fusion", "config_path": "configs/model/strata_fusion_v2.yaml"},
+  "changes": [
+    {"parameter": "hidden_dim", "old": 192, "new": 144, "reason": "Test the preregistered low-capacity regularized candidate."},
+    {"parameter": "dropout", "old": 0.1, "new": 0.08, "reason": "Match the frozen low-capacity regularization setting."}
+  ],
+  "evaluation_gate_id": "public-evidence-gates-v1",
+  "budget": {"max_runs": 2, "max_local_gpu_hours": 1.0, "max_cloud_cost_usd": 0},
+  "stop_conditions": ["budget_exhausted", "nan_or_divergence", "oom_after_one_recovery", "data_or_split_gate_failure"]
+}

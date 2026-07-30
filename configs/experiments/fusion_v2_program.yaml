@@ -1,0 +1,244 @@
+id: strata-fusion-v2-program
+task_kind: rolling_multi_horizon_forecast
+hypothesis: >-
+  Multiscale Cn2 context and weather interactions distributed throughout the
+  temporal representation will let a custom persistence-residual neural model
+  use the weather signal that Cycle 0 LightGBM exposed but Horizon v1 missed.
+data: configs/data/otbench_usna_lg_fusion_v2.yaml
+model: configs/model/strata_fusion_v2.yaml
+trainer: configs/trainer/fusion_local_16gb.yaml
+evaluation: configs/evaluation/gates/public_v1.yaml
+run_manifest: configs/run_manifests/strata_fusion_v2_program.yaml
+tracking:
+  experiment_name: strata-ot-fusion-v2-program
+  register_candidate: false
+seeds: [17, 41, 73]
+rolling_folds: [fold-1, fold-2, fold-3]
+primary_horizons_minutes: [15, 30, 60]
+anchor_horizon_minutes: 5
+bootstrap:
+  block_minutes: 1440
+  resamples: 2000
+  seed: 20260730
+budget:
+  max_total_gpu_hours: 8.0
+  max_peak_process_vram_gb: 14.0
+  max_board_vram_gb: 15.0
+  max_cloud_cost_usd: 0
+  max_new_storage_gib: 25
+  min_free_c_drive_gib: 50
+safety:
+  start_max_cpu_percent: 85
+  start_cpu_sustained_seconds: 180
+  start_min_free_ram_gib: 12
+  start_min_free_gpu_gib: 4
+  start_max_gpu_temperature_c: 75
+  stop_min_free_ram_gib: 8
+  stop_max_board_vram_gib: 15
+  stop_max_process_vram_gib: 14
+  stop_max_gpu_temperature_c: 84
+  stop_gpu_temperature_sustained_seconds: 60
+  monitor_interval_seconds: 15
+  one_oom_recovery: true
+deadline:
+  timezone: America/Chicago
+  no_new_work_after: "2026-07-31T06:06:00-05:00"
+candidates:
+  - id: control-persistence
+    category: controls
+    family: persistence
+    active_scales: [short]
+    fusion: concat
+    physics_tokens: none
+    pretraining: none
+    calibration: none
+  - id: control-climatology
+    category: controls
+    family: climatology
+    active_scales: [short]
+    fusion: concat
+    physics_tokens: none
+    pretraining: none
+    calibration: none
+  - id: diagnostic-lightgbm
+    category: controls
+    family: lightgbm
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: control-mlp
+    category: controls
+    family: mlp
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: control-tcn
+    category: controls
+    family: tcn
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: control-horizon-v1
+    category: controls
+    family: horizon_v1
+    active_scales: [short]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: context-short
+    category: context
+    family: fusion_v2
+    active_scales: [short]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: context-short-medium
+    category: context
+    family: fusion_v2
+    active_scales: [short, medium]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: context-all
+    category: context
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: fusion-concat
+    category: fusion
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: fusion-film
+    category: fusion
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: fusion-film-cross
+    category: fusion
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: physics-none
+    category: physics
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: none
+    pretraining: none
+    calibration: conformal
+  - id: physics-base
+    category: physics
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: base
+    pretraining: none
+    calibration: conformal
+  - id: physics-full
+    category: physics
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: pretrain-none
+    category: pretraining
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: none
+    calibration: conformal
+  - id: pretrain-reconstruction
+    category: pretraining
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: reconstruction
+    calibration: conformal
+  - id: pretrain-full
+    category: pretraining
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: full_multitask
+    calibration: conformal
+  - id: capacity-144
+    category: capacity_regularization
+    family: fusion_v2
+    hidden_dim: 144
+    dropout: 0.08
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: full_multitask
+    calibration: conformal
+  - id: capacity-192
+    category: capacity_regularization
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: full_multitask
+    calibration: conformal
+  - id: capacity-256
+    category: capacity_regularization
+    family: fusion_v2
+    hidden_dim: 256
+    dropout: 0.15
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: full_multitask
+    calibration: conformal
+  - id: calibration-raw
+    category: calibration
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: full_multitask
+    calibration: none
+  - id: calibration-conformal
+    category: calibration
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: full_multitask
+    calibration: conformal
+  - id: calibration-student-t
+    category: calibration
+    family: fusion_v2
+    active_scales: [short, medium, slow]
+    fusion: film_cross_attention
+    physics_tokens: full
+    pretraining: full_multitask
+    calibration: student_t_conformal

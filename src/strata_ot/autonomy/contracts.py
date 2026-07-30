@@ -20,6 +20,11 @@ ALLOWED_MODEL_PARAMETERS = {
     "weight_decay",
     "scale_parameterization",
     "mlp_flatten_context",
+    "fusion",
+    "active_scales",
+    "physics_tokens",
+    "pretraining",
+    "calibration",
 }
 
 REQUIRED_STOP_CONDITIONS = {
@@ -35,6 +40,7 @@ EXPECTED_DATASET_SPLITS = {
         "otbench-mlo-weather-horizon-v1"
     ),
     "otbench-usna-cn2-3m-forecast-6min-v1": "otbench-usna-sm-forecast-v1",
+    "otbench-usna-cn2-lg-v1": "otbench-usna-lg-fusion-v2",
 }
 
 NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
@@ -115,6 +121,28 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
         if parameter == "mlp_flatten_context":
             if new_value is not True:
                 raise ValueError("Forecast MLP must consume the complete context")
+            continue
+        categorical: dict[str, set[Any]] = {
+            "fusion": {"concat", "film", "film_cross_attention"},
+            "active_scales": {
+                ("short",),
+                ("short", "medium"),
+                ("short", "medium", "slow"),
+            },
+            "physics_tokens": {"none", "base", "full"},
+            "pretraining": {"none", "reconstruction", "full_multitask"},
+            "calibration": {"none", "conformal", "student_t_conformal"},
+        }
+        if parameter in categorical:
+            comparable = (
+                tuple(str(value) for value in new_value)
+                if parameter == "active_scales" and isinstance(new_value, list)
+                else new_value
+            )
+            if comparable not in categorical[parameter]:
+                raise ValueError(
+                    f"Autonomous categorical value is invalid for {parameter}"
+                )
             continue
         if isinstance(new_value, bool) or not isinstance(new_value, (int, float)):
             raise ValueError(f"Autonomous value for {parameter} must be numeric")

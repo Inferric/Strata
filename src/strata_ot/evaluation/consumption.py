@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -55,3 +57,39 @@ def require_unconsumed(
         f"{role} is already consumed ({consumption_id}, {consumed_at}); "
         "released labels cannot be loaded again for tuning or reruns"
     )
+
+
+def consume_partition(
+    record: dict[str, Any],
+    *,
+    root: Path | None = None,
+) -> dict[str, Any]:
+    """Atomically consume a preregistered evaluation role before label access."""
+    repository = root or find_repo_root()
+    consumption_id = record.get("consumption_id")
+    if not isinstance(consumption_id, str) or not consumption_id:
+        raise ValueError("Consumption record requires a non-empty consumption_id")
+    require_unconsumed(consumption_id, root=repository)
+    destination = repository / RUNTIME_REGISTRY
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    payload: dict[str, Any] = {"schema_version": 1, "consumed": []}
+    if destination.is_file():
+        loaded = json.loads(destination.read_text(encoding="utf-8"))
+        if isinstance(loaded, dict):
+            payload = loaded
+    completed = {
+        **record,
+        "consumed_at": datetime.now(UTC).isoformat(),
+        "process_id": os.getpid(),
+        "disposition": "consumed_no_retuning",
+    }
+    records = list(payload.get("consumed", []))
+    records.append(completed)
+    payload["consumed"] = records
+    temporary = destination.with_suffix(".tmp")
+    temporary.write_text(
+        json.dumps(payload, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(destination)
+    return completed

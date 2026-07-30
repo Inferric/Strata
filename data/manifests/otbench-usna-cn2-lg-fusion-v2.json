@@ -1,0 +1,107 @@
+{
+  "accessed_at": "2026-07-30T23:40:23.883274Z",
+  "citation": "Jellen, Nelson, Brownell, and Burkhardt (2024), Effective Benchmarks for Optical Turbulence Modeling, doi:10.1175/AIES-D-24-0003.1. Preserve the OTBench USNA, ONR, and DE-JTO acknowledgement in reports.",
+  "coverage": {
+    "official_partitions": {
+      "test": [
+        788209,
+        1291224
+      ],
+      "train": [
+        0,
+        524339
+      ],
+      "validation": [
+        524340,
+        788208
+      ]
+    },
+    "rows": 1291225,
+    "temporal_end": "2022-07-14T00:00",
+    "temporal_start": "2020-01-01T00:00"
+  },
+  "dataset_id": "otbench-usna-cn2-lg-v1",
+  "files": [
+    {
+      "bytes": 91715015,
+      "relative_path": "data/raw/otbench/canonical-v1/otbench-mlo-cn2-15m-v1/upstream/otbench/data/usna_cn2_lg/usna_cn2_lg.nc",
+      "sha256": "c38a974d71ba58b9029687ad3397d6c1330c16c53e8a51ad1a94a3fcec3dbd4f"
+    }
+  ],
+  "geometry": {
+    "kind": "surface_layer_path_observation",
+    "latitude_deg": 38.98,
+    "longitude_deg": -76.48,
+    "measurement_height_m": 3,
+    "path_type": "surface_layer",
+    "site": "United States Naval Academy"
+  },
+  "instrument": {
+    "auxiliary_weather": "TPLM2 buoy",
+    "cn2": "ScinTec BLS450 scintillometer",
+    "local_weather": "Davis Vantage Pro2"
+  },
+  "label_provenance": "direct_observation",
+  "qc": {
+    "acknowledgement": "Preserve OTBench USNA, ONR, and DE-JTO acknowledgements.",
+    "confirmation_release_required": true,
+    "official_mlo_test_loaded": false,
+    "raw_data_edited": false,
+    "source_sha256_verified": true,
+    "upstream_commit": "53cab9d53648b4870b43e35d48f19143786fa12e",
+    "usna_validation_confirmation_eligible": false
+  },
+  "schema_version": 1,
+  "source_url": "https://github.com/CDJellen/otbench.git",
+  "terms": {
+    "redistribution": "metadata_only",
+    "status": "open"
+  },
+  "units": {
+    "raw_target": "m^(-2/3)",
+    "target": "log10(m^(-2/3))",
+    "variables": {
+      "Cn2_3m": {
+        "description": "The refractive index structure parameter at 3m above the water surface.",
+        "source": "ScinTec BLS450",
+        "units": "m^-2/3"
+      },
+      "Dir_3m": {
+        "description": "The relative wind direction at 3m above the water surface.",
+        "source": "Davis Vantage Pro2",
+        "units": "relative intercardinal direction"
+      },
+      "P_3m": {
+        "description": "The air pressure at 3m above the water surface.",
+        "source": "Davis Vantage Pro2",
+        "units": "hPa"
+      },
+      "RH_3m": {
+        "description": "The relative humidity at 3m above the water surface.",
+        "source": "Davis Vantage Pro2",
+        "units": "%"
+      },
+      "Rad_1m": {
+        "description": "The incident solar radiation at 1m above the water surface.",
+        "source": "Davis Vantage Pro2",
+        "units": "W/m^2"
+      },
+      "Spd_3m": {
+        "description": "The wind speed at 3m above the water surface.",
+        "source": "Davis Vantage Pro2",
+        "units": "m/s"
+      },
+      "T_0m": {
+        "description": "The water temperature at the water surface, as measured approximately 1m below the water surface.",
+        "source": "C-MAN Station - MARS payload",
+        "units": "degC"
+      },
+      "T_3m": {
+        "description": "The air temperature at 3m above the water surface.",
+        "source": "Davis Vantage Pro2",
+        "units": "degC"
+      }
+    }
+  },
+  "wavelength_nm": null
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "preregistered",
+  "status": "implementation_validated",
   "events": [
     {
       "sequence": 0,
@@ -11,6 +11,40 @@
       "evidence_role": "protocol",
       "result": "NOT_EVALUATED",
       "notes": "Cycle 0 is preserved as a null/partial result. USNA-large development uses only official training rows; confirmation labels remain unreleased."
+    },
+    {
+      "sequence": 1,
+      "recorded_at": "2026-07-30T18:25:00-05:00",
+      "kind": "machinery_repair",
+      "hypothesis_family": "evidence-infrastructure",
+      "evidence_role": "implementation",
+      "result": "PASS",
+      "notes": "Canonical PASS/FAIL/NOT_EVALUATED states, consumed-assessment enforcement, board/process VRAM separation, exact tracked artifact bytes, and regression tests were committed at 673cf77."
+    },
+    {
+      "sequence": 2,
+      "recorded_at": "2026-07-30T18:40:30-05:00",
+      "kind": "rolling_baseline_probe",
+      "hypothesis_family": "controls",
+      "evidence_role": "fold-1-selection",
+      "result": "PASS",
+      "run_id": "7613128581954f4bb0425d39fc9dab7a",
+      "candidate_id": "control-persistence",
+      "primary_rmse": 0.3037737600096179,
+      "notes": "Deterministic endpoint, manifest, calibration, artifact, and MLflow paths completed without GPU training."
+    },
+    {
+      "sequence": 3,
+      "recorded_at": "2026-07-30T18:41:17-05:00",
+      "kind": "neural_implementation_probe",
+      "hypothesis_family": "context",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_id": "6607bb2154734a11802721608c0031b4",
+      "candidate_id": "context-short",
+      "primary_rmse": 0.30006988906485516,
+      "relative_improvement_over_persistence": 0.012192901921094124,
+      "notes": "Point RMSE improved 1.22%, below the 2% threshold, while primary tail MAE regressed materially. The candidate does not advance; the validated code path remains usable."
     }
   ]
 }

@@ -1,0 +1,24 @@
+name: strata_ot_fusion_v2
+hidden_dim: 192
+num_heads: 6
+num_experts: 4
+dropout: 0.10
+horizon_fourier_bands: 8
+active_scales: [short, medium, slow]
+fusion: film_cross_attention
+physics_tokens: full
+pretraining: full_multitask
+calibration: student_t_conformal
+parameter_budget_min: 2000000
+parameter_budget_max: 8000000
+pretraining_policy:
+  mask_fraction: 0.15
+  reconstruction_weight: 1.0
+  future_weather_weight: 0.5
+  cadence_cn2_weight: 0.5
+  screen_epochs: 1
+  full_epochs: 3
+controls:
+  mlp_hidden_dim: 256
+  mlp_depth: 4
+  tcn_hidden_dim: 192

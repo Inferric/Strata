@@ -9,6 +9,7 @@ from strata_ot.config import find_repo_root
 from strata_ot.evaluation.evaluate import evaluate_gates, gate_status
 from strata_ot.reporting.render import render_report
 from strata_ot.training.forecast import run_forecast_experiment
+from strata_ot.training.fusion import run_fusion_candidate
 from strata_ot.training.horizon import run_horizon_experiment
 from strata_ot.training.train import run_experiment
 
@@ -215,6 +216,44 @@ def horizon_flow(
     return report_horizon(summary, "reports/generated/mlo-weather-horizon-v1")
 
 
+@task(log_prints=True)
+def train_fusion(
+    config_path: str,
+    candidate_id: str,
+    fold_id: str,
+    seed: int,
+    screen: bool,
+    release_confirmation: bool,
+) -> dict[str, Any]:
+    return run_fusion_candidate(
+        config_path,
+        candidate_id=candidate_id,
+        fold_id=fold_id,
+        seed=seed,
+        screen=screen,
+        release_confirmation=release_confirmation,
+    )
+
+
+@flow(name="strata-ot-fusion-v2-candidate", log_prints=True)
+def fusion_flow(
+    config_path: str = "configs/experiments/fusion_v2_program.yaml",
+    candidate_id: str = "context-all",
+    fold_id: str = "fold-1",
+    seed: int = 17,
+    screen: bool = True,
+    release_confirmation: bool = False,
+) -> dict[str, Any]:
+    return train_fusion(
+        config_path,
+        candidate_id,
+        fold_id,
+        seed,
+        screen,
+        release_confirmation,
+    )
+
+
 def main() -> None:
     import argparse
 
@@ -256,6 +295,33 @@ def horizon_main() -> None:
             args.config,
             args.fast_dev_run,
             args.release_assessment,
+        )
+    )
+
+
+def fusion_main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Run one Fusion v2 candidate through Prefect"
+    )
+    parser.add_argument(
+        "--config", default="configs/experiments/fusion_v2_program.yaml"
+    )
+    parser.add_argument("--candidate", required=True)
+    parser.add_argument("--fold", default="fold-1")
+    parser.add_argument("--seed", type=int, default=17)
+    parser.add_argument("--full", action="store_true")
+    parser.add_argument("--release-confirmation", action="store_true")
+    args = parser.parse_args()
+    print(
+        fusion_flow(
+            args.config,
+            args.candidate,
+            args.fold,
+            args.seed,
+            not args.full,
+            args.release_confirmation,
         )
     )
 
