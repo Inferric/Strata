@@ -254,6 +254,34 @@ def fusion_flow(
     )
 
 
+@flow(name="strata-ot-fusion-v2-screen-program", log_prints=True)
+def fusion_screen_program_flow(
+    config_path: str = "configs/experiments/fusion_v2_program.yaml",
+    fold_id: str = "fold-1",
+    seed: int = 17,
+) -> list[dict[str, Any]]:
+    root = find_repo_root()
+    import yaml
+
+    experiment = yaml.safe_load((root / config_path).read_text(encoding="utf-8"))
+    candidate_ids = [
+        str(candidate["id"]) for candidate in experiment["candidates"]
+    ]
+    results: list[dict[str, Any]] = []
+    for candidate_id in candidate_ids:
+        results.append(
+            train_fusion(
+                config_path,
+                candidate_id,
+                fold_id,
+                seed,
+                True,
+                False,
+            )
+        )
+    return results
+
+
 def main() -> None:
     import argparse
 
@@ -322,6 +350,34 @@ def fusion_main() -> None:
             args.seed,
             not args.full,
             args.release_confirmation,
+        )
+    )
+
+
+def fusion_program_main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Run the complete preregistered Fusion v2 screen matrix"
+    )
+    parser.add_argument(
+        "--config", default="configs/experiments/fusion_v2_program.yaml"
+    )
+    parser.add_argument("--fold", default="fold-1")
+    parser.add_argument("--seed", type=int, default=17)
+    args = parser.parse_args()
+    results = fusion_screen_program_flow(args.config, args.fold, args.seed)
+    print(
+        json.dumps(
+            [
+                {
+                    "run_id": result["run_id"],
+                    "candidate_id": result["candidate_id"],
+                    "family": result["family"],
+                }
+                for result in results
+            ],
+            indent=2,
         )
     )
 

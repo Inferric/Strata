@@ -70,6 +70,7 @@ strata-first-flow = "strata_ot.orchestration.flows:main"
 strata-forecast-flow = "strata_ot.orchestration.flows:forecast_main"
 strata-horizon-flow = "strata_ot.orchestration.flows:horizon_main"
 strata-fusion-flow = "strata_ot.orchestration.flows:fusion_main"
+strata-fusion-program = "strata_ot.orchestration.flows:fusion_program_main"
 
 [[tool.uv.index]]
 name = "pytorch-cu128"
