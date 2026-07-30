@@ -45,6 +45,17 @@
       "primary_rmse": 0.30006988906485516,
       "relative_improvement_over_persistence": 0.012192901921094124,
       "notes": "Point RMSE improved 1.22%, below the 2% threshold, while primary tail MAE regressed materially. The candidate does not advance; the validated code path remains usable."
+    },
+    {
+      "sequence": 4,
+      "recorded_at": "2026-07-30T18:56:15-05:00",
+      "kind": "screen_failure",
+      "hypothesis_family": "capacity_regularization",
+      "evidence_role": "fold-1-selection",
+      "result": "NOT_EVALUATED",
+      "candidate_id": "capacity-256",
+      "failure": "hidden_dim=256 is not divisible by six attention heads",
+      "disposition": "Non-trainable configuration corrected to width 240 within the same preregistered high-capacity hypothesis; no metric or threshold informed the correction."
     }
   ]
 }

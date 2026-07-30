@@ -208,10 +208,10 @@ candidates:
     physics_tokens: full
     pretraining: full_multitask
     calibration: conformal
-  - id: capacity-256
+  - id: capacity-240
     category: capacity_regularization
     family: fusion_v2
-    hidden_dim: 256
+    hidden_dim: 240
     dropout: 0.15
     active_scales: [short, medium, slow]
     fusion: film_cross_attention
