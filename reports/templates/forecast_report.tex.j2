@@ -37,8 +37,10 @@ We gave every method the same recent measurements and asked it to predict the ne
 means copying the most recent value; it is the honest minimum bar. The best neural
 run was \VAR{summary.best_neural_run.name|latex} with RMSE
 \VAR{summary.best_neural_run.metrics.rmse_log10_cn2|num}. Persistence achieved
-\VAR{summary.forecast_claim.persistence_rmse_log10_cn2|num}. The measured neural
-change was \VAR{summary.best_neural_improvement_percent|num}\%.
+\VAR{summary.forecast_claim.persistence_rmse_log10_cn2|num}. The best result overall
+was \VAR{summary.best_overall_run.name|latex} at
+\VAR{summary.best_overall_run.metrics.rmse_log10_cn2|num}. The measured two-seed
+neural change was \VAR{summary.best_neural_improvement_percent|num}\%.
 \BLOCK{ if summary.forecast_claim.passed_point_estimate }
 The pre-registered 2\% point-estimate threshold was met.
 \BLOCK{ else }
@@ -83,7 +85,14 @@ samples are not treated as independent.
 
 \section{Public data, provenance, and coverage}
 The task was acquired through the repository-supported OTBench adapter at a pinned
-public commit \cite{otbench}. No credentials, paid services, gated terms, or synthetic
+public commit \cite{otbench}.
+\BLOCK{ if "United States" in summary.site }
+The direct USNA surface-layer observations are cited as \cite{usna_cn2_sm}. They cover
+1 June through 31 August 2021 at six-minute cadence. Data were provided by the United
+States Naval Academy under the sponsorship of the Office of Naval Research and the
+Directed Energy Joint Technology Office.
+\BLOCK{ endif }
+No credentials, paid services, gated terms, or synthetic
 labels were used. The target is a direct optical-turbulence observation. Raw data were
 never edited in place; the manifest records source files, checksums, task metadata,
 instrument information, geometry, terms status, coverage, and the exact transform.
@@ -131,7 +140,9 @@ Block & Candidates & Retained & Gap rejects & Target rejects\\
 hard to beat over a few minutes because the atmosphere changes continuously.
 \item \textbf{Recent mean} averages the six observed \cn{} values.
 \item \textbf{LightGBM} is a strong conventional tree ensemble using the flattened,
-identical history and weather inputs.
+identical history and weather inputs. Its fixed configuration uses 300 trees,
+learning rate 0.03, 31 leaves, maximum depth 6, \(L_2\) regularization 1.0,
+all rows and features per tree, deterministic seed 17, and no search.
 \item \textbf{Compact MLP} is a four-block, width-192 neural network. Unlike the first
 experiment, it consumes the complete six-row context.
 \item \textbf{Strata-OT Surface} projects each time step to width 192, uses six
@@ -255,9 +266,12 @@ any improvement was
 \VAR{summary.forecast_claim.bootstrap.probability_improvement|pct}.
 
 \section{Resources and saved artifacts}
-Total neural GPU time was \VAR{summary.total_neural_gpu_hours|num} hours and peak
-allocated VRAM was \VAR{summary.peak_vram_gb|num} GB. The limits were two local
-GPU-hours for this validation and 15.5 GB peak VRAM. Cloud spend was exactly zero.
+Combined MLO-development and USNA-confirmation neural GPU time was
+\VAR{summary.combined_neural_gpu_hours|num} hours; the USNA confirmation itself used
+\VAR{summary.total_neural_gpu_hours|num} hours. Peak allocated VRAM across both was
+\VAR{summary.combined_peak_vram_gb|num} GB. The limits were two local GPU-hours per
+validation, four total local GPU-hours, and 15.5 GB peak VRAM. Cloud spend was exactly
+zero.
 
 The best neural checkpoint is
 \texttt{\VAR{summary.best_checkpoint.display_path|latex}} (seed

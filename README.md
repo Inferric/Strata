@@ -103,6 +103,20 @@ hard-clamped uncertainty scale with a smooth positive scale, and calibrates that
 scale on validation only. It retains the immutable split and evidence gates and
 uses a stricter two-GPU-hour local budget.
 
+The frozen one-shot USNA confirmation is now complete. LightGBM was best overall
+at test RMSE 0.1408. The compact MLP averaged 0.1444 across seeds 17 and 41,
+improving 3.07% over persistence (0.1490); a paired 24-hour block bootstrap gave
+a 95% improvement interval of 0.85% to 4.36%. Strata-OT Surface averaged
+0.1463, so its added complexity did not beat the MLP or LightGBM.
+
+No model was promoted. The immutable evidence gate remains open because the
+best eligible MLP's mean nominal 80% interval coverage was 90.50%, just above
+the 90% maximum. Provenance, leakage, train-only preprocessing,
+reproducibility, stability, and resource checks passed. Combined MLO and USNA
+neural work used 0.1451 GPU-hours and peaked at 0.1754 GB allocated VRAM. See
+[`forecast-report.pdf`](reports/generated/short-forecast-validation/forecast-report.pdf)
+for the complete claim-to-evidence record.
+
 ## The guarded loop
 
 ```mermaid

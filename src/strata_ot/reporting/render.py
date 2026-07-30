@@ -300,6 +300,18 @@ def _prepare_forecast_report_context(
         and development_path.is_file()
     ):
         summary["development_summary"] = _load_json(development_path)
+        summary["combined_neural_gpu_hours"] = float(
+            summary.get("total_neural_gpu_hours", 0)
+        ) + float(summary["development_summary"].get("total_neural_gpu_hours", 0))
+        summary["combined_peak_vram_gb"] = max(
+            float(summary.get("peak_vram_gb", 0)),
+            float(summary["development_summary"].get("peak_vram_gb", 0)),
+        )
+    else:
+        summary["combined_neural_gpu_hours"] = float(
+            summary.get("total_neural_gpu_hours", 0)
+        )
+        summary["combined_peak_vram_gb"] = float(summary.get("peak_vram_gb", 0))
     completed = [
         run
         for run in summary.get("runs", [])
