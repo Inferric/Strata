@@ -65,6 +65,11 @@ If the ML terminology is new, start with
 [`docs/START_HERE.md`](docs/START_HERE.md). The current short-horizon forecast
 validation and its exact commands are in
 [`docs/SHORT_FORECAST_RUN.md`](docs/SHORT_FORECAST_RUN.md).
+The frozen protocol for the next development-only MLO weather-by-horizon
+ablation is in
+[`docs/NEXT_EXPERIMENT.md`](docs/NEXT_EXPERIMENT.md). It preregisters the
+selection/calibration/assessment split, feature allowlists, custom Horizon v1
+architecture, success rules, resource limits, and assessment-release gate.
 
 The acquisition adapter checks out the public `otbench` repository at commit
 `53cab9d53648b4870b43e35d48f19143786fa12e` and calls its `TaskApi`. This pin is
@@ -116,6 +121,12 @@ reproducibility, stability, and resource checks passed. Combined MLO and USNA
 neural work used 0.1451 GPU-hours and peaked at 0.1754 GB allocated VRAM. See
 [`forecast-report.pdf`](reports/generated/short-forecast-validation/forecast-report.pdf)
 for the complete claim-to-evidence record.
+
+The next experiment does not revisit that released USNA test. It uses only the
+existing MLO training and validation snapshot to ask whether operational
+weather adds value at 5, 15, 30, and 60 minutes. Assessment remains hidden
+behind an explicit release flag until the protocol and implementation are
+committed; the official MLO test remains sealed.
 
 ## The guarded loop
 

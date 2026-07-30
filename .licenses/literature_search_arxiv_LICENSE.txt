@@ -1,0 +1,9 @@
+Recorded: 2026-07-30T00:26:16-05:00
+
+Before using the arXiv API, review its terms and usage guidance:
+https://info.arxiv.org/help/api/index.html
+
+Always inspect the license of every retrieved paper for restrictions before
+downloading, redistributing, quoting, or otherwise using its contents.
+
+This notice was presented to the user before the literature search began.

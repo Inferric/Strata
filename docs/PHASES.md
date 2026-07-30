@@ -40,6 +40,13 @@ The first Phase 2 validation is the leakage-safe one-step forecast described in
 one-shot USNA confirmation. It uses honest persistence, recent-mean, LightGBM,
 compact MLP, and Strata-OT comparisons on identical six-row histories.
 
+The next Phase 2 development experiment is the frozen MLO weather-horizon
+ablation in `docs/NEXT_EXPERIMENT.md`. It holds back separate chronological
+selection, calibration, and assessment roles within the official MLO
+validation block; compares history-only and allowlisted operational-weather
+inputs at 5--60 minutes; and tests the custom 2--5M-parameter Strata-OT Horizon
+v1 without opening the official MLO test or retuning after assessment release.
+
 Exit criteria: no promotion from a single seed/site/metric; tail and OOD
 evidence are reported; inference latency and VRAM are measured.
 

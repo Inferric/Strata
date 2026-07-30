@@ -1,0 +1,100 @@
+{
+  "recorded_at": "2026-07-30T00:29:31-05:00",
+  "api_notice": {
+    "url": "https://info.arxiv.org/help/api/index.html",
+    "user_notified": true,
+    "license_check_required_per_paper": true,
+    "maximum_request_rate": "one request per three seconds"
+  },
+  "search_method": {
+    "tool": "project literature-search-arxiv skill utility",
+    "result_storage": "ignored artifacts/literature/mlo-weather-horizon-v1/search-results",
+    "full_text_storage": "ignored artifacts/literature/mlo-weather-horizon-v1/papers",
+    "full_text_bytes": 27535381
+  },
+  "queries": [
+    "all:\"optical turbulence\" AND (all:forecast OR all:prediction)",
+    "(all:Cn2 OR all:\"refractive index structure\") AND (all:forecast OR all:prediction)",
+    "ti:\"Temporal Fusion Transformers\" OR (all:\"multi-horizon forecasting\" AND all:attention)",
+    "ti:\"Time-series Dense Encoder\" OR all:TiDE",
+    "ti:PatchTST OR (all:patch AND all:\"time series forecasting\" AND all:transformer)",
+    "(all:\"mixture of experts\" OR all:\"mixture-of-experts\") AND all:\"time series forecasting\"",
+    "(all:calibration OR all:calibrated) AND all:\"probabilistic time series forecasting\"",
+    "(all:\"cross-attention\" OR all:\"cross attention\") AND (all:\"multi-horizon\" OR all:\"time series forecasting\")"
+  ],
+  "closest_prior_art": [
+    {
+      "key": "turchi2022optical",
+      "arxiv": "2210.11236v1",
+      "url": "https://arxiv.org/abs/2210.11236",
+      "license": "CC BY-NC-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "pdf_sha256": "625533c274c2421482dd8889194271e256590ba4a65ad782ecfdc1e7aab683ba",
+      "relationship": "Optical-turbulence short-timescale ML forecasting and persistence warning; not the planned neural design."
+    },
+    {
+      "key": "lim2020tft",
+      "arxiv": "1912.09363v3",
+      "url": "https://arxiv.org/abs/1912.09363",
+      "license": "arXiv non-exclusive distribution license",
+      "license_url": "https://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+      "pdf_sha256": "79580118987a028db9c83c9bfedbc5b8bc126d40c357bf0284dcf044299db5b5",
+      "relationship": "Gating, exogenous inputs, interpretable multi-horizon attention, and quantiles."
+    },
+    {
+      "key": "eisenach2022mqtransformer",
+      "arxiv": "2009.14799v4",
+      "url": "https://arxiv.org/abs/2009.14799",
+      "license": "arXiv non-exclusive distribution license",
+      "license_url": "https://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+      "pdf_sha256": "5c60e481c2b7372bdf46c174ea82c28cbb7c27a1ca07fb326579b723cbd39054",
+      "relationship": "Horizon/context-aligned decoder-to-history attention and quantile forecasting."
+    },
+    {
+      "key": "das2024tide",
+      "arxiv": "2304.08424v5",
+      "url": "https://arxiv.org/abs/2304.08424",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "pdf_sha256": "eee9d9e3248f262a137e6cf63920137263f3bbbe22cd8608e5eec77882af1999",
+      "relationship": "Efficient covariate-aware residual MLP alternative."
+    },
+    {
+      "key": "nie2023patchtst",
+      "arxiv": "2211.14730v2",
+      "url": "https://arxiv.org/abs/2211.14730",
+      "license": "arXiv non-exclusive distribution license",
+      "license_url": "https://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+      "pdf_sha256": "ffd4021d25b4959883242f256b0fe4ec42f477f66db78c61bfacf7baa7848b0e",
+      "relationship": "Patch and channel-independent long-history Transformer alternative; less applicable to six rows."
+    },
+    {
+      "key": "wang2024timexer",
+      "arxiv": "2402.19072v4",
+      "url": "https://arxiv.org/abs/2402.19072",
+      "license": "CC BY-NC-ND 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+      "pdf_sha256": "0e19a3360dc22c5c72bdd55ed5d74ef9de8a5a38f79bce293f6eb4086ada90c4",
+      "relationship": "Closest endogenous/exogenous separation and cross-attention precedent."
+    },
+    {
+      "key": "kamarthi2022camul",
+      "arxiv": "2109.07438v3",
+      "url": "https://arxiv.org/abs/2109.07438",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "pdf_sha256": "af354ecce768d519668f0525ca47a63beb78a1c7f6a0f3ccb19b96735b19d2d6",
+      "relationship": "Context-specific multi-view fusion with probabilistic calibration."
+    },
+    {
+      "key": "liu2025freqmoe",
+      "arxiv": "2501.15125v2",
+      "url": "https://arxiv.org/abs/2501.15125",
+      "license": "arXiv non-exclusive distribution license",
+      "license_url": "https://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+      "pdf_sha256": "063c7d340940a65ea896c9108610804123287e9394622778588e59dd31a5b6a0",
+      "relationship": "Time-series expert gating and residual refinement, but frequency-specialized rather than weather-regime routed."
+    }
+  ],
+  "novelty_assessment": "No identical architecture was found in the bounded search. Strata-OT Horizon v1 must be described as a custom adaptation combining established ideas, not as universally novel."
+}
