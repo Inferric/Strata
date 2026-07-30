@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "experiment_id": "mlo-weather-horizon-v1",
+  "generated_at": "2026-07-30T06:41:10.394672+00:00",
+  "assessment": {
+    "released_explicitly": true,
+    "official_mlo_test_loaded": false,
+    "evaluated_run_count": 17,
+    "status": "null_or_partial",
+    "gate_passed": false,
+    "champion_promoted": false,
+    "failed_conditions": [
+      "primary_bootstrap",
+      "primary_coverage",
+      "primary_point_improvement",
+      "primary_seed_direction",
+      "primary_stability",
+      "primary_tail_mae"
+    ]
+  },
+  "primary_endpoint": {
+    "horizons_minutes": [
+      15,
+      30,
+      60
+    ],
+    "anchor_horizon_minutes": 5,
+    "stronger_operational_control": "lightgbm",
+    "mean_relative_rmse_improvement_against_history_horizon": -0.0314557213950258,
+    "mean_relative_rmse_improvement_against_stronger_control": -0.24511690295339914,
+    "required_improvement": 0.02,
+    "bootstrap_resamples": 2000,
+    "bootstrap_seed": 20260730,
+    "bootstrap_against_history_ci95": [
+      -0.04973909296428546,
+      -0.014274637143412913
+    ],
+    "bootstrap_against_stronger_control_ci95": [
+      -0.26610998623307386,
+      -0.21948900037771246
+    ]
+  },
+  "identities": {
+    "repository_revision_used_for_assessment": "aa6464645433563b373cb343661e3cd53711f586",
+    "repository_source_digest_sha256": "ed62348edac5ba2152492605487238b0313a90209233792a936c93ed3a5a0c02",
+    "source_dataset_id": "otbench-mlo-cn2-15m-v1",
+    "source_manifest_sha256": "cd1bba8a0ca6ddc2a25f5d40a8f7b6d0187b48ad2c119d03d917c869980cf410",
+    "split_id": "otbench-mlo-weather-horizon-v1",
+    "split_config_sha256": "1ef17942dbf0640947cb4f704e334e2b6b6df84e67867d5c622a9da3a6fa5fde",
+    "sealed_split_sha256": "4f37fea37731a9413c4e2aa48334677c561f5c7cab914f2dc7d546045035350d"
+  },
+  "resources": {
+    "total_neural_gpu_hours": 0.2960550000000512,
+    "peak_vram_gib": 0.17485475540161133,
+    "storage_delta_gib": 0.0,
+    "cloud_cost_usd": 0.0,
+    "oom_recovered": false
+  },
+  "reports": [
+    {
+      "name": "architecture-review.pdf",
+      "sha256": "075687833d1e607947bc65aef2029c4e83cfa2bcf544aa402d4f50899df01f28"
+    },
+    {
+      "name": "mlo-weather-horizon-report.pdf",
+      "sha256": "c36be6da5b09f435b3d557ead8fe074c72ebd2bbe7d91bd28e5042fa84bbf467"
+    },
+    {
+      "name": "first-real-run-experiment-report.pdf",
+      "sha256": "b1ec893f58f53b7ac05243e7ff17e0eeda948f8c0b7c6052f2cbe6ecbc77a4dd"
+    }
+  ],
+  "runs": [
+    {"run_id": "bac4704341234712a69450d2fe800156", "name": "climatology-history_only-mlo"},
+    {"run_id": "aaa8a94db24c4a64b787f94851ab8601", "name": "persistence-history_only-mlo"},
+    {"run_id": "a826ba49dafb468cabf86b0208b22fde", "name": "recent_mean-history_only-mlo"},
+    {"run_id": "c4ea58724492488fb2fcf462d54efa94", "name": "lightgbm-history_only-mlo"},
+    {"run_id": "7ae29eb8a22c49d3a1886a3280c3a21a", "name": "lightgbm-operational_weather-mlo"},
+    {"run_id": "f99df01d4f2c4070a071bb1c9b5144e0", "name": "mlp-history_only-seed-17"},
+    {"run_id": "64ea7ea37c864dbdb4f0ed235ac48bd6", "name": "mlp-history_only-seed-41"},
+    {"run_id": "a1759c505d9d43619bdcec3f6d71195f", "name": "mlp-operational_weather-seed-17"},
+    {"run_id": "1ce6ca600ee74e15bd23fd90c57b18cd", "name": "mlp-operational_weather-seed-41"},
+    {"run_id": "2ef2637fe2d84d2a885670c6ae01891b", "name": "strata_ot_surface-history_only-seed-17"},
+    {"run_id": "638bba6ef65e4a959aba33c8845fdfde", "name": "strata_ot_surface-history_only-seed-41"},
+    {"run_id": "d18c76e6a7aa4cce86167a6d6f5260a5", "name": "strata_ot_surface-operational_weather-seed-17"},
+    {"run_id": "6393199341c54b8bb18e221d0ae6c92b", "name": "strata_ot_surface-operational_weather-seed-41"},
+    {"run_id": "207c8249c6bc49fca7d38c76eaccf208", "name": "strata_ot_horizon-history_only-seed-17"},
+    {"run_id": "1b89501beeb64f168f2b78aff9d12a7e", "name": "strata_ot_horizon-history_only-seed-41"},
+    {"run_id": "577f7babf1fb478aad1cb465906c19cf", "name": "strata_ot_horizon-operational_weather-seed-17"},
+    {"run_id": "57a1cd7e9c054356b3a760ea86665b5d", "name": "strata_ot_horizon-operational_weather-seed-41"}
+  ]
+}
