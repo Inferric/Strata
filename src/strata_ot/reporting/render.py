@@ -404,25 +404,174 @@ def _prepare_forecast_report_context(
     )
 
 
+def _prepare_horizon_report_context(
+    summary: dict[str, Any],
+    root: Path,
+    output_dir: Path,
+) -> None:
+    literature = _load_json(
+        root
+        / "research"
+        / "literature"
+        / "mlo-weather-horizon-v1"
+        / "search-record.json"
+    )
+    import yaml
+
+    split = yaml.safe_load(
+        (
+            root
+            / "configs"
+            / "splits"
+            / "frozen"
+            / "otbench_mlo_weather_horizon_v1.yaml"
+        ).read_text(encoding="utf-8")
+    )
+    summary["literature_record"] = literature
+    summary["split_configuration"] = split
+    feature_audit = _load_json(root / str(summary["feature_audit"]))
+    summary["feature_audit_details"] = feature_audit
+    proxy_fields = [
+        field
+        for field in feature_audit["fields"]
+        if field.get("possible_target_proxy")
+        and isinstance(field.get("pearson_target_correlation"), (int, float))
+    ]
+    summary["top_proxy_fields"] = sorted(
+        proxy_fields,
+        key=lambda field: abs(float(field["pearson_target_correlation"])),
+        reverse=True,
+    )[:12]
+    primary_horizons = {
+        int(value) for value in summary["primary_horizon_minutes"]
+    }
+
+    def primary_rmse(run: dict[str, Any]) -> float:
+        values = [
+            float(metrics["rmse_log10_cn2"])
+            for horizon, metrics in run["by_horizon"].items()
+            if int(horizon) in primary_horizons
+        ]
+        return sum(values) / len(values) if values else float("inf")
+
+    completed = [
+        run
+        for run in summary.get("runs", [])
+        if run.get("by_horizon")
+    ]
+    if not completed:
+        raise ValueError("A horizon report requires measured runs")
+    summary["best_primary_run"] = min(completed, key=primary_rmse)
+    summary["run_primary_means"] = [
+        {
+            "run_id": run["run_id"],
+            "name": run["name"],
+            "model": run["model"],
+            "feature_set": run["feature_set"],
+            "seed": run.get("seed"),
+            "primary_rmse": primary_rmse(run),
+        }
+        for run in completed
+    ]
+    neural = [run for run in completed if run.get("kind") in {"neural", "probe"}]
+    if neural:
+        resolved = neural[0].get("resolved_configuration")
+        if resolved is None:
+            manifest = _load_json(
+                root
+                / "artifacts"
+                / "runs"
+                / str(neural[0]["run_id"])
+                / "run-manifest.json"
+            )
+            resolved = manifest["resolved_configuration"]
+        summary["resolved_configuration"] = resolved
+    else:
+        summary["resolved_configuration"] = {}
+
+    figure_dir = output_dir / "figures"
+    figure_dir.mkdir(parents=True, exist_ok=True)
+    figure_keys = {
+        ("persistence", "history_only", None),
+        ("lightgbm", "operational_weather", None),
+        ("mlp", "operational_weather", 17),
+        ("strata_ot_surface", "operational_weather", 17),
+        ("strata_ot_horizon", "history_only", 17),
+        ("strata_ot_horizon", "operational_weather", 17),
+    }
+    report_figures: list[dict[str, str]] = []
+    for run in completed:
+        identity = (run["model"], run["feature_set"], run.get("seed"))
+        if identity not in figure_keys:
+            continue
+        source = root / str(run["artifacts"]["figure"])
+        if not source.is_file():
+            continue
+        destination = (
+            figure_dir
+            / f"{run['model']}-{run['feature_set']}-{run.get('seed', 'fixed')}.png"
+        )
+        shutil.copy2(source, destination)
+        report_figures.append(
+            {
+                "name": run["name"],
+                "run_id": run["run_id"],
+                "path": destination.relative_to(output_dir).as_posix(),
+            }
+        )
+    summary["report_figures"] = report_figures
+    failures: list[dict[str, str]] = []
+    for path in sorted((root / "artifacts" / "runs").glob("*/failure-manifest.json")):
+        payload = _load_json(path)
+        if payload.get("resolved_configuration", {}).get("experiment") != summary[
+            "experiment_id"
+        ]:
+            continue
+        failures.append(
+            {
+                "phase": str(payload.get("kind", "run")),
+                "identity": str(payload.get("run_id", path.parent.name)),
+                "outcome": str(
+                    payload.get("failure", {}).get("type", "failed")
+                ).replace("_", " "),
+                "explanation": _failure_summary(payload),
+            }
+        )
+    summary["failure_records"] = failures
+
+
 def render_report(summary_path: Path, output_dir: Path) -> Path:
     root = find_repo_root(summary_path.parent)
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     output_dir.mkdir(parents=True, exist_ok=True)
-    is_forecast = summary.get("task_kind") == "one_step_forecast"
-    if is_forecast:
+    task_kind = summary.get("task_kind")
+    is_forecast = task_kind == "one_step_forecast"
+    is_horizon = task_kind == "multi_horizon_forecast"
+    if is_horizon:
+        _prepare_horizon_report_context(summary, root, output_dir)
+    elif is_forecast:
         _prepare_forecast_report_context(summary, root, output_dir)
     else:
         _prepare_report_context(summary, root, output_dir)
     template_dir = root / "reports" / "templates"
     template_name = (
-        "forecast_report.tex.j2" if is_forecast else "experiment_report.tex.j2"
+        "horizon_report.tex.j2"
+        if is_horizon
+        else (
+            "forecast_report.tex.j2"
+            if is_forecast
+            else "experiment_report.tex.j2"
+        )
     )
     template = _environment(template_dir).get_template(template_name)
     summary.setdefault("checks", {})["latex_pdf_compiled"] = True
     tex = template.render(summary=summary)
-    tex_path = output_dir / (
-        "forecast-report.tex" if is_forecast else "experiment-report.tex"
+    tex_name = (
+        "mlo-weather-horizon-report.tex"
+        if is_horizon
+        else ("forecast-report.tex" if is_forecast else "experiment-report.tex")
     )
+    tex_path = output_dir / tex_name
     tex_path.write_text(tex, encoding="utf-8")
     shutil.copy2(root / "research" / "references.bib", output_dir / "references.bib")
     try:

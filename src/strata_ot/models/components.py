@@ -90,8 +90,20 @@ class ProbabilisticHead(nn.Module):
             inverse_softplus = math.log(math.expm1(initial_scale - min_scale))
             nn.init.constant_(self.log_scale.bias, inverse_softplus)
 
-    def forward(self, hidden: Tensor, baseline: Tensor | None = None) -> dict[str, Tensor]:
-        location = self.location(hidden).squeeze(-1)
+    def forward(
+        self,
+        hidden: Tensor,
+        baseline: Tensor | None = None,
+        *,
+        location_override: Tensor | None = None,
+    ) -> dict[str, Tensor]:
+        if location_override is not None and baseline is not None:
+            raise ValueError("Use either baseline or location_override, not both")
+        location = (
+            location_override
+            if location_override is not None
+            else self.location(hidden).squeeze(-1)
+        )
         if baseline is not None:
             location = location + baseline
         raw_scale = self.log_scale(hidden).squeeze(-1)

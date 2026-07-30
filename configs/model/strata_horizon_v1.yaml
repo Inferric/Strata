@@ -1,0 +1,24 @@
+name: strata_ot_horizon
+hidden_dim: 192
+num_heads: 6
+num_experts: 4
+dropout: 0.10
+context: 6
+weather_dim: 7
+horizon_fourier_bands: 8
+causal_kernel_size: 3
+causal_dilations: [1, 2]
+quantiles: [0.10, 0.50, 0.90]
+scale_parameterization: softplus
+min_scale: 0.001
+initial_scale: 0.30
+min_log_scale: -5.0
+max_log_scale: 2.0
+parameter_budget_min: 2000000
+parameter_budget_max: 5000000
+controls:
+  mlp_hidden_dim: 256
+  mlp_depth: 4
+  surface_depth: 6
+  surface_use_baseline_residual: true
+

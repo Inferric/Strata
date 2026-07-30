@@ -1,0 +1,41 @@
+id: otbench-mlo-weather-horizon-v1
+sealed: true
+source_split_id: otbench-mlo-blocked-v1
+strategy: official_validation_chronological_selection_calibration_assessment
+ordering_field: _upstream_index
+outer_purge_rows: 24
+internal_purge_rows_each_side: 24
+materialized_path: data/sealed/splits/otbench-mlo-weather-horizon-v1.json
+materialized_payload_sha256: 4f37fea37731a9413c4e2aa48334677c561f5c7cab914f2dc7d546045035350d
+roles:
+  selection:
+    raw_start_offset: 24
+    raw_end_offset_inclusive: 921
+    rows: 898
+    first_identity: "2006-07-10 03:27:30"
+    last_identity: "2006-07-13 09:47:30"
+    identities_sha256: 8aa7b2c312393d3178657c4fe37dce8b8c9cffed056d9c8f6978175578ffe2dc
+  calibration:
+    raw_start_offset: 970
+    raw_end_offset_inclusive: 1382
+    rows: 413
+    first_identity: "2006-07-13 14:27:30"
+    last_identity: "2006-07-16 03:12:30"
+    identities_sha256: 763b22ce2476f7724f0285f23e5196437cfe1815b9c93722b39a736e3326ccc0
+  assessment:
+    raw_start_offset: 1431
+    raw_end_offset_inclusive: 1867
+    rows: 437
+    first_identity: "2006-07-16 07:27:30"
+    last_identity: "2006-07-17 21:57:30"
+    identities_sha256: 4396d032511f3b7e01a602184483b5aa5f06fd81dbc52da950b3c21fee67bec6
+purged_validation_offsets:
+  - [0, 23]
+  - [922, 969]
+  - [1383, 1430]
+  - [1868, 1891]
+notes:
+  - Exact ordered role identities are materialized from validation_features.csv without reading validation targets.
+  - Before assessment release, validation_target.csv is read only through raw offset 1382.
+  - The official MLO test partition is outside this split and may not be loaded.
+

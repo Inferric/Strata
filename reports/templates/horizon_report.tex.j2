@@ -1,0 +1,370 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.68in]{geometry}
+\usepackage{booktabs,longtable,tabularx,array,graphicx,caption,microtype,xcolor,enumitem,fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\definecolor{stratalight}{HTML}{EEF3F8}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\open}{\textcolor{stratared}{\textbf{OPEN}}}
+\newcommand{\cn}{\(C_n^2\)}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.45em}
+\renewcommand{\arraystretch}{1.12}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
+\rhead{\textcolor{stratagray}{MLO weather-horizon v1}}
+\cfoot{\thepage}
+\title{\textbf{\textcolor{stratablue}{MLO Weather-Horizon Ablation}}\\
+\large Strata-OT Horizon v1: frozen protocol, measured evidence, and limitations}
+\author{Generated from recorded runs, frozen identities, and primary-literature metadata}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratablue}{stratalight}{
+\begin{minipage}{0.93\linewidth}
+\textbf{Executive summary for a new reader.}
+\VAR{summary.plain_language_question|latex}
+\VAR{summary.plain_language_conclusion|latex}
+The official MLO test partition was never loaded. This is a one-site,
+development-only result and cannot promote a champion.
+\end{minipage}}
+\end{center}
+
+\section{Frozen question and decision}
+\textbf{Hypothesis.} \VAR{summary.hypothesis|latex}
+
+The primary endpoint averages relative RMSE improvement at 15, 30, and
+60 minutes. The 5-minute result is an anchor. Horizon v1 succeeds only if
+the operational-weather arm beats both its hard-zero history arm and the
+stronger operational-weather MLP/LightGBM control by at least 2\%, both
+paired 24-hour block-bootstrap intervals are above zero, both neural seeds
+move in the same direction, 80\% coverage stays between 70\% and 90\%, and
+bias, tail MAE, CRPS, and stability do not materially regress.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.28\linewidth}X}
+\toprule
+Assessment released & \VAR{summary.assessment_released|latex}\\
+Assessment status & \VAR{summary.assessment_claim.status|latex}\\
+Primary success & \BLOCK{ if summary.assessment_claim.get("passed") }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+Formal gate & \BLOCK{ if summary.get("gate_result") and summary.gate_result.get("passed") }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+Champion promoted & No; prohibited by protocol\\
+Official MLO test loaded & \VAR{summary.official_mlo_test_loaded|latex}\\
+Best measured primary run & \VAR{summary.best_primary_run.name|latex}\\
+Best primary mean RMSE & \VAR{summary.run_primary_means|selectattr("run_id", "equalto", summary.best_primary_run.run_id)|map(attribute="primary_rmse")|first|num}\\
+\bottomrule
+\end{tabularx}
+
+\section{Provenance and immutable identities}
+Only the already acquired public OTBench MLO snapshot was used. The target is
+a direct log-space \cn{} observation; raw bytes were not edited. The pinned
+manifest, frozen split configuration, materialized ordered role identities,
+repository source archive, and environment were recorded before training.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.28\linewidth}X}
+\toprule
+Dataset / source & \VAR{summary.dataset_id|latex} /
+\VAR{summary.source_dataset_id|latex}\\
+Site & \VAR{summary.site|latex}\\
+Split & \VAR{summary.split_id|latex}\\
+Manifest SHA-256 & \texttt{\VAR{summary.data_identity.manifest_sha256|shortid}}\\
+Split config SHA-256 & \texttt{\VAR{summary.data_identity.split_config_sha256|shortid}}\\
+Materialized split SHA-256 & \texttt{\VAR{summary.data_identity.sealed_split_sha256|shortid}}\\
+Source digest & \texttt{\VAR{summary.repository_identity.source_digest_sha256|shortid}}\\
+Source archive SHA-256 & \texttt{\VAR{summary.source_snapshot.sha256|shortid}}\\
+Cloud cost & \$\VAR{summary.cloud_cost_usd|num}\\
+\bottomrule
+\end{tabularx}
+
+\section{Development split and leakage controls}
+The existing 24-row outer validation purge was preserved. The remainder was
+divided chronologically 50/25/25 before removing 24 rows from both sides of
+both internal boundaries. Normalization and imputation were fit only on the
+purged official training block. Selection alone controlled early stopping;
+calibration alone fit the scalar uncertainty multiplier; assessment labels
+required the explicit release flag.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Role & Raw first & Raw last & Rows & Identity SHA-256\\
+\midrule
+\BLOCK{ for name, role in summary.split_configuration.roles.items() }
+\VAR{name|latex} & \VAR{role.raw_start_offset|latex} &
+\VAR{role.raw_end_offset_inclusive|latex} & \VAR{role.rows|latex} &
+\texttt{\VAR{role.identities_sha256|shortid}}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Sequence retention by horizon}
+\begin{longtable}{llrrrrr}
+\toprule
+Feature arm & Role / horizon & Candidate & Retained & Context gap & Elapsed & Target\\
+\midrule
+\endhead
+\BLOCK{ for feature_set, roles in summary.sequence_qc.items() }
+\BLOCK{ for role, horizons in roles.items() }
+\BLOCK{ for horizon, qc in horizons.items() }
+\VAR{feature_set|latex} & \VAR{role|latex} / \VAR{horizon|latex} min &
+\VAR{qc.candidate_endpoints|latex} & \VAR{qc.retained|latex} &
+\VAR{qc.rejected_context_gap|latex} & \VAR{qc.rejected_horizon_elapsed|latex} &
+\VAR{qc.rejected_target|latex}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{Feature definitions and proxy audit}
+\textbf{History only} contains six \cn{} levels plus first differences and
+elapsed cadence. \textbf{Operational weather} additionally contains
+Dir\_10m, Spd\_10m, P\_2m, T\_2m, RH\_2m, and Tdew\_2m; direction is encoded
+as sine and cosine. Covariances, QC flags, counts, water-vapor instrument
+channels, and diagnostics were excluded from every learned primary arm.
+
+The descriptive proxy audit used the training block only. Correlation is not
+proof of leakage, but high association in a field derived from the same
+instrument stream is a warning against including it.
+
+\begin{tabular}{llrr}
+\toprule
+Field & Category & Missing fraction & Pearson with target\\
+\midrule
+\BLOCK{ for field in summary.top_proxy_fields }
+\VAR{field.name|latex} & \VAR{field.category|latex} &
+\VAR{field.missing_fraction|pct} &
+\VAR{field.pearson_target_correlation|num}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+
+\section{Methods and custom architecture}
+Baselines were climatology, persistence, and the recent six-row mean.
+LightGBM ran once per feature arm. MLP, the existing Strata-OT Surface, and
+Strata-OT Horizon v1 ran for seeds 17 and 41 on both arms.
+
+Horizon v1 has separate endogenous and exogenous branches. History uses
+levels, first differences, and cadence; weather uses levels, first
+differences, and circular wind. Width-192 gated causal blocks use dilations
+1 and 2. Fourier forecast-minute queries attend separately to the two
+branches through six heads. The existing four-expert regime router fuses the
+streams. Its point forecast is
+\[
+\widehat y=y_{\mathrm{last}}+\Delta_{\mathrm{history}}+
+\sigma(g_{\mathrm{weather}})\Delta_{\mathrm{weather}}.
+\]
+The last term is exactly zero in the history-only arm. The existing Gaussian
+scale and 0.10/0.50/0.90 quantile head are retained. All residual components,
+weather gates, attentions, and regime weights are recorded. The measured
+Horizon v1 parameter count is \VAR{summary.runs|selectattr("model", "equalto", "strata_ot_horizon")|map(attribute="parameters")|first|latex}.
+
+\subsection{Exact training policy}
+All neural runs used BF16 mixed precision, at most 80 epochs, selection-only
+early stopping with patience 12, AdamW learning rate \(3\times10^{-4}\),
+weight decay 0.01, one process, zero data workers, and four CPU threads.
+Calibration was a validation-only scalar scale factor. No architecture,
+horizon, feature, or success-rule retuning was allowed after assessment.
+
+\section{Closest prior art and novelty boundary}
+The literature-search record contains the arXiv API notice, eight rate-limited
+queries, verified paper URLs, licenses, BibTeX, and local full-text hashes.
+Every component has precedent; the bounded review found no identical design.
+Horizon v1 is therefore described as a \textbf{custom adaptation}, never as
+universally novel.
+
+\begin{longtable}{p{0.18\linewidth}p{0.17\linewidth}p{0.55\linewidth}}
+\toprule
+Paper / arXiv & License & Relationship\\
+\midrule
+\endhead
+\BLOCK{ for paper in summary.literature_record.closest_prior_art }
+\href{\VAR{paper.url}}{arXiv \VAR{paper.arxiv|latex}} &
+\VAR{paper.license|latex} & \VAR{paper.relationship|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{All measured horizon results}
+Lower RMSE, MAE, absolute bias, tail MAE, and CRPS are better. Coverage is
+acceptable only within the frozen 70--90\% interval.
+
+\scriptsize
+\begin{longtable}{p{0.20\linewidth}p{0.11\linewidth}rr rrrrrr}
+\toprule
+Model & Arm & Seed & Min & RMSE & MAE & Bias & Tail & CRPS & Cov.\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, metrics in run.by_horizon.items() }
+\VAR{run.model|latex} &
+\BLOCK{ if run.feature_set == "operational_weather" }weather\BLOCK{ else }history\BLOCK{ endif } &
+\VAR{run.get("seed", "--")|latex} & \VAR{horizon|latex} &
+\VAR{metrics.get("rmse_log10_cn2")|num} &
+\VAR{metrics.get("mae_log10_cn2")|num} &
+\VAR{metrics.get("bias_log10_cn2")|num} &
+\VAR{metrics.get("tail_mae_top_decile")|num} &
+\VAR{metrics.get("crps_gaussian")|num} &
+\VAR{metrics.get("interval_80_coverage")|pct}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection{Primary endpoint and uncertainty}
+\BLOCK{ if summary.assessment_claim.get("eligible") }
+The operational-weather Horizon v1 primary improvement was
+\VAR{summary.assessment_claim.relative_rmse_improvement.against_history_horizon|pct}
+against its history-only arm and
+\VAR{summary.assessment_claim.relative_rmse_improvement.against_stronger_control|pct}
+against \VAR{summary.assessment_claim.stronger_operational_control|latex}.
+The paired 24-hour moving-block bootstrap used
+\VAR{summary.assessment_claim.bootstrap.against_history_horizon.resamples|latex}
+resamples and fixed seed
+\VAR{summary.assessment_claim.bootstrap.against_history_horizon.seed|latex}.
+
+\begin{tabular}{lrrr}
+\toprule
+Comparator & Mean improvement & 95\% low & 95\% high\\
+\midrule
+History-only Horizon v1 &
+\VAR{summary.assessment_claim.bootstrap.against_history_horizon.mean_relative_improvement|pct} &
+\VAR{summary.assessment_claim.bootstrap.against_history_horizon.ci95_low|pct} &
+\VAR{summary.assessment_claim.bootstrap.against_history_horizon.ci95_high|pct}\\
+Stronger operational control &
+\VAR{summary.assessment_claim.bootstrap.against_stronger_control.mean_relative_improvement|pct} &
+\VAR{summary.assessment_claim.bootstrap.against_stronger_control.ci95_low|pct} &
+\VAR{summary.assessment_claim.bootstrap.against_stronger_control.ci95_high|pct}\\
+\bottomrule
+\end{tabular}
+\BLOCK{ else }
+The assessment claim was not eligible because the assessment role was not
+released or the preregistered run matrix was incomplete.
+\BLOCK{ endif }
+
+\subsection{Individual success conditions}
+\begin{tabularx}{\linewidth}{Xp{0.18\linewidth}}
+\toprule
+Condition & Result\\
+\midrule
+\BLOCK{ for name, passed in summary.assessment_claim.get("conditions", {}).items() }
+\VAR{name|latex} & \BLOCK{ if passed }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabularx}
+
+\section{Component diagnostics}
+Weather gates and residuals are interpretations of model calculations, not
+identified causal effects. Expert weights are not automatically physical
+regimes.
+
+\scriptsize
+\begin{longtable}{p{0.23\linewidth}rr rrr}
+\toprule
+Horizon run & Min & History delta & Weather delta & Weather gate & Contribution\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs if run.model == "strata_ot_horizon" }
+\BLOCK{ for horizon, values in run.component_summary.items() }
+\VAR{run.name|latex} & \VAR{horizon|latex} &
+\VAR{values.history_delta.mean|num} &
+\VAR{values.weather_delta.mean|num} &
+\VAR{values.weather_gate.mean|num} &
+\VAR{values.weather_contribution.mean|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Diagnostic plots}
+\BLOCK{ for figure in summary.report_figures }
+\begin{center}
+\includegraphics[width=0.74\linewidth]{\VAR{figure.path}}
+\captionof{figure}{Chronological four-horizon diagnostics for
+\VAR{figure.name|latex} (run \texttt{\VAR{figure.run_id|shortid}}).}
+\end{center}
+\BLOCK{ endfor }
+
+\section{Resources, failures, and retries}
+Neural wall-clock time was \VAR{summary.total_neural_gpu_hours|num} GPU-hours,
+peak process allocation was \VAR{summary.peak_vram_gb|num} GiB, recorded new
+artifact storage was \VAR{summary.storage_delta_gib|num} GiB, and cloud cost
+was \$\VAR{summary.cloud_cost_usd|num}. One OOM recovery was permitted by
+halving batch size and doubling accumulation; used =
+\VAR{summary.oom_recovered|latex}.
+
+\BLOCK{ if summary.failure_records }
+\begin{longtable}{p{0.15\linewidth}p{0.24\linewidth}p{0.52\linewidth}}
+\toprule
+Phase & Identity / outcome & Recorded explanation\\
+\midrule
+\endhead
+\BLOCK{ for failure in summary.failure_records }
+\VAR{failure.phase|latex} & \texttt{\VAR{failure.identity|shortid}} /
+\VAR{failure.outcome|latex} & \VAR{failure.explanation|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\BLOCK{ else }
+No failure or retry was recorded for the completed bounded matrix.
+\BLOCK{ endif }
+
+\section{Evidence checks and claim map}
+\begin{longtable}{p{0.68\linewidth}p{0.20\linewidth}}
+\toprule
+Check & Result\\
+\midrule
+\endhead
+\BLOCK{ for name, passed in summary.checks.items() }
+\VAR{name|latex} & \BLOCK{ if passed }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\begin{longtable}{p{0.28\linewidth}p{0.43\linewidth}p{0.21\linewidth}}
+\toprule
+Claim & Direct evidence & Boundary\\
+\midrule
+Weather adds information & Hard-zero versus weather Horizon arms, same seeds,
+paired identity-aligned bootstrap & Development assessment only\\
+Custom model beats controls & Stronger of full-input MLP/LightGBM, all frozen
+secondary gates & One site and short period\\
+Useful uncertainty & Calibration-only scale, horizon coverage, CRPS and NLL &
+One pooled scalar\\
+Novel architecture & Not claimed; bounded closest-prior-art review &
+Search cannot prove global novelty\\
+Promotion readiness & Not supported; official MLO test remains sealed &
+Human authorization required\\
+\bottomrule
+\end{longtable}
+
+\section{Limitations and recommendation}
+\begin{itemize}
+\item The assessment block spans less than two days and cannot represent all
+seasons or turbulence regimes.
+\item A 24-hour circular block bootstrap respects local dependence but cannot
+create independent weather episodes.
+\item Two neural seeds check direction and gross instability, not the full
+training distribution.
+\item Surface-layer, single-site evidence does not establish vertical-profile,
+path-integrated, cross-instrument, or deployment performance.
+\item The feature audit is associational; excluded target-proxy candidates
+were never used for primary training.
+\end{itemize}
+
+\textbf{Next recommendation.}
+\VAR{summary.recommended_next_experiment|latex}
+
+\end{document}

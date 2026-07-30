@@ -9,6 +9,7 @@ from strata_ot.config import find_repo_root
 from strata_ot.evaluation.evaluate import evaluate_gates
 from strata_ot.reporting.render import render_report
 from strata_ot.training.forecast import run_forecast_experiment
+from strata_ot.training.horizon import run_horizon_experiment
 from strata_ot.training.train import run_experiment
 
 
@@ -109,6 +110,94 @@ def forecast_flow(
     return report_and_gate(summary, "reports/generated/short-forecast-validation")
 
 
+@task(log_prints=True)
+def train_horizon(
+    config_path: str,
+    fast_dev_run: bool,
+    release_assessment: bool,
+) -> dict[str, Any]:
+    return run_horizon_experiment(
+        config_path,
+        fast_dev_run=fast_dev_run,
+        release_assessment=release_assessment,
+    )
+
+
+@task(log_prints=True)
+def report_horizon(summary: dict[str, Any], output_directory: str) -> dict[str, Any]:
+    root = find_repo_root()
+    summary_path = root / "artifacts" / "latest" / "summary.json"
+    output_dir = (root / output_directory).resolve()
+    reports_root = (root / "reports" / "generated").resolve()
+    if not output_dir.is_relative_to(reports_root):
+        raise ValueError("Report output must remain under reports/generated")
+    pdf = render_report(summary_path, output_dir)
+    refreshed = json.loads(summary_path.read_text(encoding="utf-8"))
+    claim = dict(refreshed.get("assessment_claim", {}))
+    checks = dict(refreshed.get("checks", {}))
+    required_checks = (
+        "dataset_manifest_valid",
+        "materialized_split_verified",
+        "no_random_row_primary_split",
+        "no_time_overlap_across_partitions",
+        "preprocessing_fit_on_train_only",
+        "official_mlo_test_sealed",
+        "uncertainty_reported",
+        "calibration_reported",
+        "resource_metrics_reported",
+        "within_gpu_budget",
+        "within_storage_budget",
+        "latex_pdf_compiled",
+    )
+    failures = [name for name in required_checks if checks.get(name) is not True]
+    if refreshed.get("assessment_released") is not True:
+        failures.append("assessment_not_released")
+    for name, passed in dict(claim.get("conditions", {})).items():
+        if not passed:
+            failures.append(f"primary_{name}")
+    gate_result = {
+        "gate_id": "mlo-weather-horizon-v1-preregistered",
+        "passed": bool(claim.get("passed")) and not failures,
+        "failures": sorted(set(failures)),
+        "evaluated_run_count": len(refreshed.get("runs", [])),
+        "assessment_status": claim.get("status", "not_released"),
+        "champion_promoted": False,
+    }
+    refreshed["gate_result"] = gate_result
+    summary_path.write_text(
+        json.dumps(refreshed, indent=2) + "\n", encoding="utf-8"
+    )
+    experiment_summary = (
+        root
+        / "artifacts"
+        / "experiments"
+        / str(refreshed["experiment_id"])
+        / "summary.json"
+    )
+    experiment_summary.write_text(
+        json.dumps(refreshed, indent=2) + "\n", encoding="utf-8"
+    )
+    (output_dir / "gate-result.json").write_text(
+        json.dumps(gate_result, indent=2) + "\n", encoding="utf-8"
+    )
+    pdf = render_report(summary_path, output_dir)
+    return {
+        "pdf": str(pdf),
+        "gate": gate_result,
+        "run_count": len(summary.get("runs", [])),
+    }
+
+
+@flow(name="strata-ot-mlo-weather-horizon-v1", log_prints=True)
+def horizon_flow(
+    config_path: str = "configs/experiments/mlo_weather_horizon_v1.yaml",
+    fast_dev_run: bool = False,
+    release_assessment: bool = False,
+) -> dict[str, Any]:
+    summary = train_horizon(config_path, fast_dev_run, release_assessment)
+    return report_horizon(summary, "reports/generated/mlo-weather-horizon-v1")
+
+
 def main() -> None:
     import argparse
 
@@ -130,6 +219,28 @@ def forecast_main() -> None:
     parser.add_argument("--release-test", action="store_true")
     args = parser.parse_args()
     print(forecast_flow(args.config, args.fast_dev_run, args.release_test))
+
+
+def horizon_main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Run the frozen MLO weather-horizon Prefect flow"
+    )
+    parser.add_argument(
+        "--config",
+        default="configs/experiments/mlo_weather_horizon_v1.yaml",
+    )
+    parser.add_argument("--fast-dev-run", action="store_true")
+    parser.add_argument("--release-assessment", action="store_true")
+    args = parser.parse_args()
+    print(
+        horizon_flow(
+            args.config,
+            args.fast_dev_run,
+            args.release_assessment,
+        )
+    )
 
 
 if __name__ == "__main__":

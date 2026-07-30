@@ -31,6 +31,9 @@ REQUIRED_STOP_CONDITIONS = {
 
 EXPECTED_DATASET_SPLITS = {
     "otbench-mlo-cn2-15m-v1": "otbench-mlo-blocked-v1",
+    "otbench-mlo-cn2-15m-weather-horizon-v1": (
+        "otbench-mlo-weather-horizon-v1"
+    ),
     "otbench-usna-cn2-3m-forecast-6min-v1": "otbench-usna-sm-forecast-v1",
 }
 
@@ -76,6 +79,12 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
     if not config_path.is_relative_to(approved_model_dir) or not config_path.is_file():
         raise ValueError("Proposal model config is outside the approved model directory")
     model_config = load_yaml(config_path, root=repository)
+    parent_reference = proposal["model"].get("parent_config_path")
+    parent_config = (
+        load_yaml(str(parent_reference), root=repository)
+        if parent_reference is not None
+        else model_config
+    )
     trainer_config = load_yaml("configs/trainer/local_16gb.yaml", root=repository)
 
     changed: set[str] = set()
@@ -86,7 +95,11 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
         if parameter in changed:
             raise ValueError(f"Autonomous proposal changes {parameter} more than once")
         changed.add(parameter)
-        source = trainer_config if parameter in {"learning_rate", "weight_decay"} else model_config
+        source = (
+            trainer_config
+            if parameter in {"learning_rate", "weight_decay"}
+            else parent_config
+        )
         defaults: dict[str, Any] = {
             "scale_parameterization": "clamp",
             "mlp_flatten_context": False,
@@ -115,8 +128,17 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
             )
         if new_value == change["old"]:
             raise ValueError(f"Autonomous change for {parameter} is a no-op")
+        if (
+            parent_reference is not None
+            and parameter in model_config
+            and model_config[parameter] != new_value
+        ):
+            raise ValueError(
+                f"Proposal final value does not match {config_path.name} "
+                f"for {parameter}"
+            )
 
-    resolved_model = dict(model_config)
+    resolved_model = dict(parent_config)
     for change in proposal["changes"]:
         if change["parameter"] not in {"learning_rate", "weight_decay"}:
             resolved_model[str(change["parameter"])] = change["new"]

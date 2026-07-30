@@ -9,6 +9,9 @@ export type Run = {
   split_id?: string;
   site?: string;
   task_kind?: string;
+  feature_set?: string;
+  horizon_rows?: string;
+  horizon_minutes?: string;
   forecast_horizon_minutes?: string;
   evaluation_partition?: string;
   metrics: Record<string, number>;
@@ -33,6 +36,41 @@ export type Overview = {
       persistence_rmse_log10_cn2?: number;
       best_neural_rmse_log10_cn2?: number;
     };
+    plain_language_conclusion?: string;
+    assessment_released?: boolean;
+    assessment_claim?: {
+      eligible: boolean;
+      status: string;
+      passed?: boolean;
+      stronger_operational_control?: string;
+      relative_rmse_improvement?: {
+        against_history_horizon: number;
+        against_stronger_control: number;
+        threshold: number;
+      };
+      conditions?: Record<string, boolean>;
+    };
+    horizon_matrix?: Array<{
+      run_id: string;
+      model: string;
+      feature_set: string;
+      seed: number | null;
+      horizon_minutes: number;
+      metrics: Record<string, number>;
+    }>;
+    runs?: Array<{
+      run_id: string;
+      name: string;
+      model: string;
+      feature_set: string;
+      seed: number | null;
+      component_summary?: Record<string, {
+        history_delta_mean: number;
+        weather_delta_mean: number;
+        weather_gate_mean: number;
+        weather_contribution_mean: number;
+      }>;
+    }>;
     checks: Record<string, boolean>;
     gate_result?: {
       passed: boolean;

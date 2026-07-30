@@ -78,6 +78,25 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--cyan); outline-
 .translation-strip article + article { border-left: 1px solid var(--line); }
 .translation-number { color: var(--mint); font: 500 11px/1 ui-monospace, monospace; padding-top: 2px; }
 .translation-strip p { color: #91a7b0; font-size: 11px; line-height: 1.62; margin: 9px 0 0; }
+.horizon-panel { margin: 14px 0; overflow: hidden; }
+.horizon-grid { display: grid; grid-template-columns: minmax(190px, 1.45fr) repeat(4, minmax(104px, 1fr)); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.horizon-corner, .horizon-head, .horizon-label, .horizon-cell { min-height: 58px; padding: 11px 13px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.horizon-corner { color: #607a86; font: 500 9px ui-monospace, monospace; letter-spacing: .07em; display: flex; align-items: center; }
+.horizon-head { display: grid; align-content: center; gap: 2px; background: rgba(132,217,232,.025); }
+.horizon-head strong { color: #d8edf0; font: 500 16px ui-monospace, monospace; }
+.horizon-head span, .horizon-cell span, .horizon-label span { color: #617984; font: 8px ui-monospace, monospace; text-transform: uppercase; letter-spacing: .06em; }
+.horizon-label { display: grid; align-content: center; gap: 4px; }
+.horizon-label strong { color: #bdd0d6; font-size: 10px; text-transform: capitalize; }
+.horizon-cell { position: relative; display: grid; align-content: center; gap: 3px; background: linear-gradient(90deg, rgba(66,200,183,calc(var(--trace) * .11)), transparent 72%); }
+.horizon-cell i { position: absolute; inset: 0 auto 0 0; width: 2px; background: rgba(66,200,183,var(--trace)); }
+.horizon-cell strong { color: #d9f4f1; font: 500 13px ui-monospace, monospace; }
+.weather-gates { display: grid; grid-template-columns: minmax(190px, 1.45fr) repeat(4, minmax(104px, 1fr)); gap: 0; align-items: center; margin-top: 14px; }
+.gate-dial { padding: 7px 13px; display: grid; grid-template-columns: auto 1fr; gap: 5px 8px; align-items: center; }
+.gate-dial > span { color: #78909d; font: 8px ui-monospace, monospace; }
+.gate-dial > i { height: 3px; border-radius: 99px; background: rgba(132,217,232,.10); overflow: hidden; }
+.gate-dial > i b { height: 100%; display: block; background: var(--cyan); }
+.gate-dial > strong { grid-column: 1 / -1; color: #bcd1d7; font: 500 11px ui-monospace, monospace; }
+.horizon-conclusion { margin: 13px 0 0; padding-top: 12px; border-top: 1px solid var(--line); color: #91a7b0; font-size: 11px; line-height: 1.6; }
 .service-card { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: 9px; padding: 12px 14px; background: rgba(13,25,35,.72); color: #8198a3; }
 .service-card:hover { border-color: rgba(132,217,232,.28); color: var(--cyan); }
 .service-card > div { display: flex; align-items: center; gap: 10px; }
@@ -140,4 +159,7 @@ footer span { display: flex; align-items: center; gap: 6px; }
   .service-row { grid-template-columns: 1fr; }
   .hero-metrics { grid-template-columns: 1fr; gap: 12px; }
   .hero-metrics div + div { border-left: 0; padding-left: 0; }
+  .horizon-grid { grid-template-columns: minmax(140px, 1.25fr) repeat(4, minmax(82px, 1fr)); overflow-x: auto; }
+  .weather-gates { grid-template-columns: 1fr 1fr; }
+  .weather-gates > .eyebrow { grid-column: 1 / -1; margin-bottom: 6px; }
 }

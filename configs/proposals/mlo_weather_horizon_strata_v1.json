@@ -1,0 +1,41 @@
+{
+  "proposal_id": "mlo-weather-horizon-strata-v1",
+  "hypothesis": "Strata-OT Horizon v1 uses operational weather more effectively than its history-only ablation and the strongest full-input control over 15, 30, and 60 minutes.",
+  "parent_run_id": null,
+  "dataset_manifest_id": "otbench-mlo-cn2-15m-weather-horizon-v1",
+  "split_id": "otbench-mlo-weather-horizon-v1",
+  "feature_sets": ["history_only", "operational_weather"],
+  "horizon_minutes": [5, 15, 30, 60],
+  "model": {
+    "family": "strata_ot_horizon",
+    "config_path": "configs/model/strata_horizon_v1.yaml",
+    "parent_config_path": "configs/model/strata_surface_tiny.yaml"
+  },
+  "changes": [
+    {
+      "parameter": "context",
+      "old": 32,
+      "new": 6,
+      "reason": "Use the preregistered six-row history for every horizon."
+    },
+    {
+      "parameter": "scale_parameterization",
+      "old": "clamp",
+      "new": "softplus",
+      "reason": "Keep the inherited Gaussian and quantile head smoothly trainable."
+    }
+  ],
+  "evaluation_gate_id": "public-evidence-gates-v1",
+  "budget": {
+    "max_runs": 2,
+    "max_local_gpu_hours": 1.7,
+    "max_cloud_cost_usd": 0
+  },
+  "stop_conditions": [
+    "budget_exhausted",
+    "nan_or_divergence",
+    "oom_after_one_recovery",
+    "data_or_split_gate_failure",
+    "no_validation_improvement"
+  ]
+}

@@ -14,6 +14,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { links, loadConsole } from "./api";
 import type { DatasetManifest, Overview, Run, SystemStatus } from "./types";
 
@@ -80,6 +81,103 @@ function RunTrend({ runs }: { runs: Run[] }) {
   );
 }
 
+function HorizonMatrix({ summary }: { summary: NonNullable<Overview["latest_summary"]> }) {
+  const rows = summary.horizon_matrix ?? [];
+  const horizons = [5, 15, 30, 60];
+  const identities = Array.from(
+    new Set(rows.map((row) => `${row.model}|${row.feature_set}`)),
+  );
+  const values = rows
+    .map((row) => row.metrics.rmse_log10_cn2)
+    .filter(Number.isFinite);
+  const minimum = values.length ? Math.min(...values) : 0;
+  const maximum = values.length ? Math.max(...values) : 1;
+  const span = Math.max(maximum - minimum, 1e-6);
+
+  return (
+    <section id="horizons" className="panel horizon-panel">
+      <div className="panel-heading">
+        <div>
+          <span className="eyebrow">WEATHER TRACE / LOWER IS BETTER</span>
+          <h3>RMSE by information source and forecast horizon</h3>
+        </div>
+        <span className="state-chip">
+          {summary.assessment_released ? "assessment" : "selection"}
+        </span>
+      </div>
+      <div className="horizon-grid" role="table" aria-label="Horizon RMSE matrix">
+        <div className="horizon-corner" role="columnheader">Model / feature arm</div>
+        {horizons.map((horizon) => (
+          <div className="horizon-head" role="columnheader" key={horizon}>
+            <strong>{horizon}</strong><span>minutes</span>
+          </div>
+        ))}
+        {identities.map((identity) => {
+          const [model, featureSet] = identity.split("|");
+          return [
+            <div className="horizon-label" role="rowheader" key={`${identity}-label`}>
+              <strong>{model.replaceAll("_", " ")}</strong>
+              <span>{featureSet.replaceAll("_", " ")}</span>
+            </div>,
+            ...horizons.map((horizon) => {
+              const matching = rows.filter(
+                (row) => row.model === model
+                  && row.feature_set === featureSet
+                  && row.horizon_minutes === horizon,
+              );
+              const mean = matching.length
+                ? matching.reduce(
+                  (total, row) => total + row.metrics.rmse_log10_cn2,
+                  0,
+                ) / matching.length
+                : undefined;
+              const strength = mean === undefined ? 0 : 1 - (mean - minimum) / span;
+              return (
+                <div
+                  className="horizon-cell"
+                  role="cell"
+                  key={`${identity}-${horizon}`}
+                  style={{ "--trace": strength } as CSSProperties}
+                >
+                  <i />
+                  <strong>{mean?.toFixed(4) ?? "—"}</strong>
+                  <span>{matching.length > 1 ? `${matching.length} seeds` : "fixed"}</span>
+                </div>
+              );
+            }),
+          ];
+        })}
+      </div>
+      <div className="weather-gates">
+        <span className="eyebrow">ACTUAL HORIZON V1 WEATHER GATES</span>
+        {horizons.map((horizon) => {
+          const gates = (summary.runs ?? [])
+            .filter(
+              (run) => run.model === "strata_ot_horizon"
+                && run.feature_set === "operational_weather",
+            )
+            .map((run) => run.component_summary?.[String(horizon)]?.weather_gate_mean)
+            .filter((value): value is number => Number.isFinite(value));
+          const mean = gates.length
+            ? gates.reduce((total, value) => total + value, 0) / gates.length
+            : undefined;
+          return (
+            <div className="gate-dial" key={horizon}>
+              <span>+{horizon}m</span>
+              <i><b style={{ width: `${(mean ?? 0) * 100}%` }} /></i>
+              <strong>{mean?.toFixed(3) ?? "—"}</strong>
+            </div>
+          );
+        })}
+      </div>
+      <p className="horizon-conclusion">
+        {summary.plain_language_conclusion
+          ?? "The conclusion appears only after the frozen matrix is recorded."}
+      </p>
+    </section>
+  );
+}
+
 export default function App() {
   const [overview, setOverview] = useState<Overview | null>(null);
   const [runs, setRuns] = useState<Run[]>([]);
@@ -117,6 +215,7 @@ export default function App() {
   );
   const forecastClaim = overview?.latest_summary?.forecast_claim;
   const measuredChange = forecastClaim?.measured_relative_improvement;
+  const assessmentClaim = overview?.latest_summary?.assessment_claim;
 
   return (
     <div className="shell">
@@ -127,6 +226,7 @@ export default function App() {
         </div>
         <nav>
           <a className="active" href="#overview"><CircleGauge size={17} />Overview</a>
+          <a href="#horizons"><Activity size={17} />Horizon matrix</a>
           <a href="#runs"><Beaker size={17} />Experiments</a>
           <a href="#datasets"><Database size={17} />Datasets</a>
           <a href="#evidence"><ShieldCheck size={17} />Evidence gates</a>
@@ -178,7 +278,6 @@ export default function App() {
               <div><span>Best blocked RMSE</span><strong>{metric(best, "rmse_log10_cn2")}</strong></div>
               <div><span>Best model</span><strong>{best?.model ?? "—"}</strong></div>
               <div>
-                <span>Evidence gates</span>
                 <strong>
                   {gateResult?.passed
                     ? "PASS"
@@ -224,7 +323,9 @@ export default function App() {
               <div>
                 <span className="eyebrow">THE CURRENT VERDICT</span>
                 <p>
-                  {forecastClaim?.eligible && measuredChange !== undefined
+                  {assessmentClaim?.eligible
+                    ? `${assessmentClaim.status.replaceAll("_", " ")} evidence across 15, 30, and 60 minutes.`
+                    : forecastClaim?.eligible && measuredChange !== undefined
                     ? `${forecastClaim.best_model} changed error by ${(measuredChange * 100).toFixed(1)}% versus persistence on the ${overview.latest_summary.evaluation_partition} block.`
                     : "The verdict appears only after comparable measured runs finish."}
                 </p>
@@ -232,6 +333,10 @@ export default function App() {
             </article>
           </section>
         )}
+
+        {overview?.latest_summary?.horizon_matrix?.length ? (
+          <HorizonMatrix summary={overview.latest_summary} />
+        ) : null}
 
         <section className="service-row">
           {[
