@@ -65,11 +65,16 @@ If the ML terminology is new, start with
 [`docs/START_HERE.md`](docs/START_HERE.md). The current short-horizon forecast
 validation and its exact commands are in
 [`docs/SHORT_FORECAST_RUN.md`](docs/SHORT_FORECAST_RUN.md).
-The frozen protocol for the next development-only MLO weather-by-horizon
-ablation is in
+The frozen protocol for the completed development-only MLO weather-by-horizon
+Cycle 0 is in
 [`docs/NEXT_EXPERIMENT.md`](docs/NEXT_EXPERIMENT.md). It preregisters the
 selection/calibration/assessment split, feature allowlists, custom Horizon v1
 architecture, success rules, resource limits, and assessment-release gate.
+The active rolling-origin **Strata-OT Fusion v2** research program is frozen in
+[`docs/FUSION_V2_PROGRAM.md`](docs/FUSION_V2_PROGRAM.md). It preserves the
+negative Cycle 0 result, uses public USNA-large training periods for ablations,
+and protects a one-shot 2022 confirmation slice behind an explicit release
+gate.
 
 The acquisition adapter checks out the public `otbench` repository at commit
 `53cab9d53648b4870b43e35d48f19143786fa12e` and calls its `TaskApi`. This pin is

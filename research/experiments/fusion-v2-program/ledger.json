@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "program_id": "strata-fusion-v2-program",
+  "status": "preregistered",
+  "events": [
+    {
+      "sequence": 0,
+      "recorded_at": "2026-07-30T18:06:00-05:00",
+      "kind": "program_started",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "notes": "Cycle 0 is preserved as a null/partial result. USNA-large development uses only official training rows; confirmation labels remain unreleased."
+    }
+  ]
+}
