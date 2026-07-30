@@ -18,6 +18,8 @@ ALLOWED_MODEL_PARAMETERS = {
     "context",
     "learning_rate",
     "weight_decay",
+    "scale_parameterization",
+    "mlp_flatten_context",
 }
 
 REQUIRED_STOP_CONDITIONS = {
@@ -27,8 +29,10 @@ REQUIRED_STOP_CONDITIONS = {
     "data_or_split_gate_failure",
 }
 
-EXPECTED_DATASET_ID = "otbench-mlo-cn2-15m-v1"
-EXPECTED_SPLIT_ID = "otbench-mlo-blocked-v1"
+EXPECTED_DATASET_SPLITS = {
+    "otbench-mlo-cn2-15m-v1": "otbench-mlo-blocked-v1",
+    "otbench-usna-cn2-3m-forecast-6min-v1": "otbench-usna-sm-forecast-v1",
+}
 
 NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
     "hidden_dim": (64, 384),
@@ -36,7 +40,7 @@ NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
     "num_heads": (2, 12),
     "num_experts": (2, 8),
     "dropout": (0.0, 0.3),
-    "context": (8, 128),
+    "context": (6, 128),
     "learning_rate": (1e-5, 3e-3),
     "weight_decay": (0.0, 0.2),
 }
@@ -56,9 +60,10 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
         raise ValueError("Autonomous local proposals must have a zero cloud budget")
     if int(proposal["budget"]["max_runs"]) > 2:
         raise ValueError("Autonomous proposals may request at most two runs")
-    if proposal["dataset_manifest_id"] != EXPECTED_DATASET_ID:
+    dataset_id = str(proposal["dataset_manifest_id"])
+    if dataset_id not in EXPECTED_DATASET_SPLITS:
         raise ValueError("Proposal changed the approved dataset identity")
-    if proposal["split_id"] != EXPECTED_SPLIT_ID:
+    if proposal["split_id"] != EXPECTED_DATASET_SPLITS[dataset_id]:
         raise ValueError("Proposal changed the frozen split identity")
     missing_stops = REQUIRED_STOP_CONDITIONS - set(proposal["stop_conditions"])
     if missing_stops:
@@ -82,9 +87,22 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
             raise ValueError(f"Autonomous proposal changes {parameter} more than once")
         changed.add(parameter)
         source = trainer_config if parameter in {"learning_rate", "weight_decay"} else model_config
-        if parameter not in source or change["old"] != source[parameter]:
+        defaults: dict[str, Any] = {
+            "scale_parameterization": "clamp",
+            "mlp_flatten_context": False,
+        }
+        old_value = source.get(parameter, defaults.get(parameter))
+        if old_value is None or change["old"] != old_value:
             raise ValueError(f"Proposal old value does not match the sealed parent for {parameter}")
         new_value = change["new"]
+        if parameter == "scale_parameterization":
+            if new_value != "softplus":
+                raise ValueError("Forecast uncertainty may only change to softplus")
+            continue
+        if parameter == "mlp_flatten_context":
+            if new_value is not True:
+                raise ValueError("Forecast MLP must consume the complete context")
+            continue
         if isinstance(new_value, bool) or not isinstance(new_value, (int, float)):
             raise ValueError(f"Autonomous value for {parameter} must be numeric")
         if parameter in INTEGER_PARAMETERS and not isinstance(new_value, int):

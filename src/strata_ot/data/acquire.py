@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from datetime import UTC, datetime
@@ -44,8 +45,11 @@ def _canonical_log10(values: pd.Series) -> list[str]:
         log_ten = Decimal(10).ln()
         for value in values:
             numeric = float(value)
-            if not np.isfinite(numeric) or numeric <= 0:
-                raise ValueError("The canonical log10 target requires finite positive values")
+            if not np.isfinite(numeric):
+                rendered.append("")
+                continue
+            if numeric <= 0:
+                raise ValueError("The canonical log10 target requires positive values")
             logged = Decimal.from_float(numeric).ln() / log_ten
             rendered.append(
                 format(logged.quantize(quantum, rounding=ROUND_HALF_EVEN), "f")
@@ -69,9 +73,13 @@ def _canonical_target_frame(task: Any, target: Any) -> pd.DataFrame:
             raise ValueError("Could not align canonical targets to TaskApi row identities")
         canonical = _canonical_log10(raw_target)
         upstream = pd.to_numeric(frame["target"], errors="coerce").to_numpy(float)
-        difference = np.abs(upstream - np.asarray(canonical, dtype=np.float64))
-        if not np.all(np.isfinite(difference)):
-            raise ValueError("TaskApi returned non-finite transformed targets")
+        canonical_numeric = pd.to_numeric(
+            pd.Series(canonical), errors="coerce"
+        ).to_numpy(float)
+        if not np.array_equal(np.isfinite(upstream), np.isfinite(canonical_numeric)):
+            raise ValueError("TaskApi missing targets do not align with the source")
+        valid = np.isfinite(upstream)
+        difference = np.abs(upstream[valid] - canonical_numeric[valid])
         if float(difference.max(initial=0.0)) > MAX_TASK_CANONICALIZATION_DIFFERENCE:
             raise RuntimeError(
                 "Canonical target differs materially from the pinned TaskApi output"
@@ -201,27 +209,48 @@ def acquire_otbench(config: dict[str, Any], root: Path) -> Path:
         snapshots.extend((features_path, target_path))
         partition_sizes[partition] = len(feature_frame)
 
+    task_info = task.get_info()
+    dataset_name = str(task_info["ds_name"])
+    datasets_config = json.loads(
+        (package_root / "config" / "datasets.json").read_text(encoding="utf-8")
+    )
+    local_data_path = str(datasets_config[dataset_name]["local_data_path"])
+    dataset_directory = package_root / "data" / dataset_name
     source_files = (
         package_root / "config" / "tasks.json",
         package_root / "config" / "datasets.json",
-        package_root / "data" / "mlo_cn2" / "mlo_cn2.nc",
+        dataset_directory / local_data_path,
+        dataset_directory / "citation.md",
+        dataset_directory / "README.md",
     )
     snapshots.extend(source_files)
 
     manifest = DatasetManifest(
         dataset_id=str(config["id"]),
         source_url="https://github.com/CDJellen/otbench",
-        citation=(
-            "Jellen, Nelson, Brownell, and Burkhardt (2024), "
-            "Effective Benchmarks for Optical Turbulence Modeling, "
-            "doi:10.1175/AIES-D-24-0003.1."
+        citation=str(
+            config.get(
+                "citation",
+                "Jellen, Nelson, Brownell, and Burkhardt (2024), "
+                "Effective Benchmarks for Optical Turbulence Modeling, "
+                "doi:10.1175/AIES-D-24-0003.1.",
+            )
         ),
         accessed_at=datetime.now(UTC),
         terms=DatasetTerms(status="review_required", redistribution="metadata_only"),
         files=file_records(snapshots, root),
         label_provenance="direct_observation",
-        geometry={"kind": "surface_point", "site": config.get("site", "Mauna Loa")},
-        instrument={"name": "see upstream task metadata"},
+        geometry={
+            "kind": str(config.get("geometry_kind", "surface_point")),
+            "site": config.get("site", dataset_name),
+            "latitude": task_info.get("obs_lat"),
+            "longitude": task_info.get("obs_lon"),
+            "time_zone": task_info.get("obs_tz"),
+            **dict(config.get("geometry", {})),
+        },
+        instrument=dict(
+            config.get("instrument", {"name": "see upstream task metadata"})
+        ),
         wavelength_nm=None,
         units={"target": "log10(m^(-2/3)), transformed by the upstream task"},
         coverage={
@@ -232,7 +261,7 @@ def acquire_otbench(config: dict[str, Any], root: Path) -> Path:
         qc={
             "task": config["task"],
             "upstream_commit": commit,
-            "upstream_task_info": task.get_info(),
+            "upstream_task_info": task_info,
             "upstream_transforms": task.get_transforms(),
             "dropna_task": ".dropna." in str(config["task"]),
             "canonical_serialization": {

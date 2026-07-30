@@ -1,0 +1,367 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.78in]{geometry}
+\usepackage{booktabs,longtable,tabularx,array,graphicx,caption,microtype,siunitx,xcolor,enumitem,fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\open}{\textcolor{stratared}{\textbf{OPEN}}}
+\newcommand{\cn}{\(C_n^2\)}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.5em}
+\renewcommand{\arraystretch}{1.15}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / short forecast validation}}
+\rhead{\textcolor{stratagray}{\VAR{summary.experiment_id|latex}}}
+\cfoot{\thepage}
+\title{\textbf{\textcolor{stratablue}{Strata-OT Forecast Experiment}}\\
+\large Reproducible public-source one-step \cn{} validation}
+\author{Generated only from recorded runs, artifacts, and frozen evidence}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratagray}{white}{
+\begin{minipage}{0.93\linewidth}
+\textbf{The experiment in plain English.}
+We gave every method the same recent measurements and asked it to predict the next
+\cn{} value \VAR{summary.forecast_horizon_minutes|num} minutes later. ``Persistence''
+means copying the most recent value; it is the honest minimum bar. The best neural
+run was \VAR{summary.best_neural_run.name|latex} with RMSE
+\VAR{summary.best_neural_run.metrics.rmse_log10_cn2|num}. Persistence achieved
+\VAR{summary.forecast_claim.persistence_rmse_log10_cn2|num}. The best result overall
+was \VAR{summary.best_overall_run.name|latex} at
+\VAR{summary.best_overall_run.metrics.rmse_log10_cn2|num}. The measured two-seed
+neural change was \VAR{summary.best_neural_improvement_percent|num}\%.
+\BLOCK{ if summary.forecast_claim.passed_point_estimate }
+The pre-registered 2\% point-estimate threshold was met.
+\BLOCK{ else }
+The pre-registered 2\% point-estimate threshold was not met.
+\BLOCK{ endif }
+This is \VAR{summary.evaluation_partition|latex} evidence, not permission to deploy.
+\end{minipage}}
+\end{center}
+
+\section{Identity and decision status}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.27\linewidth}X}
+\toprule
+Experiment & \VAR{summary.experiment_id|latex}\\
+Site / task & \VAR{summary.site|latex}; one-step forecast\\
+History / horizon & \VAR{summary.history_minutes|num} minutes /
+\VAR{summary.forecast_horizon_minutes|num} minutes\\
+Evaluation partition & \VAR{summary.evaluation_partition|latex};
+test released = \VAR{summary.test_released|latex}\\
+Dataset / split & \VAR{summary.dataset_id|latex} / \VAR{summary.split_id|latex}\\
+Manifest SHA-256 & \texttt{\VAR{summary.data_identity.dataset_manifest_sha256|shortid}}\\
+Split identity & \texttt{\VAR{summary.data_identity.get("split_sha256", summary.data_identity.split_config_sha256)|shortid}}\\
+Code & revision \texttt{\VAR{summary.code_revision|shortid}};
+source \texttt{\VAR{summary.repository_identity.source_digest_sha256|shortid}}\\
+Source archive & Content-addressed ZIP; SHA-256
+\texttt{\VAR{summary.source_snapshot.sha256|shortid}}\\
+Hardware & \VAR{summary.environment.device|latex};
+\VAR{summary.environment.gpu.total_memory_gb|num} GB visible\\
+Formal evidence gate &
+\BLOCK{ if summary.get("gate_result", {}).get("passed") }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+\bottomrule
+\end{tabularx}
+
+\section{Hypothesis}
+\textbf{Registered hypothesis.} \VAR{summary.hypothesis|latex}
+
+\textbf{Question.} \VAR{summary.plain_language_question|latex}
+
+\textbf{Interpretation.} RMSE is error in log10 \cn{} units; lower is better.
+A difference of 0.3 is roughly a factor of two in the original physical scale.
+The blocked bootstrap keeps neighboring hours together so highly related time
+samples are not treated as independent.
+
+\section{Public data, provenance, and coverage}
+The task was acquired through the repository-supported OTBench adapter at a pinned
+public commit \cite{otbench}.
+\BLOCK{ if "United States" in summary.site }
+The direct USNA surface-layer observations are cited as \cite{usna_cn2_sm}. They cover
+1 June through 31 August 2021 at six-minute cadence. Data were provided by the United
+States Naval Academy under the sponsorship of the Office of Naval Research and the
+Directed Energy Joint Technology Office.
+\BLOCK{ endif }
+No credentials, paid services, gated terms, or synthetic
+labels were used. The target is a direct optical-turbulence observation. Raw data were
+never edited in place; the manifest records source files, checksums, task metadata,
+instrument information, geometry, terms status, coverage, and the exact transform.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.28\linewidth}X}
+\toprule
+Dataset identity & \VAR{summary.source_dataset_id|latex}\\
+Site & \VAR{summary.site|latex}\\
+Rows / feature columns & \VAR{summary.data_coverage.rows|latex} /
+\VAR{summary.data_coverage.features|latex}\\
+Label provenance & \VAR{summary.data_qc_details.label_provenance|latex}\\
+Geometry & \VAR{summary.data_qc_details.geometry|latex}\\
+Instrument record & \VAR{summary.data_qc_details.instrument|latex}\\
+Manifest verified & \VAR{summary.data_qc_details.manifest_verified|latex}\\
+Redistribution boundary & Metadata and checksums are reported; raw upstream bytes
+remain in the ignored local cache.\\
+\bottomrule
+\end{tabularx}
+
+\section{Split and leakage controls}
+Official chronological train, validation, and test partitions were preserved. A
+24-row purge was applied at exposed boundaries without reallocating rows. Validation
+was divided chronologically into a 70\% model-selection block and a 30\% uncertainty
+calibration block, with another 24-row purge between them. Inputs with gaps above
+\VAR{summary.resolved_configuration.data.forecast.maximum_gap_minutes|num} minutes
+were rejected. Normalization and imputation were fitted on train only.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Block & Candidates & Retained & Gap rejects & Target rejects\\
+\midrule
+\BLOCK{ for name, qc in summary.sequence_qc.items() }
+\VAR{name|latex} & \VAR{qc.candidate_endpoints|latex} & \VAR{qc.retained|latex} &
+\VAR{qc.rejected_gap|latex} & \VAR{qc.rejected_target|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{What the models actually do}
+\begin{itemize}
+\item \textbf{Climatology} always predicts the median training value.
+\item \textbf{Persistence} copies the most recent observed \cn{} value. It is usually
+hard to beat over a few minutes because the atmosphere changes continuously.
+\item \textbf{Recent mean} averages the six observed \cn{} values.
+\item \textbf{LightGBM} is a strong conventional tree ensemble using the flattened,
+identical history and weather inputs. Its fixed configuration uses 300 trees,
+learning rate 0.03, 31 leaves, maximum depth 6, \(L_2\) regularization 1.0,
+all rows and features per tree, deterministic seed 17, and no search.
+\item \textbf{Compact MLP} is a four-block, width-192 neural network. Unlike the first
+experiment, it consumes the complete six-row context.
+\item \textbf{Strata-OT Surface} projects each time step to width 192, uses six
+Transformer blocks, a four-expert regime router, temporal pooling, and a residual
+around honest per-example persistence.
+\end{itemize}
+
+Both neural models predict a Gaussian location and positive scale plus ordered
+quantiles. The scale uses a smooth softplus parameterization. A single multiplicative
+scale factor is fitted only on the validation calibration block and then frozen.
+Location predictions are not recalibrated.
+
+\section{Exact training configuration}
+AdamW used learning rate \VAR{summary.resolved_configuration.trainer.learning_rate|latex},
+weight decay \VAR{summary.resolved_configuration.trainer.weight_decay|latex}, BF16
+mixed precision, deterministic algorithms, batch size
+\VAR{summary.resolved_configuration.trainer.effective_batch_size|latex}, gradient
+accumulation \VAR{summary.resolved_configuration.trainer.gradient_accumulation|latex},
+early-stopping patience
+\VAR{summary.resolved_configuration.trainer.early_stopping_patience|latex}, and at
+most \VAR{summary.resolved_configuration.trainer.max_epochs|latex} epochs.
+
+\begin{longtable}{>{\bfseries}p{0.28\linewidth}p{0.64\linewidth}}
+\toprule
+Model field & Resolved value\\
+\midrule
+\endhead
+\BLOCK{ for name, value in summary.resolved_configuration.model.items() }
+\VAR{name|latex} & \VAR{value|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{Measured accuracy}
+\begin{longtable}{p{0.30\linewidth}lrrrrr}
+\toprule
+Run & Seed & Parameters & RMSE & MAE & Bias & Tail MAE\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\VAR{run.name|latex} & \VAR{run.get("seed", "--")|latex} &
+\VAR{run.get("parameters", "--")|latex} &
+\VAR{run.metrics.get("rmse_log10_cn2")|num} &
+\VAR{run.metrics.get("mae_log10_cn2")|num} &
+\VAR{run.metrics.get("bias_log10_cn2")|num} &
+\VAR{run.metrics.get("tail_mae_top_decile")|num}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\BLOCK{ if summary.get("development_summary") }
+\subsection{Frozen MLO development result}
+Before USNA test release, the identical model configuration was developed on
+MLO train/validation only. The MLO test was not loaded. This table is included
+to show what was known when the USNA configuration was frozen.
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+MLO model & Seeds & RMSE (mean for neural)\\
+\midrule
+\BLOCK{ for run in summary.development_summary.runs if run.kind == "baseline" }
+\VAR{run.model|latex} & -- & \VAR{run.metrics.rmse_log10_cn2|num}\\
+\BLOCK{ endfor }
+\BLOCK{ for aggregate in summary.development_summary.model_aggregates }
+\VAR{aggregate.model|latex} & \VAR{aggregate.seeds|latex} &
+\VAR{aggregate.mean_rmse_log10_cn2|num}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+
+The best two-seed neural family changed MLO RMSE by
+\VAR{(summary.development_summary.forecast_claim.measured_relative_improvement * 100)|num}\%
+versus persistence; its 24-hour bootstrap interval was
+\VAR{summary.development_summary.forecast_claim.bootstrap.ci95_low|pct} to
+\VAR{summary.development_summary.forecast_claim.bootstrap.ci95_high|pct}.
+\BLOCK{ endif }
+
+\subsection{Uncertainty and calibration}
+\begin{longtable}{p{0.30\linewidth}rrrrrr}
+\toprule
+Run & Raw cov. & Cal. cov. & Cal. factor & NLL & CRPS & Width\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs if run.kind == "neural" }
+\VAR{run.name|latex} &
+\VAR{run.metrics.get("raw_interval_80_coverage")|pct} &
+\VAR{run.metrics.get("interval_80_coverage")|pct} &
+\VAR{run.metrics.get("scale_calibration_factor")|num} &
+\VAR{run.metrics.get("gaussian_nll")|num} &
+\VAR{run.metrics.get("crps_gaussian")|num} &
+\VAR{run.metrics.get("interval_80_width")|num}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\subsection{Across-seed stability}
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Model & Seeds & Mean RMSE & RMSE std. & Relative std.\\
+\midrule
+\BLOCK{ for aggregate in summary.model_aggregates }
+\VAR{aggregate.model|latex} & \VAR{aggregate.seeds|latex} &
+\VAR{aggregate.mean_rmse_log10_cn2|num} &
+\VAR{aggregate.std_rmse_log10_cn2|num} &
+\VAR{aggregate.relative_seed_std|pct}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Paired uncertainty on the main comparison}
+The best neural run changed RMSE versus persistence by
+\VAR{summary.best_neural_improvement_percent|num}\%. A 24-hour moving-block bootstrap
+with \VAR{summary.forecast_claim.bootstrap.resamples|latex} resamples estimated a
+95\% interval from \VAR{summary.forecast_claim.bootstrap.ci95_low|pct} to
+\VAR{summary.forecast_claim.bootstrap.ci95_high|pct}; the estimated probability of
+any improvement was
+\VAR{summary.forecast_claim.bootstrap.probability_improvement|pct}.
+
+\section{Resources and saved artifacts}
+Combined MLO-development and USNA-confirmation neural GPU time was
+\VAR{summary.combined_neural_gpu_hours|num} hours; the USNA confirmation itself used
+\VAR{summary.total_neural_gpu_hours|num} hours. Peak allocated VRAM across both was
+\VAR{summary.combined_peak_vram_gb|num} GB. The limits were two local GPU-hours per
+validation, four total local GPU-hours, and 15.5 GB peak VRAM. Cloud spend was exactly
+zero.
+
+The best neural checkpoint is
+\texttt{\VAR{summary.best_checkpoint.display_path|latex}} (seed
+\VAR{summary.best_checkpoint.seed|latex}, SHA-256
+\texttt{\VAR{summary.best_checkpoint.sha256|shortid}}). MLflow stores the resolved
+configuration, environment, repository state, calibration record, metrics, checkpoint,
+predictions, row identities, timestamps, diagnostic plot, runtime, and peak VRAM.
+
+\section{Diagnostic plots}
+\BLOCK{ for figure in summary.report_figures }
+\begin{center}
+\includegraphics[width=0.78\linewidth]{\VAR{figure.path}}
+\captionof{figure}{Chronological diagnostics for \VAR{figure.name|latex}
+(run \texttt{\VAR{figure.run_id|shortid}}).}
+\end{center}
+\BLOCK{ endfor }
+
+\section{Evidence gates}
+\begin{longtable}{p{0.68\linewidth}p{0.20\linewidth}}
+\toprule
+Check & Result\\
+\midrule
+\endhead
+\BLOCK{ for name, passed in summary.checks.items() }
+\VAR{name|latex} & \BLOCK{ if passed }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\BLOCK{ if summary.get("gate_result") }
+The immutable gate result is
+\BLOCK{ if summary.gate_result.passed }\pass\BLOCK{ else }\open\BLOCK{ endif }.
+Recorded failures: \VAR{summary.gate_result.failures|latex}. No criterion was changed
+after observing evaluation data.
+\BLOCK{ endif }
+
+\section{Failures, limitations, and unsupported claims}
+\begin{itemize}
+\item This is short-horizon, single-site surface-layer evidence. It does not establish
+vertical-profile accuracy, long-range propagation performance, causality, deployment
+safety, seasonal generalization, or cross-instrument equivalence.
+\item Adjacent atmospheric observations remain correlated even after blocked splitting;
+the moving-block bootstrap reduces but cannot eliminate this limitation.
+\item Two seeds give a first stability check, not a complete distribution over training
+randomness.
+\item Calibration on MLO development data is descriptive because that same held-out
+block estimates the scale factor. The USNA test, when released, is the independent
+confirmatory calibration assessment.
+\item Integrated optical metrics and layer behavior are unsupported by a surface-point
+task and are marked unsupported rather than reported as zero.
+\end{itemize}
+
+\BLOCK{ if summary.failure_records }
+\begin{longtable}{p{0.15\linewidth}p{0.22\linewidth}p{0.52\linewidth}}
+\toprule
+Phase & Identity / outcome & Recorded explanation\\
+\midrule
+\endhead
+\BLOCK{ for failure in summary.failure_records }
+\VAR{failure.phase|latex} & \texttt{\VAR{failure.identity|shortid}} /
+\VAR{failure.outcome|latex} & \VAR{failure.explanation|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\BLOCK{ else }
+No failure or retry was recorded for the completed forecast runs.
+\BLOCK{ endif }
+
+\section{Claim-to-evidence map}
+\begin{longtable}{p{0.28\linewidth}p{0.42\linewidth}p{0.22\linewidth}}
+\toprule
+Claim & Direct evidence & Boundary\\
+\midrule
+Public direct observations & Manifest, pinned OTBench commit, checksums, acquisition
+record & Metadata-only redistribution\\
+No temporal leakage & Official chronological blocks, purges, row-identity overlap
+check, train-only transforms & Correlation within blocks remains\\
+Accuracy versus persistence & Aligned prediction artifact and paired 24-hour block
+bootstrap & One site and horizon\\
+Useful uncertainty & Raw and calibrated NLL, CRPS, coverage, and interval width &
+Gaussian approximation\\
+Reproducibility & Git state, source ZIP, resolved config, environment, seeds,
+checkpoints, predictions, MLflow runs & Hardware-specific floating point\\
+Resource compliance & Per-run wall time and peak VRAM & Allocated VRAM, not board power\\
+\bottomrule
+\end{longtable}
+
+\section{Recommended next experiment}
+\VAR{summary.recommended_next_experiment|latex}
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}

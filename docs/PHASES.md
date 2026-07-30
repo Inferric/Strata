@@ -35,6 +35,11 @@ Extend direct-label tasks, add physical baselines and input ablations, evaluate
 blocked seasons/campaigns/sites/instruments, calibrate uncertainty, and test
 selective prediction under distribution shift.
 
+The first Phase 2 validation is the leakage-safe one-step forecast described in
+`docs/START_HERE.md`: MLO train/validation for development, followed by a frozen
+one-shot USNA confirmation. It uses honest persistence, recent-mean, LightGBM,
+compact MLP, and Strata-OT comparisons on identical six-row histories.
+
 Exit criteria: no promotion from a single seed/site/metric; tail and OOD
 evidence are reported; inference latency and VRAM are measured.
 

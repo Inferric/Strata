@@ -53,6 +53,12 @@ def _serialize_run(run: Any) -> dict[str, Any]:
         "kind": run.data.tags.get("run_kind", "unknown"),
         "dataset_id": run.data.tags.get("dataset_id"),
         "split_id": run.data.tags.get("split_id"),
+        "site": run.data.tags.get("site"),
+        "task_kind": run.data.tags.get("task_kind"),
+        "forecast_horizon_minutes": run.data.tags.get(
+            "forecast_horizon_minutes"
+        ),
+        "evaluation_partition": run.data.tags.get("evaluation_partition"),
         "metrics": run.data.metrics,
         "parameters": run.data.params,
     }

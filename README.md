@@ -61,6 +61,11 @@ starting Compose. The exact acquisition, probe, training, gate, report, and
 validation commands are recorded in
 [`docs/FIRST_REAL_RUN.md`](docs/FIRST_REAL_RUN.md).
 
+If the ML terminology is new, start with
+[`docs/START_HERE.md`](docs/START_HERE.md). The current short-horizon forecast
+validation and its exact commands are in
+[`docs/SHORT_FORECAST_RUN.md`](docs/SHORT_FORECAST_RUN.md).
+
 The acquisition adapter checks out the public `otbench` repository at commit
 `53cab9d53648b4870b43e35d48f19143786fa12e` and calls its `TaskApi`. This pin is
 intentional: the current PyPI wheel omits files required by the task loader.
@@ -83,6 +88,34 @@ preprocessing, reproducibility, stability, and resource checks passed. No model
 was promoted and the gate was not weakened. See the generated
 [`experiment-report.pdf`](reports/generated/first-real-run/experiment-report.pdf)
 for the full evidence and limitations.
+
+## Current validation: a fair short forecast
+
+The next bounded test asks a simpler, better-controlled question: using six
+recent Cn² observations plus weather, can a model predict the next observation
+better than copying the latest value? MLO is development-only; its previous
+sealed test is not reused. The configuration is then frozen before a one-shot
+confirmation on the independent public OTBench USNA surface-layer task.
+
+This path fixes the information mismatch in the first experiment, adds recent
+mean and LightGBM comparators, rejects irregular histories, replaces the
+hard-clamped uncertainty scale with a smooth positive scale, and calibrates that
+scale on validation only. It retains the immutable split and evidence gates and
+uses a stricter two-GPU-hour local budget.
+
+The frozen one-shot USNA confirmation is now complete. LightGBM was best overall
+at test RMSE 0.1408. The compact MLP averaged 0.1444 across seeds 17 and 41,
+improving 3.07% over persistence (0.1490); a paired 24-hour block bootstrap gave
+a 95% improvement interval of 0.85% to 4.36%. Strata-OT Surface averaged
+0.1463, so its added complexity did not beat the MLP or LightGBM.
+
+No model was promoted. The immutable evidence gate remains open because the
+best eligible MLP's mean nominal 80% interval coverage was 90.50%, just above
+the 90% maximum. Provenance, leakage, train-only preprocessing,
+reproducibility, stability, and resource checks passed. Combined MLO and USNA
+neural work used 0.1451 GPU-hours and peaked at 0.1754 GB allocated VRAM. See
+[`forecast-report.pdf`](reports/generated/short-forecast-validation/forecast-report.pdf)
+for the complete claim-to-evidence record.
 
 ## The guarded loop
 

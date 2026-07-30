@@ -1,0 +1,26 @@
+id: otbench-mlo-cn2-15m-forecast-dev-v1
+source_dataset_id: otbench-mlo-cn2-15m-v1
+adapter: otbench
+task: regression.mlo_cn2.dropna.Cn2_15m
+derived_task: repository_defined_one_step_forecast
+upstream_repository: https://github.com/CDJellen/otbench.git
+upstream_commit: 53cab9d53648b4870b43e35d48f19143786fa12e
+label:
+  name: Cn2_15m
+  representation: log10_cn2_m_minus_2_over_3
+  provenance_class: direct_observation
+site: Mauna Loa Observatory
+access: open_via_pinned_public_source_and_supported_task_api
+upstream_terms: review_before_release
+cache_dir: data/raw/otbench/canonical-v1
+manifest_path: data/manifests/otbench-mlo-cn2-15m-v1.json
+split_config: configs/splits/frozen/otbench_mlo_blocked_v1.yaml
+forecast:
+  window_rows: 6
+  forecast_horizon_rows: 1
+  nominal_cadence_minutes: 5
+  maximum_gap_minutes: 7.5
+  validation_calibration_fraction: 0.30
+notes:
+  - Development-only forecasting view over the already acquired MLO snapshot.
+  - The official test partition remains sealed and is not loaded by this experiment.

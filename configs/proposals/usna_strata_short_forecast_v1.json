@@ -1,0 +1,38 @@
+{
+  "proposal_id": "usna-strata-short-forecast-v1",
+  "hypothesis": "The MLO-frozen Strata temporal model transfers without tuning to the independent public USNA one-step Cn2 forecast task.",
+  "parent_run_id": null,
+  "dataset_manifest_id": "otbench-usna-cn2-3m-forecast-6min-v1",
+  "split_id": "otbench-usna-sm-forecast-v1",
+  "model": {
+    "family": "strata_ot_surface",
+    "config_path": "configs/model/strata_surface_tiny.yaml"
+  },
+  "changes": [
+    {
+      "parameter": "context",
+      "old": 32,
+      "new": 6,
+      "reason": "Use the official USNA six-row forecast history."
+    },
+    {
+      "parameter": "scale_parameterization",
+      "old": "clamp",
+      "new": "softplus",
+      "reason": "Use the uncertainty parameterization frozen during development."
+    }
+  ],
+  "evaluation_gate_id": "public-evidence-gates-v1",
+  "budget": {
+    "max_runs": 2,
+    "max_local_gpu_hours": 0.5,
+    "max_cloud_cost_usd": 0
+  },
+  "stop_conditions": [
+    "budget_exhausted",
+    "nan_or_divergence",
+    "oom_after_one_recovery",
+    "data_or_split_gate_failure",
+    "no_validation_improvement"
+  ]
+}

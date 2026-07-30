@@ -73,6 +73,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--cyan); outline-
 .chart-empty { height: 145px; border: 1px dashed var(--line); border-radius: 7px; display: grid; place-items: center; align-content: center; gap: 10px; color: #5f7884; text-align: center; font-size: 10px; padding: 20px; }
 
 .service-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
+.translation-strip { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 10px; margin: 14px 0; overflow: hidden; background: rgba(9, 20, 29, .8); }
+.translation-strip article { display: grid; grid-template-columns: 33px 1fr; gap: 11px; padding: 18px 17px; min-height: 126px; }
+.translation-strip article + article { border-left: 1px solid var(--line); }
+.translation-number { color: var(--mint); font: 500 11px/1 ui-monospace, monospace; padding-top: 2px; }
+.translation-strip p { color: #91a7b0; font-size: 11px; line-height: 1.62; margin: 9px 0 0; }
 .service-card { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: 9px; padding: 12px 14px; background: rgba(13,25,35,.72); color: #8198a3; }
 .service-card:hover { border-color: rgba(132,217,232,.28); color: var(--cyan); }
 .service-card > div { display: flex; align-items: center; gap: 10px; }
@@ -123,6 +128,8 @@ footer span { display: flex; align-items: center; gap: 6px; }
   nav a { justify-content: center; }
   .sidebar-foot { display: none; }
   .hero-grid, .lower-grid { grid-template-columns: 1fr; }
+  .translation-strip { grid-template-columns: 1fr; }
+  .translation-strip article + article { border-left: 0; border-top: 1px solid var(--line); }
 }
 @media (max-width: 700px) {
   .shell { display: block; }

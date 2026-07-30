@@ -1,0 +1,44 @@
+{
+  "proposal_id": "mlo-mlp-short-forecast-v1",
+  "hypothesis": "A compact MLP given the complete six-step weather and Cn2 history can improve an honest one-step forecast over persistence.",
+  "parent_run_id": null,
+  "dataset_manifest_id": "otbench-mlo-cn2-15m-v1",
+  "split_id": "otbench-mlo-blocked-v1",
+  "model": {
+    "family": "mlp",
+    "config_path": "configs/model/strata_surface_tiny.yaml"
+  },
+  "changes": [
+    {
+      "parameter": "context",
+      "old": 32,
+      "new": 6,
+      "reason": "Match the preregistered thirty-minute forecast history."
+    },
+    {
+      "parameter": "scale_parameterization",
+      "old": "clamp",
+      "new": "softplus",
+      "reason": "Keep uncertainty gradients active and scales strictly positive."
+    },
+    {
+      "parameter": "mlp_flatten_context",
+      "old": false,
+      "new": true,
+      "reason": "Give the comparator the same complete history as Strata."
+    }
+  ],
+  "evaluation_gate_id": "public-evidence-gates-v1",
+  "budget": {
+    "max_runs": 2,
+    "max_local_gpu_hours": 0.5,
+    "max_cloud_cost_usd": 0
+  },
+  "stop_conditions": [
+    "budget_exhausted",
+    "nan_or_divergence",
+    "oom_after_one_recovery",
+    "data_or_split_gate_failure",
+    "no_validation_improvement"
+  ]
+}
