@@ -1,0 +1,19 @@
+stages:
+  acquire_otbench:
+    cmd: uv run strata-acquire --config configs/data/otbench_mlo.yaml
+    deps:
+      - configs/data/otbench_mlo.yaml
+      - src/strata_ot/data/acquire.py
+    outs:
+      - data/raw/otbench
+  first_real_run:
+    cmd: uv run strata-first-flow
+    deps:
+      - configs/experiments/first_real_mlo.yaml
+      - configs/model/strata_surface_tiny.yaml
+      - configs/trainer/local_16gb.yaml
+      - configs/splits/frozen/otbench_mlo_blocked_v1.yaml
+      - src/strata_ot
+    outs:
+      - artifacts/latest
+      - reports/generated/first-real-run

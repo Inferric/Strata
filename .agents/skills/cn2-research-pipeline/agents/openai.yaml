@@ -1,0 +1,12 @@
+interface:
+  display_name: Cn2 Research Pipeline
+  short_description: Run reproducible optical-turbulence research loops
+  default_prompt: Use $cn2-research-pipeline to acquire approved Cn2 datasets, run
+    guarded experiments, evaluate them, and compile a LaTeX report.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

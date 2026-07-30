@@ -1,0 +1,14 @@
+id: otbench-mlo-blocked-v1
+sealed: true
+strategy: upstream_task_chronological_blocks_with_purge
+ordering_field: upstream_task_index
+purge_gap_rows: 24
+group_fields:
+  - site
+  - instrument
+notes:
+  - Preserve the train, validation, and test blocks defined by the pinned task.
+  - Purge adjacent boundary rows without moving any row between partitions.
+  - Materialize exact row identities and checksums on first acquisition.
+  - Never regenerate this split after inspecting test performance.
+  - If upstream supplies an official test partition, preserve it as the test set.

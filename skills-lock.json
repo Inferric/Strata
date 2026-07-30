@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "4eabc66183767153e404b39d1b839b1c37f2d82d86f0a0d7e880a579d8d62336"
+    },
+    "latex-formatting": {
+      "source": "lingzhi227/agent-research-skills",
+      "sourceType": "github",
+      "skillPath": "skills/latex-formatting/SKILL.md",
+      "computedHash": "c54413ee387288bc8231462bee02e7e128a966c1ff1f2422f720c1a822ed8a66"
+    },
+    "literature-search-arxiv": {
+      "source": "google-deepmind/science-skills",
+      "sourceType": "github",
+      "skillPath": "skills/literature_search_arxiv/SKILL.md",
+      "computedHash": "48d7f42f881c008a4d404a3a9f7af462c924f62d2a318b339eb296b16a2c21d2"
+    },
+    "mlflow-onboarding": {
+      "source": "mlflow/skills",
+      "sourceType": "github",
+      "skillPath": "mlflow-onboarding/SKILL.md",
+      "computedHash": "f38bc94c8ae4dbb246bc0ee55c0994e21c6ff9e4b245e4b6d3e8d04674bd8cde"
+    },
+    "pytorch-lightning": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "skillPath": "cli-tool/components/skills/ai-research/distributed-training-pytorch-lightning/SKILL.md",
+      "computedHash": "ca5ca05097e4ad9cc07db0a5f314303d751c447a78b80163058c75d586a7c9e9"
+    },
+    "scientific-brainstorming": {
+      "source": "k-dense-ai/claude-scientific-skills",
+      "sourceType": "github",
+      "skillPath": "skills/scientific-brainstorming/SKILL.md",
+      "computedHash": "e0eb5620d347fa4b55142eb8d777e2fc6539c8aad520635389475ff73b18ce36"
+    },
+    "skypilot-multi-cloud-orchestration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "skillPath": "cli-tool/components/skills/ai-research/infrastructure-skypilot/SKILL.md",
+      "computedHash": "2adcae07e15259065410b3031e1db07b8d721adcfb46b620b959e9bc8166a05b"
+    },
+    "vastai": {
+      "source": "vast-ai/vast-cli",
+      "sourceType": "github",
+      "skillPath": "vastai/SKILL.md",
+      "computedHash": "af30f6904cfc8f04745dafaa223a6f55bf8fe8ec92effd475f6279f7157688fe"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "ca7b0c0c6e5f2750043f7f0cd72d16ac4e2abc48f9b5500d047a4b77a2506212"
+    }
+  }
+}

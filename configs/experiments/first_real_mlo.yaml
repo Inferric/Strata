@@ -1,0 +1,22 @@
+id: first-real-mlo-v1
+hypothesis: >-
+  A compact regime-routed temporal transformer with a train-fold climatology residual
+  improves blocked-time log-space Cn2 accuracy and calibration over climatology,
+  persistence, and a parameter-matched MLP without exceeding 16 GB VRAM.
+seed: 17
+seeds: [17, 41]
+data: configs/data/otbench_mlo.yaml
+model: configs/model/strata_surface_tiny.yaml
+trainer: configs/trainer/local_16gb.yaml
+evaluation: configs/evaluation/gates/public_v1.yaml
+models:
+  - climatology
+  - persistence
+  - mlp
+  - strata_ot_surface
+tracking:
+  experiment_name: strata-ot-first-real-mlo
+  register_candidate: true
+report:
+  template: reports/templates/experiment_report.tex.j2
+  output_dir: reports/generated/first-real-run

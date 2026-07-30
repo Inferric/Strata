@@ -1,0 +1,131 @@
+schema_version: 1
+datasets:
+  - id: otbench-mlo-usna
+    priority: A
+    label_class: direct_point_and_path
+    access: open_supported_loader
+    auto_acquire: true
+    best_use: first reproducible direct-label benchmark
+    risk: few environments; inspect task-level terms and missingness
+    source: https://github.com/CDJellen/otbench
+  - id: ncar-mlo-cn2
+    priority: A
+    label_class: direct_surface_sonic_derived
+    access: open_archive
+    auto_acquire: false
+    best_use: few-shot transfer and surface physics
+    risk: short, single high-altitude dry-site campaign
+    source: https://www.eol.ucar.edu/field_projects/mlocn2
+  - id: tmt-site-testing
+    priority: A
+    label_class: profile_and_integrated_observation
+    access: login_and_publication_conditions
+    auto_acquire: false
+    best_use: leave-one-site and leave-instrument evaluation
+    risk: intentionally unfiltered; terms and rigorous QC required
+    source: https://sitedata.tmt.org/
+  - id: eso-paranal-asm
+    priority: A
+    label_class: profile_and_integrated_observation
+    access: open_query
+    auto_acquire: false
+    best_use: long temporal holdouts and multitask learning
+    risk: nighttime astronomical selection and vertical geometry
+    source: https://archive.eso.org/wdb/help/eso/ambient_paranal.html
+  - id: otprof
+    priority: A-minus
+    label_class: numerical_weather_model_teacher
+    access: open_zenodo
+    auto_acquire: false
+    size_gb: 25.7
+    best_use: profile pretraining and architecture reproduction
+    risk: WRF-derived teacher, rare strong layers smoothed
+    source: https://doi.org/10.5281/zenodo.20733692
+  - id: wrf-cn2-parameterization-intercomparison
+    priority: B-plus
+    label_class: numerical_weather_model_teacher
+    access: open_zenodo_and_code
+    auto_acquire: false
+    best_use: physical teacher and parameterization baseline
+    risk: independent scintillometer labels withheld
+    source: https://doi.org/10.5281/zenodo.10966120
+  - id: turbulence-strength-video
+    priority: B
+    label_class: path_observation_plus_images
+    access: public_download
+    auto_acquire: false
+    best_use: typed observation encoder proof of concept
+    risk: short daytime fixed-scene collections
+    source: https://github.com/Riponcs/TurbulenceDataset
+  - id: cases-99
+    priority: B
+    label_class: turbulence_covariate
+    access: open_ncar
+    auto_acquire: false
+    best_use: stable-boundary-layer representation pretraining
+    risk: optical target must be derived
+    source: https://www.eol.ucar.edu/content/sample-rate-isff-data-cases99
+  - id: materhorn-x
+    priority: B
+    label_class: turbulence_covariate
+    access: open_ncar
+    auto_acquire: false
+    best_use: terrain and regime stress tests
+    risk: no direct Cn2 label
+    source: https://www.eol.ucar.edu/field_projects/materhorn-x
+  - id: perdigao-2017
+    priority: B
+    label_class: turbulence_covariate
+    access: open_ncar
+    auto_acquire: false
+    best_use: terrain-aware multiscale pretraining
+    risk: no direct optical label
+    source: https://www.eol.ucar.edu/field_projects/perdig%C3%A3o
+  - id: era5-era5-land
+    priority: A-covariate
+    label_class: atmospheric_covariate
+    access: copernicus_terms
+    auto_acquire: false
+    best_use: broad atmospheric pretraining and context
+    risk: coarse boundary layer; not a Cn2 label
+    source: https://cds.climate.copernicus.eu/
+  - id: noaa-hrrr
+    priority: A-covariate
+    label_class: atmospheric_covariate
+    access: open_cloud_archive
+    auto_acquire: false
+    best_use: high-resolution US forecast-time covariates
+    risk: changing model versions and large volume
+    source: https://registry.opendata.aws/noaa-hrrr-pds/
+  - id: new-york-state-mesonet
+    priority: B-plus
+    label_class: atmospheric_covariate
+    access: request_and_use_specific_terms
+    auto_acquire: false
+    best_use: cross-site urban/rural surface evaluation
+    risk: redistribution and Cn2-subset provenance
+    source: https://nysmesonet.org/
+  - id: ocan-gscidar
+    priority: A-if-licensed
+    label_class: direct_profile_observation
+    access: author_or_database_access_unresolved
+    auto_acquire: false
+    best_use: independent high-resolution profile corpus
+    risk: gated and nighttime-observatory domain
+    source: https://arxiv.org/abs/2607.25940
+  - id: chesapeake-neural-scintillometry
+    priority: A-if-licensed
+    label_class: path_observation_plus_images
+    access: corpus_not_publicly_advertised
+    auto_acquire: false
+    best_use: large optical sensor encoder
+    risk: partnership required and one link geometry
+    source: https://opg.optica.org/ao/abstract.cfm?uri=ao-65-19-H86
+  - id: synthetic-wrf-les-phase-screen
+    priority: teacher-only
+    label_class: synthetic_teacher
+    access: open_software_compute_required
+    auto_acquire: false
+    best_use: controlled ablations and rare-regime pretraining
+    risk: simulation bias must never be reported as field truth
+    source: https://www2.mmm.ucar.edu/wrf/users/

@@ -1,0 +1,33 @@
+id: public-evidence-gates-v1
+sealed: true
+primary_metric: rmse_log10_cn2
+promotion:
+  minimum_seeds: 2
+  require_improvement_over_climatology: true
+  require_improvement_over_persistence: false
+  max_relative_seed_std: 0.15
+  min_interval_80_coverage: 0.70
+  max_interval_80_coverage: 0.90
+  max_absolute_bias_log10_cn2: 0.25
+  max_peak_vram_gb: 15.5
+  max_local_gpu_hours: 4.0
+required_checks:
+  - dataset_manifest_valid
+  - no_random_row_primary_split
+  - preprocessing_fit_on_train_only
+  - no_time_overlap_across_partitions
+  - uncertainty_reported
+  - direct_and_teacher_labels_separated
+  - within_gpu_budget
+  - latex_pdf_compiled
+metrics:
+  - mae_log10_cn2
+  - rmse_log10_cn2
+  - bias_log10_cn2
+  - gaussian_nll
+  - crps_gaussian
+  - interval_80_coverage
+  - interval_80_width
+  - tail_mae_top_decile
+  - peak_vram_gb
+  - wall_clock_seconds

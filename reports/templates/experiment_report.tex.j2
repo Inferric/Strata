@@ -1,0 +1,460 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.78in]{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{siunitx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\open}{\textcolor{stratared}{\textbf{OPEN}}}
+\newcommand{\cn}{\(C_n^2\)}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.5em}
+\renewcommand{\arraystretch}{1.15}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / first real run}}
+\rhead{\textcolor{stratagray}{\VAR{summary.experiment_id|latex}}}
+\cfoot{\thepage}
+\title{\textbf{\textcolor{stratablue}{Strata-OT Experiment Report}}\\
+\large First reproducible real Mauna Loa \cn{} result}
+\author{Generated from recorded run metadata and sealed evidence}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratagray}{white}{
+\begin{minipage}{0.93\linewidth}
+\textbf{Decision.}
+The experiment completed on real, publicly downloaded OTBench Mauna Loa data.
+Persistence was best overall at RMSE
+\VAR{summary.best_overall_run.metrics.rmse_log10_cn2|num}; the best neural run was
+\VAR{summary.best_neural_run.name|latex} at RMSE
+\VAR{summary.best_neural_run.metrics.rmse_log10_cn2|num}.
+The Strata-OT hypothesis was not supported. All provenance, leakage,
+reproducibility, stability, and resource checks passed, but the sealed evidence
+gate remains \open{} because the eligible MLP's nominal 80\% interval covered
+100\% of test targets. No model is promoted.
+\end{minipage}}
+\end{center}
+
+\section{Experiment identity}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.25\linewidth}X}
+\toprule
+Experiment & \VAR{summary.experiment_id|latex}\\
+Recorded UTC & \VAR{summary.generated_at|latex}\\
+Repository identity & \VAR{summary.code_revision|latex}; unborn branch with dirty working tree\\
+Training source digest & \texttt{\VAR{summary.repository_identity.source_digest_sha256|shortid}} (full digest in summary JSON)\\
+Source snapshot & Content-addressed ZIP; SHA-256 \texttt{\VAR{summary.source_snapshot.sha256|shortid}}\\
+Dataset / split & \VAR{summary.dataset_id|latex} / \VAR{summary.split_id|latex}\\
+Manifest / sealed split SHA-256 & \texttt{\VAR{summary.data_identity.dataset_manifest_sha256|shortid}} /
+\texttt{\VAR{summary.data_identity.split_sha256|shortid}}\\
+Evaluation gate & \VAR{summary.evaluation_gate_id|latex}:
+\BLOCK{ if summary.gate_result.passed }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+Hardware & \VAR{summary.environment.device|latex}; \VAR{summary.environment.gpu.total_memory_gb|num} GB visible\\
+Software & Python \VAR{summary.environment.python|latex}; PyTorch \VAR{summary.environment.torch|latex};
+Lightning \VAR{summary.environment.lightning|latex}; CUDA \VAR{summary.environment.cuda_runtime|latex}\\
+\bottomrule
+\end{tabularx}
+
+\section{Hypothesis and outcome}
+\textbf{Pre-registered hypothesis.}
+\VAR{summary.hypothesis|latex}
+
+\textbf{Outcome.}
+The mean MLP RMSE was \VAR{summary.model_aggregates[0].mean_rmse_log10_cn2|num},
+while mean Strata-OT Surface RMSE was
+\VAR{summary.model_aggregates[1].mean_rmse_log10_cn2|num}. Both were worse than
+persistence (\VAR{summary.best_overall_run.metrics.rmse_log10_cn2|num}).
+Strata-OT Surface did improve slightly over climatology in mean RMSE, but its
+large negative bias and weak calibration make that comparison insufficient.
+The main architectural claim is therefore rejected for this task and configuration.
+
+\section{Dataset coverage and provenance}
+The benchmark task and loader come from OTBench \cite{otbench}. The underlying
+near-surface observations are the NCAR/EOL MLO\_CN2 product \cite{mlo_cn2}.
+Acquisition used the repository's supported interface at pinned upstream commit
+\texttt{\VAR{summary.data_coverage.qc.upstream_commit|shortid}}, without credentials,
+click-through acceptance, paid access, or automated terms acceptance.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.25\linewidth}X}
+\toprule
+Site / geometry & \VAR{summary.data_coverage.geometry.site|latex};
+\VAR{summary.data_coverage.geometry.latitude|num}, \VAR{summary.data_coverage.geometry.longitude|num};
+\VAR{summary.data_coverage.geometry.observation_height_m|latex} m surface point\\
+Instrument class & \VAR{summary.data_qc_details.label.detail|latex}\\
+Target & \VAR{summary.data_qc_details.label.name|latex};
+\VAR{summary.data_qc_details.label.representation|latex};
+\VAR{summary.data_qc_details.label.raw_units|latex}\\
+Label provenance & Direct observation; no WRF, LES, synthetic, reanalysis, or teacher labels\\
+Time coverage & \VAR{summary.data_coverage.coverage.temporal_start|latex} through
+\VAR{summary.data_coverage.coverage.temporal_end|latex}\\
+Rows / features & \VAR{summary.data_coverage.coverage.rows|latex} task rows after dropna
+from \VAR{summary.data_coverage.coverage.source_rows|latex} source rows; 87 numeric features\\
+Terms boundary & Software repository MIT; data redistribution remains metadata-only
+pending review. This report records hashes and citations, not redistributed raw bytes.\\
+Manifest verification & \VAR{summary.data_qc_details.manifest_verified|latex};
+source NetCDF checksum and pinned commit both matched\\
+\bottomrule
+\end{tabularx}
+
+\subsection{Coverage caveats}
+\begin{itemize}
+\item Train spans \VAR{summary.data_qc_details.coverage.train.start|latex} to
+\VAR{summary.data_qc_details.coverage.train.end|latex}; validation spans
+\VAR{summary.data_qc_details.coverage.validation.start|latex} to
+\VAR{summary.data_qc_details.coverage.validation.end|latex}; test spans
+\VAR{summary.data_qc_details.coverage.test.start|latex} to
+\VAR{summary.data_qc_details.coverage.test.end|latex}.
+\item The median cadence is five minutes, but dropna produces maximum gaps of
+\VAR{summary.data_qc_details.coverage.train.maximum_gap_minutes|num} minutes in train,
+\VAR{summary.data_qc_details.coverage.validation.maximum_gap_minutes|num} in validation,
+and \VAR{summary.data_qc_details.coverage.test.maximum_gap_minutes|num} in test.
+Sequence position therefore does not always imply a uniform physical time interval.
+\item The task is a single high-altitude surface site and does not support vertical-profile,
+cross-site, seasonal, or propagation-path claims.
+\end{itemize}
+
+\section{Split methodology and leakage controls}
+The official OTBench chronological train, validation, and test blocks were retained.
+A frozen 24-row purge was removed at each applicable boundary without moving any row
+between partitions. Random row splitting was prohibited.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Partition & Official rows after dropna & Rows after purge & Context-32 endpoints\\
+\midrule
+Train & \VAR{summary.data_qc_details.upstream_task.rows_after_dropna.train|latex} &
+\VAR{summary.data_qc_details.split.post_purge_rows.train|latex} &
+\VAR{summary.data_qc_details.split.context_32_sequence_counts.train|latex}\\
+Validation & \VAR{summary.data_qc_details.upstream_task.rows_after_dropna.validation|latex} &
+\VAR{summary.data_qc_details.split.post_purge_rows.validation|latex} &
+\VAR{summary.data_qc_details.split.context_32_sequence_counts.validation|latex}\\
+Test & \VAR{summary.data_qc_details.upstream_task.rows_after_dropna.test|latex} &
+\VAR{summary.data_qc_details.split.post_purge_rows.test|latex} &
+\VAR{summary.data_qc_details.split.context_32_sequence_counts.test|latex}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The materialized split has zero train-validation, train-test, or validation-test
+row-identity overlap. Its sealed SHA-256 is
+\texttt{\VAR{summary.data_qc_details.split.sealed_sha256|shortid}}. The test partition
+was evaluated only after model selection rules and the gate were frozen; it was not
+used to fit normalization, early stopping, uncertainty calibration, or hyperparameters.
+
+\section{Preprocessing}
+Only columns with at least 80\% numeric completeness in the training fold were retained,
+yielding 87 inputs. Non-finite values were imputed with training-fold medians. Means and
+standard deviations were then fitted on the purged training fold only and applied
+unchanged to validation and test. Constant-scale safeguards replace standard deviations
+below \(10^{-8}\) with one. Targets are deterministically serialized as
+\VAR{summary.target_transform|latex} to 12 decimal places from exact upstream float32
+observations. The canonical values must remain within \(2\times10^{-6}\) log10 units of
+the upstream TaskApi output.
+
+All models use context length 32. The MLP reads the final feature vector in each context;
+Strata-OT reads the full ordered context. Persistence predicts the previous observed
+test target, with the final training target used only for the first test endpoint.
+Climatology is the training-fold target median.
+
+\section{Model architectures and optimization}
+\subsection{Compact MLP baseline}
+The MLP has four 1024-wide fully connected blocks, each with GELU and dropout 0.1,
+after input layer normalization. A probabilistic head emits Gaussian location and
+hard-clamped log scale plus ordered 0.1/0.5/0.9 quantiles. It has 3,244,211 parameters
+and no climatology residual.
+
+\subsection{Strata-OT Surface}
+Strata-OT Surface projects 87 features to width 192, adds learned positions, and applies
+six pre-norm Transformer encoder layers with six attention heads and four-times-width
+feed-forward blocks. A four-expert differentiable regime mixture is followed by learned
+temporal attention pooling, output normalization, and the same probabilistic head. The
+location is a residual around the training-fold climatology median. It has 3,331,768
+parameters.
+
+\subsection{Loss and trainer}
+Neural training minimizes Gaussian negative log likelihood plus 0.20 times quantile
+pinball loss. AdamW uses learning rate 0.0003 and weight decay 0.01 with cosine annealing,
+BF16 mixed precision, gradient clipping at 1.0, batch size 128, and gradient accumulation
+of 2. Validation RMSE controls the best checkpoint and early stopping (patience 12,
+maximum 80 epochs). Deterministic algorithms, highest float32 matmul precision, and
+math-only scaled dot-product attention were enforced. The Windows worker probe selected
+zero effective data-loader workers.
+
+\section{Measured results}
+\begin{longtable}{p{0.26\linewidth}lrrrrr}
+\toprule
+Run & Seed & Parameters & RMSE & MAE & Bias & Tail MAE\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\VAR{run.name|latex} &
+\VAR{run.get("seed", "--")|latex} &
+\VAR{run.get("parameters", "--")|latex} &
+\VAR{run.metrics.get("rmse_log10_cn2")|num} &
+\VAR{run.metrics.get("mae_log10_cn2")|num} &
+\VAR{run.metrics.get("bias_log10_cn2")|num} &
+\VAR{run.metrics.get("tail_mae_top_decile")|num}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\subsection{Uncertainty and calibration}
+\begin{longtable}{p{0.26\linewidth}rrrrrr}
+\toprule
+Run & NLL & CRPS & 80\% cov. & Width & Pred. std. & Cal. slope\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs if run.kind == "neural" }
+\VAR{run.name|latex} &
+\VAR{run.metrics.get("gaussian_nll")|num} &
+\VAR{run.metrics.get("crps_gaussian")|num} &
+\VAR{run.metrics.get("interval_80_coverage")|pct} &
+\VAR{run.metrics.get("interval_80_width")|num} &
+\VAR{run.metrics.get("predictive_std_mean")|num} &
+\VAR{run.metrics.get("calibration_slope")|num}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+The eligible MLP's Gaussian log scale saturated at the configured maximum:
+mean predictive standard deviation was 7.389 and the nominal 80\% interval width
+was 18.939 log10 units for both seeds, producing 100\% coverage. This is severe
+overcoverage, not useful uncertainty. Strata-OT instead covered only
+\VAR{summary.strata_interval_coverages[0]|pct} and
+\VAR{summary.strata_interval_coverages[1]|pct}, indicating undercoverage.
+Neither neural distribution is calibrated for deployment.
+
+\subsection{Across-seed stability}
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Model & Seeds & Mean RMSE & RMSE std. & Relative std.\\
+\midrule
+\BLOCK{ for aggregate in summary.model_aggregates }
+\VAR{aggregate.model|latex} &
+\VAR{aggregate.seeds|latex} &
+\VAR{aggregate.mean_rmse_log10_cn2|num} &
+\VAR{aggregate.std_rmse_log10_cn2|num} &
+\VAR{aggregate.relative_seed_std|pct}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+Two seeds satisfy the minimum stability evidence. They do not establish a broad
+sampling distribution, and no promotion decision is made from these two seeds alone.
+
+\subsection{Resource use and saved model}
+Total neural GPU time was \VAR{summary.total_neural_gpu_hours|num} hours
+(\VAR{(summary.total_neural_gpu_hours * 60)|num} minutes), below the four-hour cap.
+Peak allocated VRAM was \VAR{summary.peak_vram_gb|num} GB, below the
+15.5 GB gate. No cloud resource or paid service was used.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Run & Seconds & VRAM (GB) & Latency (ms/sample) & Samples/s\\
+\midrule
+\BLOCK{ for run in summary.runs if run.kind == "neural" }
+\VAR{run.name|latex} &
+\VAR{run.metrics.wall_clock_seconds|num} &
+\VAR{run.metrics.peak_vram_gb|num} &
+\VAR{run.metrics.inference_latency_ms_per_sample|num} &
+\VAR{run.metrics.throughput_samples_per_second|num}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+
+The best completed neural checkpoint is \texttt{\VAR{summary.best_checkpoint.display_path|latex}}
+(run \texttt{\VAR{summary.best_checkpoint.run_id|shortid}}, seed
+\VAR{summary.best_checkpoint.seed|latex}, SHA-256
+\texttt{\VAR{summary.best_checkpoint.sha256|shortid}},
+\VAR{(summary.best_checkpoint.bytes / 1048576)|num} MiB). This is an evidence artifact,
+not a promoted champion.
+
+\section{Diagnostic plots}
+\BLOCK{ for figure in summary.report_figures }
+\begin{center}
+\centering
+\includegraphics[width=0.78\linewidth]{\VAR{figure.path}}
+\captionof{figure}{Measured test diagnostics for \VAR{figure.name|latex}
+(run \texttt{\VAR{figure.run_id|shortid}}).}
+\end{center}
+\BLOCK{ endfor }
+
+\section{Exact resolved configuration}
+\subsection{Data}
+\begin{longtable}{>{\bfseries}p{0.28\linewidth}p{0.64\linewidth}}
+\toprule
+Field & Value\\
+\midrule
+\endhead
+\BLOCK{ for name, value in summary.resolved_configuration.data.items() }
+\VAR{name|latex} & \VAR{value|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\subsection{Strata-OT model configuration}
+\begin{longtable}{>{\bfseries}p{0.28\linewidth}p{0.64\linewidth}}
+\toprule
+Field & Value\\
+\midrule
+\endhead
+\BLOCK{ for name, value in summary.resolved_configuration.model.items() }
+\VAR{name|latex} & \VAR{value|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+The configured \texttt{input\_dim=32} is a legacy placeholder; model construction
+overrode it with the 87 features discovered from the training fold, recorded above as
+\texttt{effective\_input\_dim}. Parameter counts and checkpoints reflect 87.
+
+\subsection{Local 16 GB trainer configuration}
+\begin{longtable}{>{\bfseries}p{0.28\linewidth}p{0.64\linewidth}}
+\toprule
+Field & Value\\
+\midrule
+\endhead
+\BLOCK{ for name, value in summary.resolved_configuration.trainer.items() }
+\VAR{name|latex} & \VAR{value|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{Evidence gates}
+\begin{longtable}{p{0.62\linewidth}p{0.26\linewidth}}
+\toprule
+Check & Result\\
+\midrule
+\endhead
+\BLOCK{ for name, passed in summary.checks.items() }
+\VAR{name|latex} & \BLOCK{ if passed }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+\BLOCK{ endfor }
+Minimum two seeds & \pass\\
+Relative seed standard deviation at most 0.15 & \pass\\
+Absolute mean bias at most 0.25 & \pass\\
+Peak VRAM at most 15.5 GB & \pass\\
+Local GPU time at most 4 hours & \pass\\
+80\% interval coverage between 70\% and 90\% & \open{} (100\%)\\
+\bottomrule
+\end{longtable}
+
+The formal gate result is \open{} with failure
+\texttt{\VAR{summary.gate_result.failures[0]|latex}}. The best eligible model family is
+\VAR{summary.gate_result.best_eligible_model|latex}, with mean RMSE
+\VAR{summary.gate_result.best_mean_rmse_log10_cn2|num}. The gate was not weakened,
+regenerated, or tuned after test inspection.
+
+\section{Failures, retries, and negative results}
+\begin{longtable}{p{0.12\linewidth}p{0.22\linewidth}p{0.55\linewidth}}
+\toprule
+Phase & Identity / outcome & Recorded explanation\\
+\midrule
+\endhead
+\BLOCK{ for failure in summary.failure_records }
+\VAR{failure.phase|latex} &
+\texttt{\VAR{failure.identity|shortid}} / \VAR{failure.outcome|latex} &
+\VAR{failure.explanation|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+The first Windows snapshot was preserved unchanged. Its source NetCDF and upstream
+commit were exact, but five target serializations differed by at most \(10^{-6}\)
+log10 units because the upstream task applies NumPy log10 to float32. Recovery
+recomputed only the declared transform from the exact raw float32 observations with
+fixed precision and LF endings. The sealed split, gate, architecture, and hypothesis
+were not changed.
+
+Two initial full-flow attempts stopped before an epoch because MLflow rejected
+conflicting serialization of a duplicated Lightning hyperparameter. A fast-development
+probe also encountered Windows CP1252 output during MLflow finalization. Both software
+defects were fixed, the failures remained logged, and the final six-run flow completed.
+There was no OOM and no batch-size recovery was needed.
+
+\section{Failure analysis and limitations}
+\begin{itemize}
+\item \textbf{Hypothesis failure.} Persistence beats both neural families. This likely
+reflects the strength of local temporal continuity and the inadequacy of the current
+sequence representation across irregular gaps; the result does not justify a causal claim.
+\item \textbf{MLP scale saturation.} Hard clamping permits the Gaussian scale to stick at
+its maximum, yielding enormous intervals and the formal overcoverage failure.
+\item \textbf{Strata-OT bias.} Both seeds have negative bias around -0.35 log10 units,
+correlation below 0.63, and undercoverage below 45\%.
+\item \textbf{Single-site scope.} No vertical layers, integrated optical metrics,
+cross-site OOD behavior, propagation-path performance, or selective-risk curves are
+supported by this surface point task. Such metrics are reported as unsupported, not zero.
+\item \textbf{Irregular time.} Context length counts surviving rows, not fixed elapsed
+time, after dropna gaps. A time-gap-aware sequence model is needed before interpreting
+attention as a physical history.
+\item \textbf{Reproducibility boundary.} The checkout had no Git commit. Exact training
+source is therefore preserved as a content-addressed archive and all runs record the
+dirty state, digest, data hashes, split hash, configuration, environment, predictions,
+plots, checkpoints, runtime, and VRAM.
+\end{itemize}
+
+\section{Claim-to-evidence mapping}
+\begin{longtable}{p{0.25\linewidth}p{0.37\linewidth}p{0.29\linewidth}}
+\toprule
+Claim & Evidence & Boundary / disposition\\
+\midrule
+\endhead
+The result uses real direct \cn{} observations &
+Pinned OTBench task, exact NetCDF checksum, manifest, data-QC artifact, and
+direct-observation label provenance &
+Supported for this MLO surface dataset only\\
+The evaluation is leakage resistant &
+Official chronological blocks, 24-row purge, zero row overlap, train-only preprocessing,
+sealed split SHA-256 &
+Supported; test cannot be reused for tuning\\
+Persistence is best on the sealed test &
+RMSE \VAR{summary.best_overall_run.metrics.rmse_log10_cn2|num} versus all six final runs &
+Supported for this task and test period\\
+Strata-OT improves over the MLP &
+Mean RMSE \VAR{summary.model_aggregates[1].mean_rmse_log10_cn2|num} versus
+\VAR{summary.model_aggregates[0].mean_rmse_log10_cn2|num} &
+Rejected\\
+Neural uncertainty is calibrated &
+MLP 100\% coverage; Strata-OT below 45\% for nominal 80\% intervals &
+Rejected; gate remains open\\
+The run is locally reproducible &
+Content-addressed source, manifest and split identities, resolved config, environment,
+seeds, checkpoints, predictions, plots, and MLflow ledger &
+Supported subject to upstream and container availability\\
+The model is ready for promotion &
+Formal evidence gate is open &
+Rejected; no champion promotion authorized\\
+\bottomrule
+\end{longtable}
+
+\section{Recommended next experiment}
+\VAR{summary.recommended_next_experiment|latex}
+
+The primary confirmatory metric remains blocked-test RMSE, accompanied by bias, tail
+MAE, CRPS, 80\% coverage and width, stability across seeds, runtime, and peak VRAM.
+Success requires a newly frozen confirmatory test or equivalent untouched evidence;
+the observed test in this report must not drive model selection.
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}

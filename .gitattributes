@@ -1,0 +1,2 @@
+# Vendored skills retain upstream whitespace for source fidelity.
+.agents/skills/** -whitespace

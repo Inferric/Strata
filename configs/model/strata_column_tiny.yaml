@@ -1,0 +1,12 @@
+name: strata_ot_column
+input_dim: 48
+hidden_dim: 256
+depth: 8
+num_heads: 8
+num_experts: 4
+pressure_fourier_bands: 16
+output_levels: 64
+dropout: 0.10
+quantiles: [0.10, 0.50, 0.90]
+use_baseline_residual: true
+parameter_budget_max: 15000000

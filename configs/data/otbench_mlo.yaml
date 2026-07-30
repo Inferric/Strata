@@ -1,0 +1,15 @@
+id: otbench-mlo-cn2-15m-v1
+adapter: otbench
+task: regression.mlo_cn2.dropna.Cn2_15m
+upstream_repository: https://github.com/CDJellen/otbench.git
+upstream_commit: 53cab9d53648b4870b43e35d48f19143786fa12e
+label:
+  name: Cn2_15m
+  representation: log10_cn2_m_minus_2_over_3
+  provenance_class: direct_observation
+site: Mauna Loa Observatory
+access: open_via_pinned_public_source_and_supported_task_api
+upstream_terms: review_before_release
+cache_dir: data/raw/otbench/canonical-v1
+manifest_path: data/manifests/otbench-mlo-cn2-15m-v1.json
+split_config: configs/splits/frozen/otbench_mlo_blocked_v1.yaml

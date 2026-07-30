@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://strata-ot.local/schemas/experiment-proposal-v1.json",
+  "title": "Strata-OT bounded experiment proposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "proposal_id",
+    "hypothesis",
+    "parent_run_id",
+    "dataset_manifest_id",
+    "split_id",
+    "model",
+    "changes",
+    "evaluation_gate_id",
+    "budget",
+    "stop_conditions"
+  ],
+  "properties": {
+    "proposal_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,79}$"},
+    "hypothesis": {"type": "string", "minLength": 30, "maxLength": 1200},
+    "parent_run_id": {"type": ["string", "null"]},
+    "dataset_manifest_id": {"type": "string", "minLength": 3},
+    "split_id": {"type": "string", "minLength": 3},
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["family", "config_path"],
+      "properties": {
+        "family": {"enum": ["mlp", "strata_ot_surface"]},
+        "config_path": {"const": "configs/model/strata_surface_tiny.yaml"}
+      }
+    },
+    "changes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["parameter", "old", "new", "reason"],
+        "properties": {
+          "parameter": {"type": "string"},
+          "old": {},
+          "new": {},
+          "reason": {"type": "string", "minLength": 12}
+        }
+      }
+    },
+    "evaluation_gate_id": {"type": "string", "const": "public-evidence-gates-v1"},
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_runs", "max_local_gpu_hours", "max_cloud_cost_usd"],
+      "properties": {
+        "max_runs": {"type": "integer", "minimum": 1, "maximum": 2},
+        "max_local_gpu_hours": {"type": "number", "exclusiveMinimum": 0, "maximum": 4},
+        "max_cloud_cost_usd": {"type": "number", "minimum": 0}
+      }
+    },
+    "stop_conditions": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "enum": [
+          "budget_exhausted",
+          "nan_or_divergence",
+          "oom_after_one_recovery",
+          "data_or_split_gate_failure",
+          "no_validation_improvement",
+          "credentials_or_terms_required",
+          "cloud_approval_required"
+        ]
+      },
+      "uniqueItems": true
+    }
+  }
+}

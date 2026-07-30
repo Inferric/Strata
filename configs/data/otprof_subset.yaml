@@ -1,0 +1,13 @@
+id: otprof-teacher-subset-v1
+adapter: otprof
+label:
+  name: cn2_profile
+  representation: log10_cn2_m_minus_2_over_3
+  provenance_class: numerical_weather_model_teacher
+access: zenodo_public_download
+expected_archive_size_gb: 25.7
+cache_dir: data/raw/otprof
+manifest_path: data/manifests/otprof-teacher-subset-v1.json
+notes:
+  - Teacher profiles are not ground truth.
+  - Use for representation pretraining, then evaluate on independent observations.

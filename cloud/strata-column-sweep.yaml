@@ -1,0 +1,24 @@
+name: strata-ot-column-bounded
+
+workdir: .
+
+resources:
+  accelerators: [L40S:1, A100-80GB:1]
+  use_spot: true
+  disk_size: 200
+  job_recovery:
+    strategy: EAGER_NEXT_REGION
+    max_restarts_on_errors: 1
+
+envs:
+  MLFLOW_TRACKING_URI: ""
+  STRATA_ALLOW_CLOUD: "true"
+  STRATA_MAX_CLOUD_COST_USD: "0"
+
+setup: |
+  python -m pip install "uv>=0.8,<1"
+  uv sync --extra dev --extra data
+
+run: |
+  test "${STRATA_MAX_CLOUD_COST_USD}" != "0"
+  uv run strata-train --config configs/experiments/first_real_mlo.yaml --model strata_ot_surface
