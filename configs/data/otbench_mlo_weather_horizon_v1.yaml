@@ -14,6 +14,7 @@ access: open_via_existing_verified_snapshot
 cache_dir: data/raw/otbench/canonical-v1
 manifest_path: data/manifests/otbench-mlo-cn2-15m-v1.json
 split_config: configs/splits/frozen/otbench_mlo_weather_horizon_v1.yaml
+assessment_consumption_id: mlo-weather-horizon-v1-assessment
 forecast:
   window_rows: 6
   horizon_rows: [1, 3, 6, 12]

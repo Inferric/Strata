@@ -92,7 +92,7 @@ RMSE 0.2751 log10 \(C_n^2\). The best neural run was the compact MLP at RMSE
 two seeds. Neural training used 0.0481 GPU-hours and peaked at 0.4937 GB
 allocated VRAM.
 
-The sealed evidence gate remains open: the eligible MLP's nominal 80% interval
+The sealed evidence gate failed: the eligible MLP's nominal 80% interval
 covered 100% of the test targets. Provenance, split-overlap, train-only
 preprocessing, reproducibility, stability, and resource checks passed. No model
 was promoted and the gate was not weakened. See the generated
@@ -119,7 +119,7 @@ improving 3.07% over persistence (0.1490); a paired 24-hour block bootstrap gave
 a 95% improvement interval of 0.85% to 4.36%. Strata-OT Surface averaged
 0.1463, so its added complexity did not beat the MLP or LightGBM.
 
-No model was promoted. The immutable evidence gate remains open because the
+No model was promoted. The immutable evidence gate failed because the
 best eligible MLP's mean nominal 80% interval coverage was 90.50%, just above
 the 90% maximum. Provenance, leakage, train-only preprocessing,
 reproducibility, stability, and resource checks passed. Combined MLO and USNA

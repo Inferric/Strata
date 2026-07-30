@@ -166,3 +166,18 @@ def test_experiment_template_renders_complete_summary() -> None:
     )
     assert "minimum\\_seeds" in rendered
     assert "Exact resolved configuration" in rendered
+
+
+def test_completed_report_templates_do_not_render_open_gate_states() -> None:
+    root = Path(__file__).resolve().parents[1]
+    for name in (
+        "experiment_report.tex.j2",
+        "forecast_report.tex.j2",
+        "horizon_report.tex.j2",
+    ):
+        source = (root / "reports" / "templates" / name).read_text(
+            encoding="utf-8"
+        )
+        assert r"\newcommand{\open}" not in source
+        assert r"\open" not in source
+        assert "OPEN" not in source

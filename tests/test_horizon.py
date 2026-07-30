@@ -8,7 +8,8 @@ import pytest
 
 from strata_ot.config import load_yaml
 from strata_ot.data.horizon import HorizonDataModule
-from strata_ot.training.horizon import _paired_bootstrap
+from strata_ot.training.horizon import _paired_bootstrap, _tracked_artifact_bytes
+from strata_ot.training.safety import resource_peaks
 
 
 def _repository() -> Path:
@@ -47,6 +48,22 @@ def test_frozen_horizon_split_and_assessment_isolation() -> None:
         module.assessment_dataloader()
     with pytest.raises(RuntimeError, match="official MLO test partition is sealed"):
         module.test_dataloader()
+
+
+def test_consumed_mlo_assessment_cannot_be_reopened() -> None:
+    root = _repository()
+    data = load_yaml("configs/data/otbench_mlo_weather_horizon_v1.yaml", root=root)
+    split = load_yaml(str(data["split_config"]), root=root)
+    module = HorizonDataModule(
+        data,
+        split,
+        feature_set="history_only",
+        batch_size=8,
+        num_workers=0,
+        allow_assessment=True,
+    )
+    with pytest.raises(RuntimeError, match="already consumed"):
+        module.prepare_data()
 
 
 def test_paired_horizon_bootstrap_detects_improvement(tmp_path: Path) -> None:
@@ -103,3 +120,40 @@ def test_split_configuration_keeps_48_row_internal_gaps() -> None:
     if materialized.is_file():
         payload = json.loads(materialized.read_text(encoding="utf-8"))
         assert payload["sha256"] == split["materialized_payload_sha256"]
+
+
+def test_resource_peaks_separate_board_allocated_and_reserved() -> None:
+    samples = [
+        {
+            "gpu": {
+                "used_memory_gib": 2.5,
+                "process_peak_allocated_gib": 0.7,
+                "process_peak_reserved_gib": 0.9,
+            }
+        },
+        {
+            "gpu": {
+                "used_memory_gib": 3.25,
+                "process_peak_allocated_gib": 1.2,
+                "process_peak_reserved_gib": 1.5,
+            }
+        },
+    ]
+    assert resource_peaks(samples) == {
+        "peak_total_board_vram_gib": 3.25,
+        "peak_process_allocated_vram_gib": 1.2,
+        "peak_process_reserved_vram_gib": 1.5,
+    }
+
+
+def test_tracked_artifact_bytes_counts_unique_files(tmp_path: Path) -> None:
+    artifact = tmp_path / "artifact.bin"
+    checkpoint = tmp_path / "checkpoint.ckpt"
+    artifact.write_bytes(b"12345")
+    checkpoint.write_bytes(b"1234567")
+    size = _tracked_artifact_bytes(
+        tmp_path,
+        {"a": "artifact.bin", "duplicate": "artifact.bin"},
+        checkpoint=str(checkpoint),
+    )
+    assert size == 12

@@ -12,6 +12,7 @@ from typing import Any, cast
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from strata_ot.config import find_repo_root
+from strata_ot.evaluation.evaluate import gate_status
 
 LATEX_REPLACEMENTS = {
     "\\": r"\textbackslash{}",
@@ -74,6 +75,7 @@ def _environment(template_dir: Path) -> Environment:
     environment.filters["num"] = latex_number
     environment.filters["pct"] = latex_percent
     environment.filters["shortid"] = short_identity
+    environment.filters["gate"] = gate_status
     return environment
 
 

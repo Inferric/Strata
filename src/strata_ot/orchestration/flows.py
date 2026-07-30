@@ -6,7 +6,7 @@ from typing import Any
 from prefect import flow, task
 
 from strata_ot.config import find_repo_root
-from strata_ot.evaluation.evaluate import evaluate_gates
+from strata_ot.evaluation.evaluate import evaluate_gates, gate_status
 from strata_ot.reporting.render import render_report
 from strata_ot.training.forecast import run_forecast_experiment
 from strata_ot.training.horizon import run_horizon_experiment
@@ -149,16 +149,33 @@ def report_horizon(summary: dict[str, Any], output_directory: str) -> dict[str, 
         "within_storage_budget",
         "latex_pdf_compiled",
     )
-    failures = [name for name in required_checks if checks.get(name) is not True]
-    if refreshed.get("assessment_released") is not True:
-        failures.append("assessment_not_released")
+    assessment_released = refreshed.get("assessment_released") is True
+    condition_statuses = {
+        name: gate_status(checks.get(name), evaluated=name in checks)
+        for name in required_checks
+    }
+    failures = [
+        name for name, status in condition_statuses.items() if status == "FAIL"
+    ]
+    condition_statuses["assessment_released"] = gate_status(
+        assessment_released,
+        evaluated=assessment_released,
+    )
     for name, passed in dict(claim.get("conditions", {})).items():
-        if not passed:
-            failures.append(f"primary_{name}")
+        condition_name = f"primary_{name}"
+        condition_statuses[condition_name] = gate_status(
+            bool(passed),
+            evaluated=assessment_released,
+        )
+        if assessment_released and not passed:
+            failures.append(condition_name)
+    passed = bool(claim.get("passed")) and not failures
     gate_result = {
         "gate_id": "mlo-weather-horizon-v1-preregistered",
-        "passed": bool(claim.get("passed")) and not failures,
+        "status": gate_status(passed, evaluated=assessment_released),
+        "passed": passed,
         "failures": sorted(set(failures)),
+        "condition_statuses": condition_statuses,
         "evaluated_run_count": len(refreshed.get("runs", [])),
         "assessment_status": claim.get("status", "not_released"),
         "champion_promoted": False,

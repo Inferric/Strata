@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
-from strata_ot.evaluation.evaluate import evaluate_gates
+from strata_ot.evaluation.evaluate import evaluate_gates, gate_status
 from strata_ot.evaluation.metrics import regression_metrics
 
 
@@ -62,4 +63,16 @@ def test_gate_requires_two_seeds_for_same_model() -> None:
     }
     result = evaluate_gates(summary, gates)
     assert result["passed"] is False
+    assert result["status"] == "FAIL"
+    assert result["condition_statuses"]["minimum_seeds"] == "FAIL"
     assert "minimum_seeds" in result["failures"]
+    assert "OPEN" not in set(result["condition_statuses"].values())
+
+
+def test_gate_status_has_only_terminal_or_unevaluated_states() -> None:
+    assert gate_status(True) == "PASS"
+    assert gate_status(False) == "FAIL"
+    assert gate_status(None) == "NOT_EVALUATED"
+    assert gate_status(False, evaluated=False) == "NOT_EVALUATED"
+    with pytest.raises(ValueError, match="Invalid gate status"):
+        gate_status("OPEN")
