@@ -64,21 +64,41 @@ class RegimeMixture(nn.Module):
 class ProbabilisticHead(nn.Module):
     """Gaussian location/scale plus ordered 10/50/90% quantiles."""
 
-    def __init__(self, hidden_dim: int, min_log_scale: float = -5.0, max_log_scale: float = 2.0):
+    def __init__(
+        self,
+        hidden_dim: int,
+        min_log_scale: float = -5.0,
+        max_log_scale: float = 2.0,
+        scale_parameterization: str = "clamp",
+        min_scale: float = 1e-3,
+        initial_scale: float = 0.3,
+    ):
         super().__init__()
+        if scale_parameterization not in {"clamp", "softplus"}:
+            raise ValueError("scale_parameterization must be 'clamp' or 'softplus'")
+        if min_scale <= 0 or initial_scale <= min_scale:
+            raise ValueError("Require 0 < min_scale < initial_scale")
         self.location = nn.Linear(hidden_dim, 1)
         self.log_scale = nn.Linear(hidden_dim, 1)
         self.quantile_offsets = nn.Linear(hidden_dim, 3)
         self.min_log_scale = min_log_scale
         self.max_log_scale = max_log_scale
+        self.scale_parameterization = scale_parameterization
+        self.min_scale = min_scale
+        if scale_parameterization == "softplus":
+            nn.init.zeros_(self.log_scale.weight)
+            inverse_softplus = math.log(math.expm1(initial_scale - min_scale))
+            nn.init.constant_(self.log_scale.bias, inverse_softplus)
 
     def forward(self, hidden: Tensor, baseline: Tensor | None = None) -> dict[str, Tensor]:
         location = self.location(hidden).squeeze(-1)
         if baseline is not None:
             location = location + baseline
-        log_scale = self.log_scale(hidden).squeeze(-1).clamp(
-            self.min_log_scale, self.max_log_scale
-        )
+        raw_scale = self.log_scale(hidden).squeeze(-1)
+        if self.scale_parameterization == "softplus":
+            log_scale = (self.min_scale + F.softplus(raw_scale)).log()
+        else:
+            log_scale = raw_scale.clamp(self.min_log_scale, self.max_log_scale)
         raw = self.quantile_offsets(hidden)
         median = location + raw[..., 1]
         lower = median - F.softplus(raw[..., 0])

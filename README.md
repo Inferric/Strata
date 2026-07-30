@@ -61,6 +61,11 @@ starting Compose. The exact acquisition, probe, training, gate, report, and
 validation commands are recorded in
 [`docs/FIRST_REAL_RUN.md`](docs/FIRST_REAL_RUN.md).
 
+If the ML terminology is new, start with
+[`docs/START_HERE.md`](docs/START_HERE.md). The current short-horizon forecast
+validation and its exact commands are in
+[`docs/SHORT_FORECAST_RUN.md`](docs/SHORT_FORECAST_RUN.md).
+
 The acquisition adapter checks out the public `otbench` repository at commit
 `53cab9d53648b4870b43e35d48f19143786fa12e` and calls its `TaskApi`. This pin is
 intentional: the current PyPI wheel omits files required by the task loader.
@@ -83,6 +88,20 @@ preprocessing, reproducibility, stability, and resource checks passed. No model
 was promoted and the gate was not weakened. See the generated
 [`experiment-report.pdf`](reports/generated/first-real-run/experiment-report.pdf)
 for the full evidence and limitations.
+
+## Current validation: a fair short forecast
+
+The next bounded test asks a simpler, better-controlled question: using six
+recent Cn² observations plus weather, can a model predict the next observation
+better than copying the latest value? MLO is development-only; its previous
+sealed test is not reused. The configuration is then frozen before a one-shot
+confirmation on the independent public OTBench USNA surface-layer task.
+
+This path fixes the information mismatch in the first experiment, adds recent
+mean and LightGBM comparators, rejects irregular histories, replaces the
+hard-clamped uncertainty scale with a smooth positive scale, and calibrates that
+scale on validation only. It retains the immutable split and evidence gates and
+uses a stricter two-GPU-hour local budget.
 
 ## The guarded loop
 

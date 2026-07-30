@@ -1,0 +1,29 @@
+id: usna-short-forecast-confirm-v1
+task_kind: one_step_forecast
+hypothesis: >-
+  The neural configuration frozen after MLO development transfers to a public,
+  independent USNA surface-layer task and improves one-step-ahead Cn2 accuracy
+  over honest persistence without violating calibration or resource gates.
+seed: 17
+seeds: [17, 41]
+data: configs/data/otbench_usna_sm_forecast.yaml
+model: configs/model/strata_surface_forecast_v1.yaml
+trainer: configs/trainer/local_16gb.yaml
+evaluation: configs/evaluation/gates/public_v1.yaml
+models:
+  - climatology
+  - persistence
+  - recent_mean
+  - lightgbm
+  - mlp
+  - strata_ot_surface
+tracking:
+  experiment_name: strata-ot-short-forecast-v1
+  register_candidate: false
+budget:
+  max_total_gpu_hours: 2.0
+  max_peak_vram_gb: 15.5
+  max_cloud_cost_usd: 0
+report:
+  template: reports/templates/forecast_report.tex.j2
+  output_dir: reports/generated/short-forecast-validation

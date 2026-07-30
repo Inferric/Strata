@@ -9,6 +9,8 @@ from torch import Tensor, nn
 
 from strata_ot.models.components import gaussian_nll, pinball_loss
 
+type Batch = tuple[Tensor, Tensor] | dict[str, Tensor]
+
 
 class Cn2LightningModule(L.LightningModule):
     def __init__(
@@ -28,18 +30,25 @@ class Cn2LightningModule(L.LightningModule):
         self.max_epochs = max_epochs
         self.baseline_value = baseline_value
 
-    def forward(self, features: Tensor) -> dict[str, Tensor]:
-        baseline = (
-            features.new_full((features.shape[0],), self.baseline_value)
-            if self.baseline_value is not None
-            else None
-        )
+    def forward(
+        self,
+        features: Tensor,
+        baseline: Tensor | None = None,
+    ) -> dict[str, Tensor]:
+        if baseline is None and self.baseline_value is not None:
+            baseline = features.new_full((features.shape[0],), self.baseline_value)
         output: dict[str, Tensor] = self.model(features, baseline=baseline)
         return output
 
-    def _step(self, batch: tuple[Tensor, Tensor], stage: str) -> Tensor:
-        features, target = batch
-        output = self(features)
+    def _step(self, batch: Batch, stage: str) -> Tensor:
+        if isinstance(batch, dict):
+            features = batch["features"]
+            target = batch["target"]
+            baseline = batch.get("persistence")
+        else:
+            features, target = batch
+            baseline = None
+        output = self(features, baseline)
         nll = gaussian_nll(output["location"], output["log_scale"], target)
         quantile = pinball_loss(output["quantiles"], target)
         loss = nll + 0.20 * quantile
@@ -60,15 +69,15 @@ class Cn2LightningModule(L.LightningModule):
         )
         return loss
 
-    def training_step(self, batch: tuple[Tensor, Tensor], batch_idx: int) -> Tensor:
+    def training_step(self, batch: Batch, batch_idx: int) -> Tensor:
         del batch_idx
         return self._step(batch, "train")
 
-    def validation_step(self, batch: tuple[Tensor, Tensor], batch_idx: int) -> Tensor:
+    def validation_step(self, batch: Batch, batch_idx: int) -> Tensor:
         del batch_idx
         return self._step(batch, "validation")
 
-    def test_step(self, batch: tuple[Tensor, Tensor], batch_idx: int) -> Tensor:
+    def test_step(self, batch: Batch, batch_idx: int) -> Tensor:
         del batch_idx
         return self._step(batch, "test")
 

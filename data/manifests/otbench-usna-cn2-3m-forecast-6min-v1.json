@@ -1,0 +1,154 @@
+{
+  "accessed_at": "2026-07-30T04:45:03.590149Z",
+  "citation": "Jellen, Nelson, Brownell, and Burkhardt (2024), Effective Benchmarks for Optical Turbulence Modeling, doi:10.1175/AIES-D-24-0003.1; public USNA surface-layer dataset metadata and acknowledgements preserved from OTBench.",
+  "coverage": {
+    "features": 7,
+    "partitions": {
+      "test": 4081,
+      "train": 14640,
+      "validation": 3360
+    },
+    "rows": 22081
+  },
+  "dataset_id": "otbench-usna-cn2-3m-forecast-6min-v1",
+  "files": [
+    {
+      "bytes": 262219,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\test_features.csv",
+      "sha256": "7dea11c858cce35314a3fe9ff931a2f578029f976e63bc99dc59db31e84cf48d"
+    },
+    {
+      "bytes": 151004,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\test_target.csv",
+      "sha256": "762beb311826cdae64649550f3425affa7abccb2b6244955ce7483d46e7f4b8f"
+    },
+    {
+      "bytes": 939669,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\train_features.csv",
+      "sha256": "3f9936da3e8bab71cd55fa1b5875567de9d769b36fab8df575008e1df98783b2"
+    },
+    {
+      "bytes": 541687,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\train_target.csv",
+      "sha256": "eff905fbbcaa5cc5d6465e449e51a8cf25f751ce524ae80b5c761feaf3f12d4b"
+    },
+    {
+      "bytes": 511,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\upstream\\otbench\\config\\datasets.json",
+      "sha256": "0b724b8cd6b816c9015572ca7829cfdf25565e7457afeff9abed1cad5cf9036d"
+    },
+    {
+      "bytes": 8801,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\upstream\\otbench\\config\\tasks.json",
+      "sha256": "011360d40f96bc60a51ae322bce06099cd888ba7a09d811b0b550437cc727095"
+    },
+    {
+      "bytes": 243,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\upstream\\otbench\\data\\usna_cn2_sm\\citation.md",
+      "sha256": "5d3691d94248737903004fb9c8f7ecb4fa8633de5f52049ef7b1647f1e653e9c"
+    },
+    {
+      "bytes": 1994,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\upstream\\otbench\\data\\usna_cn2_sm\\README.md",
+      "sha256": "9bdabf506d080846797db79ac87cbdf443fb026ed54dfc709cf893ae890b859b"
+    },
+    {
+      "bytes": 1505936,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\upstream\\otbench\\data\\usna_cn2_sm\\usna_cn2_sm.nc",
+      "sha256": "f73e1785244f5f5adc2106afafa9be7e69b9f2fe6f9c794fa3fa20c1bd90f880"
+    },
+    {
+      "bytes": 210496,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\validation_features.csv",
+      "sha256": "eaf5982da9cbcc8af5c80a839718a0dea7aaed1dc91c863a0945d810f7eb750d"
+    },
+    {
+      "bytes": 124343,
+      "relative_path": "data\\raw\\otbench\\canonical-v1\\otbench-usna-cn2-3m-forecast-6min-v1\\validation_target.csv",
+      "sha256": "cfec913cd23559d5bb3d218de6073490426808d77ea4093722a34bc9e035874d"
+    }
+  ],
+  "geometry": {
+    "kind": "surface_point",
+    "latitude": 38.98,
+    "longitude": -76.48,
+    "measurement_height_m": 3,
+    "path_type": "surface_layer",
+    "site": "United States Naval Academy",
+    "time_zone": "US/Eastern"
+  },
+  "instrument": {
+    "auxiliary_weather": "NOAA station",
+    "cn2": "BLS450 scintillometer",
+    "local_weather": "Davis Vantage Pro2"
+  },
+  "label_provenance": "direct_observation",
+  "qc": {
+    "canonical_serialization": {
+      "line_terminator": "LF",
+      "maximum_allowed_task_difference": 2e-06,
+      "target_decimal_places": 12,
+      "target_log10_source": "exact upstream raw float32 observation"
+    },
+    "dropna_task": false,
+    "task": "forecasting.usna_cn2_sm.full.Cn2_3m",
+    "upstream_commit": "53cab9d53648b4870b43e35d48f19143786fa12e",
+    "upstream_metadata_review_required_before_redistribution": true,
+    "upstream_task_info": {
+      "description": "Forecasting task for USNA Cn2 small data, where the last 15 days are set aside for evaluation.",
+      "description_long": "This dataset evaluates forecasting approaches for predicting the extent of optical turbulence, as measured by Cn2 at an elevation of 3m. Optical turbulence on data collected at the United States Naval Academy, across the Severn River between Santee Basin and the Waterfront Readiness Center. This dataset contains measurements between 01 June 2021 and 31 August 2021, inclusive. Meteorological and Oceanographic measurements are collated using the scintillometer's internal clock at a 6-minute frequency. Prediction accuracy is evaluated  under the root-mean square error metric.",
+      "dropna": false,
+      "ds_name": "usna_cn2_sm",
+      "eval_metrics": [
+        "root_mean_square_error",
+        "coefficient_of_determination",
+        "mean_absolute_error",
+        "mean_absolute_percentage_error"
+      ],
+      "forecast_horizon": 1,
+      "log_transform": true,
+      "obs_lat": 38.98,
+      "obs_lon": -76.48,
+      "obs_tz": "US/Eastern",
+      "remove": [
+        "base_time",
+        "Dir_3m",
+        "Cn2_3m",
+        "lat",
+        "lon",
+        "alt"
+      ],
+      "target": "Cn2_3m",
+      "test_idx": [
+        "18000:22081"
+      ],
+      "train_idx": [
+        "0:14640"
+      ],
+      "val_idx": [
+        "14640:18000"
+      ],
+      "window_size": 6
+    },
+    "upstream_transforms": {
+      "dropna": {
+        "description": "Whether to drop observations with any missing values across both the features and target.",
+        "value": false
+      },
+      "log_transform": {
+        "description": "Whether to apply a base-10 log transform to the target.",
+        "value": true
+      }
+    }
+  },
+  "schema_version": 1,
+  "source_url": "https://github.com/CDJellen/otbench",
+  "terms": {
+    "redistribution": "metadata_only",
+    "status": "review_required"
+  },
+  "units": {
+    "target": "log10(m^(-2/3)), transformed by the upstream task"
+  },
+  "wavelength_nm": null
+}

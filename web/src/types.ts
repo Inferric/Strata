@@ -7,6 +7,10 @@ export type Run = {
   kind: string;
   dataset_id?: string;
   split_id?: string;
+  site?: string;
+  task_kind?: string;
+  forecast_horizon_minutes?: string;
+  evaluation_partition?: string;
   metrics: Record<string, number>;
   parameters: Record<string, string>;
 };
@@ -18,6 +22,17 @@ export type Overview = {
   latest_summary: {
     experiment_id: string;
     hypothesis: string;
+    plain_language_question?: string;
+    evaluation_partition?: string;
+    forecast_horizon_minutes?: number;
+    forecast_claim?: {
+      eligible: boolean;
+      measured_relative_improvement?: number;
+      passed_point_estimate?: boolean;
+      best_model?: string;
+      persistence_rmse_log10_cn2?: number;
+      best_neural_rmse_log10_cn2?: number;
+    };
     checks: Record<string, boolean>;
     gate_result?: {
       passed: boolean;

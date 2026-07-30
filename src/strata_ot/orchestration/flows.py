@@ -8,6 +8,7 @@ from prefect import flow, task
 from strata_ot.config import find_repo_root
 from strata_ot.evaluation.evaluate import evaluate_gates
 from strata_ot.reporting.render import render_report
+from strata_ot.training.forecast import run_forecast_experiment
 from strata_ot.training.train import run_experiment
 
 
@@ -42,6 +43,18 @@ def report_and_gate(
         json.dumps(refreshed, indent=2) + "\n",
         encoding="utf-8",
     )
+    experiment_summary = (
+        root
+        / "artifacts"
+        / "experiments"
+        / str(refreshed["experiment_id"])
+        / "summary.json"
+    )
+    experiment_summary.parent.mkdir(parents=True, exist_ok=True)
+    experiment_summary.write_text(
+        json.dumps(refreshed, indent=2) + "\n",
+        encoding="utf-8",
+    )
     pdf = render_report(summary_path, output_dir)
     refreshed = json.loads(summary_path.read_text(encoding="utf-8"))
     result = evaluate_gates(refreshed, gates)
@@ -73,6 +86,29 @@ def candidate_flow(config_path: str, output_directory: str) -> dict[str, Any]:
     return report_and_gate(summary, output_directory)
 
 
+@task(retries=1, retry_delay_seconds=30, log_prints=True)
+def train_forecast(
+    config_path: str,
+    fast_dev_run: bool,
+    release_test: bool,
+) -> dict[str, Any]:
+    return run_forecast_experiment(
+        config_path,
+        fast_dev_run=fast_dev_run,
+        release_test=release_test,
+    )
+
+
+@flow(name="strata-ot-short-forecast", log_prints=True)
+def forecast_flow(
+    config_path: str = "configs/experiments/mlo_short_forecast_dev.yaml",
+    fast_dev_run: bool = False,
+    release_test: bool = False,
+) -> dict[str, Any]:
+    summary = train_forecast(config_path, fast_dev_run, release_test)
+    return report_and_gate(summary, "reports/generated/short-forecast-validation")
+
+
 def main() -> None:
     import argparse
 
@@ -81,6 +117,19 @@ def main() -> None:
     parser.add_argument("--fast-dev-run", action="store_true")
     args = parser.parse_args()
     print(first_real_flow(args.config, args.fast_dev_run))
+
+
+def forecast_main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run the short forecast Prefect flow")
+    parser.add_argument(
+        "--config", default="configs/experiments/mlo_short_forecast_dev.yaml"
+    )
+    parser.add_argument("--fast-dev-run", action="store_true")
+    parser.add_argument("--release-test", action="store_true")
+    args = parser.parse_args()
+    print(forecast_flow(args.config, args.fast_dev_run, args.release_test))
 
 
 if __name__ == "__main__":

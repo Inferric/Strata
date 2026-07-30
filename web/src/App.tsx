@@ -115,6 +115,8 @@ export default function App() {
     () => Object.values(gates).filter(Boolean).length,
     [gates],
   );
+  const forecastClaim = overview?.latest_summary?.forecast_claim;
+  const measuredChange = forecastClaim?.measured_relative_improvement;
 
   return (
     <div className="shell">
@@ -197,6 +199,40 @@ export default function App() {
           </article>
         </section>
 
+        {overview?.latest_summary?.plain_language_question && (
+          <section className="translation-strip" aria-label="Experiment in plain language">
+            <article>
+              <span className="translation-number">01</span>
+              <div>
+                <span className="eyebrow">THE QUESTION</span>
+                <p>{overview.latest_summary.plain_language_question}</p>
+              </div>
+            </article>
+            <article>
+              <span className="translation-number">02</span>
+              <div>
+                <span className="eyebrow">THE FAIR COMPARISON</span>
+                <p>
+                  Persistence copies the latest measurement. Every neural model sees
+                  the same six-step history, so beating it would mean learning useful
+                  change—not receiving extra information.
+                </p>
+              </div>
+            </article>
+            <article>
+              <span className="translation-number">03</span>
+              <div>
+                <span className="eyebrow">THE CURRENT VERDICT</span>
+                <p>
+                  {forecastClaim?.eligible && measuredChange !== undefined
+                    ? `${forecastClaim.best_model} changed error by ${(measuredChange * 100).toFixed(1)}% versus persistence on the ${overview.latest_summary.evaluation_partition} block.`
+                    : "The verdict appears only after comparable measured runs finish."}
+                </p>
+              </div>
+            </article>
+          </section>
+        )}
+
         <section className="service-row">
           {[
             ["MLflow", system.mlflow, links.mlflow],
@@ -227,12 +263,20 @@ export default function App() {
           {runs.length ? (
             <div className="table-wrap">
               <table>
-                <thead><tr><th>Run</th><th>Model</th><th>Status</th><th>RMSE</th><th>MAE</th><th>VRAM</th></tr></thead>
+                <thead><tr><th>Run</th><th>Model / task</th><th>Status</th><th>RMSE</th><th>MAE</th><th>VRAM</th></tr></thead>
                 <tbody>
                   {runs.slice(0, 10).map((run) => (
                     <tr key={run.run_id}>
                       <td><strong>{run.name}</strong><small>{run.run_id.slice(0, 10)}</small></td>
-                      <td><span className="model-tag">{run.model}</span></td>
+                      <td>
+                        <span className="model-tag">{run.model}</span>
+                        <small>
+                          {run.site ?? run.dataset_id ?? "recorded dataset"}
+                          {run.forecast_horizon_minutes
+                            ? ` · +${run.forecast_horizon_minutes} min · ${run.evaluation_partition}`
+                            : ""}
+                        </small>
+                      </td>
                       <td><span className={`run-status ${statusClass(run.status)}`}><i />{run.status}</span></td>
                       <td>{metric(run, "rmse_log10_cn2")}</td>
                       <td>{metric(run, "mae_log10_cn2")}</td>

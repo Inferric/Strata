@@ -20,6 +20,9 @@ class StrataOTSurface(nn.Module):
         max_context: int = 256,
         min_log_scale: float = -5.0,
         max_log_scale: float = 2.0,
+        scale_parameterization: str = "clamp",
+        min_scale: float = 1e-3,
+        initial_scale: float = 0.3,
         use_baseline_residual: bool = True,
         **_: object,
     ):
@@ -44,7 +47,14 @@ class StrataOTSurface(nn.Module):
         self.regimes = RegimeMixture(hidden_dim, num_experts, dropout)
         self.pool_score = nn.Linear(hidden_dim, 1)
         self.output_norm = nn.LayerNorm(hidden_dim)
-        self.head = ProbabilisticHead(hidden_dim, min_log_scale, max_log_scale)
+        self.head = ProbabilisticHead(
+            hidden_dim,
+            min_log_scale,
+            max_log_scale,
+            scale_parameterization,
+            min_scale,
+            initial_scale,
+        )
 
     def forward(self, features: Tensor, baseline: Tensor | None = None) -> dict[str, Tensor]:
         if features.ndim == 2:

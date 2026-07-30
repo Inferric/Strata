@@ -1,0 +1,17 @@
+name: strata_ot_surface
+input_dim: 9
+hidden_dim: 192
+depth: 6
+num_heads: 6
+num_experts: 4
+context: 6
+dropout: 0.10
+quantiles: [0.10, 0.50, 0.90]
+scale_parameterization: softplus
+min_scale: 0.001
+initial_scale: 0.30
+min_log_scale: -5.0
+max_log_scale: 2.0
+use_baseline_residual: true
+mlp_flatten_context: true
+parameter_budget_max: 8000000

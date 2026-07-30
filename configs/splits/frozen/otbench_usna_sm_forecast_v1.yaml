@@ -1,0 +1,18 @@
+id: otbench-usna-sm-forecast-v1
+sealed: true
+strategy: upstream_task_chronological_blocks_with_purge
+ordering_field: upstream_task_index
+purge_gap_rows: 24
+materialize_on_first_use: true
+group_fields:
+  - site
+  - instrument
+official_partitions:
+  train: upstream_task_train
+  validation: upstream_task_validation
+  test: upstream_task_test
+notes:
+  - Preserve the train, validation, and test blocks defined by the pinned task.
+  - Purge 24 adjacent rows at each exposed boundary without moving rows.
+  - Materialize exact row identities and a checksum only when the test is released.
+  - Never regenerate this split after inspecting test performance.

@@ -282,16 +282,135 @@ def _prepare_report_context(
     )
 
 
+def _prepare_forecast_report_context(
+    summary: dict[str, Any],
+    root: Path,
+    output_dir: Path,
+) -> None:
+    summary["data_qc_details"] = _load_json(root / str(summary["data_qc"]))
+    development_path = (
+        root
+        / "artifacts"
+        / "experiments"
+        / "mlo-short-forecast-dev-v1"
+        / "summary.json"
+    )
+    if (
+        summary.get("experiment_id") != "mlo-short-forecast-dev-v1"
+        and development_path.is_file()
+    ):
+        summary["development_summary"] = _load_json(development_path)
+    completed = [
+        run
+        for run in summary.get("runs", [])
+        if isinstance(run.get("metrics", {}).get("rmse_log10_cn2"), (int, float))
+    ]
+    if not completed:
+        raise ValueError("A forecast report requires completed measured runs")
+    summary["best_overall_run"] = min(
+        completed,
+        key=lambda run: float(run["metrics"]["rmse_log10_cn2"]),
+    )
+    neural = [run for run in completed if run.get("kind") == "neural"]
+    if not neural:
+        raise ValueError("A forecast report requires a completed neural run")
+    summary["best_neural_run"] = min(
+        neural,
+        key=lambda run: float(run["metrics"]["rmse_log10_cn2"]),
+    )
+    checkpoint_path = Path(str(summary["best_neural_run"]["checkpoint"])).resolve()
+    if not checkpoint_path.is_file():
+        raise FileNotFoundError(f"Best checkpoint is unavailable: {checkpoint_path}")
+    checkpoint_record = {
+        "run_id": summary["best_neural_run"]["run_id"],
+        "model": summary["best_neural_run"]["model"],
+        "seed": summary["best_neural_run"]["seed"],
+        "rmse_log10_cn2": summary["best_neural_run"]["metrics"][
+            "rmse_log10_cn2"
+        ],
+        "path": checkpoint_path.relative_to(root).as_posix(),
+        "display_path": "/".join(checkpoint_path.parts[-4:]),
+        "sha256": _sha256_file(checkpoint_path),
+        "bytes": checkpoint_path.stat().st_size,
+    }
+    best_checkpoint_path = root / "artifacts" / "latest" / "best-checkpoint.json"
+    best_checkpoint_path.write_text(
+        json.dumps(checkpoint_record, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    summary["best_checkpoint"] = checkpoint_record
+    source_digest = summary["repository_identity"]["source_digest_sha256"]
+    source_archive = root / "artifacts" / "source-snapshots" / f"{source_digest}.zip"
+    if not source_archive.is_file():
+        raise FileNotFoundError(f"Recorded source snapshot is unavailable: {source_archive}")
+    summary["source_snapshot"] = {
+        "path": source_archive.relative_to(root).as_posix(),
+        "sha256": _sha256_file(source_archive),
+        "bytes": source_archive.stat().st_size,
+    }
+    figure_dir = output_dir / "figures"
+    figure_dir.mkdir(parents=True, exist_ok=True)
+    report_figures: list[dict[str, str]] = []
+    for model in ("persistence", "lightgbm", "mlp", "strata_ot_surface"):
+        candidates = [run for run in completed if run.get("model") == model]
+        if not candidates:
+            continue
+        selected = min(
+            candidates,
+            key=lambda run: float(run["metrics"]["rmse_log10_cn2"]),
+        )
+        source = root / str(selected["artifacts"]["figure"])
+        destination = figure_dir / f"{model}-diagnostics.png"
+        shutil.copy2(source, destination)
+        report_figures.append(
+            {
+                "model": model,
+                "run_id": selected["run_id"],
+                "name": selected["name"],
+                "path": destination.relative_to(output_dir).as_posix(),
+            }
+        )
+    summary["report_figures"] = report_figures
+    failures: list[dict[str, str]] = []
+    for path in sorted((root / "artifacts" / "runs").glob("*/failure-manifest.json")):
+        payload = _load_json(path)
+        resolved = payload.get("resolved_configuration", {})
+        if resolved.get("task_kind") != "one_step_forecast":
+            continue
+        failures.append(
+            {
+                "phase": str(payload.get("kind", "run")),
+                "identity": str(payload.get("run_id", path.parent.name)),
+                "outcome": str(payload.get("failure", {}).get("type", "failed")),
+                "explanation": _failure_summary(payload),
+            }
+        )
+    summary["failure_records"] = failures
+    summary["best_neural_improvement_percent"] = (
+        100
+        * float(summary["forecast_claim"].get("measured_relative_improvement", 0))
+    )
+
+
 def render_report(summary_path: Path, output_dir: Path) -> Path:
     root = find_repo_root(summary_path.parent)
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     output_dir.mkdir(parents=True, exist_ok=True)
-    _prepare_report_context(summary, root, output_dir)
+    is_forecast = summary.get("task_kind") == "one_step_forecast"
+    if is_forecast:
+        _prepare_forecast_report_context(summary, root, output_dir)
+    else:
+        _prepare_report_context(summary, root, output_dir)
     template_dir = root / "reports" / "templates"
-    template = _environment(template_dir).get_template("experiment_report.tex.j2")
+    template_name = (
+        "forecast_report.tex.j2" if is_forecast else "experiment_report.tex.j2"
+    )
+    template = _environment(template_dir).get_template(template_name)
     summary.setdefault("checks", {})["latex_pdf_compiled"] = True
     tex = template.render(summary=summary)
-    tex_path = output_dir / "experiment-report.tex"
+    tex_path = output_dir / (
+        "forecast-report.tex" if is_forecast else "experiment-report.tex"
+    )
     tex_path.write_text(tex, encoding="utf-8")
     shutil.copy2(root / "research" / "references.bib", output_dir / "references.bib")
     try:

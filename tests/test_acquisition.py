@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from strata_ot.data.acquire import _canonical_target_frame
+from strata_ot.data.acquire import _canonical_log10, _canonical_target_frame
 
 
 class FakeTask:
@@ -52,3 +52,9 @@ def test_canonical_target_rejects_material_task_difference() -> None:
 
     with pytest.raises(RuntimeError, match="differs materially"):
         _canonical_target_frame(FakeTask(raw), inconsistent)
+
+
+def test_canonical_log10_preserves_missing_observation() -> None:
+    rendered = _canonical_log10(pd.Series([1e-13, np.nan]))
+    assert len(rendered[0].rsplit(".", maxsplit=1)[1]) == 12
+    assert rendered[1] == ""

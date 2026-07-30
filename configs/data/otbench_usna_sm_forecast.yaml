@@ -1,0 +1,33 @@
+id: otbench-usna-cn2-3m-forecast-6min-v1
+source_dataset_id: otbench-usna-cn2-3m-forecast-6min-v1
+adapter: otbench
+task: forecasting.usna_cn2_sm.full.Cn2_3m
+upstream_repository: https://github.com/CDJellen/otbench.git
+upstream_commit: 53cab9d53648b4870b43e35d48f19143786fa12e
+citation: >-
+  Jellen, Nelson, Brownell, and Burkhardt (2024), Effective Benchmarks for
+  Optical Turbulence Modeling, doi:10.1175/AIES-D-24-0003.1; public USNA
+  surface-layer dataset metadata and acknowledgements preserved from OTBench.
+label:
+  name: Cn2_3m
+  representation: log10_cn2_m_minus_2_over_3
+  provenance_class: direct_observation
+site: United States Naval Academy
+geometry:
+  measurement_height_m: 3
+  path_type: surface_layer
+instrument:
+  cn2: BLS450 scintillometer
+  local_weather: Davis Vantage Pro2
+  auxiliary_weather: NOAA station
+access: open_via_pinned_public_source_and_supported_task_api
+upstream_terms: review_before_release
+cache_dir: data/raw/otbench/canonical-v1
+manifest_path: data/manifests/otbench-usna-cn2-3m-forecast-6min-v1.json
+split_config: configs/splits/frozen/otbench_usna_sm_forecast_v1.yaml
+forecast:
+  window_rows: 6
+  forecast_horizon_rows: 1
+  nominal_cadence_minutes: 6
+  maximum_gap_minutes: 9
+  validation_calibration_fraction: 0.30
