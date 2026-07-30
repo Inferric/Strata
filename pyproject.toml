@@ -61,11 +61,13 @@ cloud = [
 strata-acquire = "strata_ot.data.acquire:main"
 strata-train = "strata_ot.training.train:main"
 strata-forecast = "strata_ot.training.forecast:main"
+strata-horizon = "strata_ot.training.horizon:main"
 strata-evaluate = "strata_ot.evaluation.evaluate:main"
 strata-report = "strata_ot.reporting.render:main"
 strata-loop = "strata_ot.autonomy.loop:main"
 strata-first-flow = "strata_ot.orchestration.flows:main"
 strata-forecast-flow = "strata_ot.orchestration.flows:forecast_main"
+strata-horizon-flow = "strata_ot.orchestration.flows:horizon_main"
 
 [[tool.uv.index]]
 name = "pytorch-cu128"

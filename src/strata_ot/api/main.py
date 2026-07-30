@@ -55,6 +55,9 @@ def _serialize_run(run: Any) -> dict[str, Any]:
         "split_id": run.data.tags.get("split_id"),
         "site": run.data.tags.get("site"),
         "task_kind": run.data.tags.get("task_kind"),
+        "feature_set": run.data.tags.get("feature_set"),
+        "horizon_rows": run.data.tags.get("horizon_rows"),
+        "horizon_minutes": run.data.tags.get("horizon_minutes"),
         "forecast_horizon_minutes": run.data.tags.get(
             "forecast_horizon_minutes"
         ),
@@ -149,6 +152,37 @@ async def overview() -> dict[str, Any]:
         "best_run": best,
         "latest_summary": latest,
         "tracking_source": run_payload["source"],
+    }
+
+
+@app.get("/api/horizon")
+async def horizon() -> dict[str, Any]:
+    summary_path = _root_or_app() / "artifacts" / "latest" / "summary.json"
+    if not summary_path.is_file():
+        raise HTTPException(status_code=404, detail="No completed horizon experiment")
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    if summary.get("task_kind") != "multi_horizon_forecast":
+        raise HTTPException(status_code=404, detail="Latest experiment is not multi-horizon")
+    return {
+        "experiment_id": summary["experiment_id"],
+        "evaluation_partition": summary["evaluation_partition"],
+        "assessment_released": summary["assessment_released"],
+        "plain_language_conclusion": summary["plain_language_conclusion"],
+        "horizon_matrix": summary["horizon_matrix"],
+        "component_diagnostics": [
+            {
+                "run_id": run["run_id"],
+                "model": run["model"],
+                "feature_set": run["feature_set"],
+                "seed": run.get("seed"),
+                "by_horizon": run.get("component_summary", {}),
+            }
+            for run in summary["runs"]
+            if run["model"] == "strata_ot_horizon"
+        ],
+        "assessment_claim": summary["assessment_claim"],
+        "checks": summary["checks"],
+        "gate_result": summary.get("gate_result"),
     }
 
 

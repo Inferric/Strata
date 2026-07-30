@@ -1,0 +1,44 @@
+id: mlo-weather-horizon-v1
+status: completed_null_or_partial
+protocol_commit: d4731649fbddb05297cf011284d600e8f054a668
+architecture_review_commit: 8254ba3f0d57e3bd144167098f65cd192887f2e5
+implementation_commit: aa6464645433563b373cb343661e3cd53711f586
+evidence_console_commit: 41894ff
+source_dataset_id: otbench-mlo-cn2-15m-v1
+source_manifest_sha256: cd1bba8a0ca6ddc2a25f5d40a8f7b6d0187b48ad2c119d03d917c869980cf410
+split_id: otbench-mlo-weather-horizon-v1
+assessment:
+  completed_at: "2026-07-30T06:41:10.394672+00:00"
+  released_explicitly: true
+  official_mlo_test_loaded: false
+  evaluated_run_count: 17
+  gate_passed: false
+  champion_promoted: false
+  status: null_or_partial
+  run_index: research/experiments/mlo-weather-horizon-v1/run-index.json
+reports:
+  architecture_review:
+    path: reports/generated/mlo-weather-horizon-v1/architecture-review.pdf
+    sha256: 075687833d1e607947bc65aef2029c4e83cfa2bcf544aa402d4f50899df01f28
+  final_experiment:
+    path: reports/generated/mlo-weather-horizon-v1/mlo-weather-horizon-report.pdf
+    sha256: c36be6da5b09f435b3d557ead8fe074c72ebd2bbe7d91bd28e5042fa84bbf467
+assumptions:
+  - The existing public OTBench MLO snapshot is the only dataset needed.
+  - The official MLO test files remain sealed and are never loaded by this experiment.
+  - Validation feature identities may be read before assessment release; assessment labels may not.
+  - Six retained context rows represent 30 nominal minutes only when cadence checks pass.
+  - All learned models use the same stacked set of 5, 15, 30, and 60 minute examples.
+  - Zero-filled weather slots in history_only carry no raw weather information and keep control shapes identical.
+  - Weather, target history, and cadence normalization are fitted only on the purged official training block.
+  - The literature supports custom-adaptation wording, not a universal novelty claim.
+  - A partial or null assessment result ends this bounded cycle without retuning.
+authority_boundaries:
+  cloud_cost_usd: 0
+  champion_promotion: prohibited
+  official_mlo_test_release: prohibited
+  assessment_release_requires_flag: true
+  public_release: requires_human_approval
+deadline:
+  timezone: America/Chicago
+  no_new_work_after: "2026-07-30T12:30:00-05:00"

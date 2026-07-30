@@ -1,0 +1,65 @@
+id: mlo-weather-horizon-v1
+task_kind: multi_horizon_forecast
+hypothesis: >-
+  Operational surface weather adds forecast information beyond six recent Cn2
+  observations as the horizon grows, and Strata-OT Horizon v1 can use it more
+  effectively than its hard-zero history-only ablation and the stronger
+  operational-weather MLP or LightGBM control.
+seeds: [17, 41]
+feature_sets: [history_only, operational_weather]
+data: configs/data/otbench_mlo_weather_horizon_v1.yaml
+model: configs/model/strata_horizon_v1.yaml
+trainer: configs/trainer/local_16gb.yaml
+evaluation: configs/evaluation/gates/public_v1.yaml
+run_manifest: configs/run_manifests/mlo_weather_horizon_v1.yaml
+models:
+  - climatology
+  - persistence
+  - recent_mean
+  - lightgbm
+  - mlp
+  - strata_ot_surface
+  - strata_ot_horizon
+tracking:
+  experiment_name: strata-ot-mlo-weather-horizon-v1
+  register_candidate: false
+budget:
+  max_total_gpu_hours: 4.0
+  max_peak_process_vram_gb: 14.0
+  max_board_vram_gb: 15.0
+  max_cloud_cost_usd: 0
+  max_new_storage_gib: 25
+  min_free_c_drive_gib: 50
+safety:
+  start_max_cpu_percent: 85
+  start_cpu_sustained_seconds: 180
+  start_min_free_ram_gib: 12
+  start_min_free_gpu_gib: 4
+  start_max_gpu_temperature_c: 75
+  stop_min_free_ram_gib: 8
+  stop_max_board_vram_gib: 15
+  stop_max_process_vram_gib: 14
+  stop_max_gpu_temperature_c: 84
+  stop_gpu_temperature_sustained_seconds: 60
+  monitor_interval_seconds: 15
+  one_oom_recovery: true
+deadline:
+  timezone: America/Chicago
+  no_new_work_after: "2026-07-30T12:30:00-05:00"
+assessment:
+  release_flag: --release-assessment
+  primary_horizon_minutes: [15, 30, 60]
+  anchor_horizon_minutes: 5
+  minimum_relative_rmse_improvement: 0.02
+  bootstrap_block_rows: 288
+  bootstrap_resamples: 2000
+  bootstrap_seed: 20260730
+  maximum_bias_regression_log10: 0.02
+  maximum_tail_mae_regression_fraction: 0.02
+  maximum_crps_regression_fraction: 0.02
+  maximum_relative_seed_std: 0.15
+  maximum_stability_regression: 0.02
+report:
+  template: reports/templates/horizon_report.tex.j2
+  output_dir: reports/generated/mlo-weather-horizon-v1
+
