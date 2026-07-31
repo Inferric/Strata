@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "report_pdf": "reports/generated/fusion-v23-residual-scaling/fusion-v23-residual-scaling-report.pdf",
+  "report_tex": "reports/generated/fusion-v23-residual-scaling/fusion-v23-residual-scaling-report.tex",
+  "inspected_at": "2026-07-30T22:57:36.5563686-05:00",
+  "page_count": 3,
+  "bytes": 52360,
+  "sha256": "06bcfd308ab3ce2f750abfd8d6831f1201b28eadc75aa4bb1326b308d37934e4",
+  "render_engine": "PyMuPDF 1.28.0 (Poppler unavailable)",
+  "render_scale": 2.0,
+  "rendered_pages": [
+    "tmp/pdfs/fusion-v23-residual-scaling-final/page-01.png",
+    "tmp/pdfs/fusion-v23-residual-scaling-final/page-02.png",
+    "tmp/pdfs/fusion-v23-residual-scaling-final/page-03.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "no_clipping_or_truncation": "PASS",
+    "tables_readable": "PASS",
+    "page_numbers_and_header_styles_consistent": "PASS",
+    "no_overlapping_elements": "PASS",
+    "no_unresolved_placeholders": "PASS",
+    "residual_component_audit_readable": "PASS"
+  },
+  "corrections_before_pass": [
+    "Removed an empty bibliography page because this bounded component audit introduces no literature claim.",
+    "Reduced table spacing so the claim boundary remains with the gate table on page three."
+  ],
+  "status": "PASS"
+}

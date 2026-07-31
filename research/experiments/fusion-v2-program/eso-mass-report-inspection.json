@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "report": "reports/generated/eso-paranal-mass-qc/eso-paranal-mass-qc-report.pdf",
+  "inspected_at": "2026-07-31T02:43:38-05:00",
+  "sha256": "bc68e4d0763a4c87c6135d6c9fc47d720ac5ba7da8bbd91d120fd6bea0ebbecb",
+  "bytes": 45787,
+  "pages": 3,
+  "render_engine": "PyMuPDF 1.28.0 (Poppler unavailable)",
+  "render_scale": 2.0,
+  "rendered_pages": [
+    "artifacts/pdf-inspection/eso-paranal-mass-qc-recompiled/page-1.png",
+    "artifacts/pdf-inspection/eso-paranal-mass-qc-recompiled/page-2.png",
+    "artifacts/pdf-inspection/eso-paranal-mass-qc-recompiled/page-3.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "all_pages_visually_inspected": "PASS",
+    "tables_legible": "PASS",
+    "content_within_margins": "PASS",
+    "no_clipped_text": "PASS",
+    "no_overlapping_elements": "PASS",
+    "primary_sources_present": "PASS",
+    "units_and_observation_operator_explicit": "PASS",
+    "verdict_matches_frozen_summary": "PASS"
+  },
+  "notes": "The final three-page dataset-QC report is clean and legible. It explicitly distinguishes integrated MASS layer strengths from pointwise Cn2, records the one-month cadence limitation, and leaves Column training and promotion unauthorized."
+}

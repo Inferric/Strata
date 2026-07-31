@@ -1,0 +1,289 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.68in]{geometry}
+\usepackage{amsmath,booktabs,tabularx,longtable,microtype,xcolor,enumitem,fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\definecolor{stratalight}{HTML}{EEF3F8}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
+\newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
+\newcommand{\cn}{\(C_n^2\)}
+\newcommand{\manualheader}{
+\noindent\textcolor{stratagray}{Strata-OT / bounded development evidence}
+\hfill\textcolor{stratagray}{Fusion v2.6 tail objective}\par
+\vspace{0.15em}\hrule\vspace{0.42in}
+}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.28em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.45em}
+\renewcommand{\arraystretch}{1.08}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
+\fancyhead[R]{\textcolor{stratagray}{Fusion v2.6 tail objective}}
+\cfoot{\thepage}
+\fancypagestyle{plain}{
+\fancyhf{}
+\fancyhead[L]{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
+\fancyhead[R]{\textcolor{stratagray}{Fusion v2.6 tail objective}}
+\cfoot{\thepage}
+}
+\title{\textbf{\textcolor{stratablue}{Strata-OT Fusion v2.6}}\\
+\large Frozen training-only tail-objective screen}
+\author{Generated from four paired rolling-development runs}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratablue}{stratalight}{
+\begin{minipage}{0.92\linewidth}
+\textbf{Executive summary.}
+\VAR{summary.plain_language_question|latex}
+\VAR{summary.plain_language_conclusion|latex}
+This is development evidence, not a champion decision. Confirmation labels
+and the official MLO test remained sealed.
+\end{minipage}}
+\end{center}
+
+\section{Frozen hypothesis and isolated change}
+\textbf{Hypothesis.} \VAR{summary.hypothesis|latex}
+
+Every arm retains the exact 3,611,849-parameter Fusion v2.5 history-shortcut
+architecture. The only intervention is an extra Smooth L1 location term on
+training targets at or above the fold-training 90th percentile:
+\[
+\mathcal{L}=\mathcal{L}_{\mathrm{Student}\text{-}t}
++0.20\mathcal{L}_{\mathrm{pinball}}
++\lambda B^{-1}\sum_i
+\mathbf{1}[y_i\ge q_{0.90}^{\mathrm{train}}]
+\operatorname{SmoothL1}(\hat y_i-y_i;\beta=0.10).
+\]
+The threshold is \VAR{summary.training_tail_threshold_log10_cn2|num} in
+log10 \cn{} units and is identical across paired arms. No selection target
+enters the threshold.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.36\linewidth}X}
+\toprule
+Protocol & \texttt{\VAR{summary.protocol|latex}}\\
+Fold / seed & fold 1 / 17\\
+Training / selection sequences & 12,000 / 4,000\\
+Primary horizons & 15, 30, 60 minutes; 5-minute anchor\\
+Repository revision & \texttt{\VAR{summary.repository_revision|shortid}}\\
+Source SHA-256 & \texttt{\VAR{summary.data_identity.source_sha256|shortid}}\\
+Split SHA-256 & \texttt{\VAR{summary.data_identity.split_sha256|shortid}}\\
+Family verdict &
+\BLOCK{ if summary.status == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
+Confirmation & \notevaluated\\
+\bottomrule
+\end{tabularx}
+
+\section{Complete paired screen}
+\small
+\begin{center}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Candidate & Weight & Epochs & Steps & RMSE & Bias & Tail & CRPS & Cov.\ 80\\
+\midrule
+\BLOCK{ for run in summary.runs }
+\VAR{run.candidate_id|latex} &
+\VAR{run.weight|num(2)} &
+\VAR{run.epochs_completed|latex} &
+\VAR{run.optimizer_steps|latex} &
+\VAR{run.primary.rmse_log10_cn2|num} &
+\VAR{run.primary.bias_log10_cn2|num} &
+\VAR{run.primary.tail_mae_top_decile|num} &
+\VAR{run.primary.crps_gaussian|num} &
+\VAR{run.primary.interval_80_coverage|pct}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\subsection*{Frozen advancement decisions}
+\small
+\begin{center}
+\begin{tabular}{lrrrrrr}
+\toprule
+Candidate & RMSE change & Tail change & RMSE gate & Tail gate & Coverage & Advances\\
+\midrule
+\BLOCK{ for candidate_id, decision in summary.decisions.items() }
+\VAR{candidate_id|latex} &
+\VAR{decision.relative_improvement_over_control|pct} &
+\VAR{decision.relative_tail_improvement_over_control|pct} &
+\BLOCK{ if decision.checks.rmse_improvement_at_least_0_75pct == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.checks.tail_improvement_at_least_0_5pct == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.checks.coverage_70_to_90_percent == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.advances }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\clearpage
+\thispagestyle{fancy}
+\section{Horizon-resolved point error}
+\small
+\begin{center}
+\begin{longtable}{llrrrr}
+\toprule
+Candidate & Horizon & RMSE & MAE & Bias & Tail MAE\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.by_horizon.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.rmse_log10_cn2|num} &
+\VAR{values.mae_log10_cn2|num} &
+\VAR{values.bias_log10_cn2|num} &
+\VAR{values.tail_mae_top_decile|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\end{center}
+\normalsize
+
+\section{Residual-component audit}
+These are descriptive model diagnostics, not causal atmospheric components.
+\small
+\begin{center}
+\begin{longtable}{llrrrr}
+\toprule
+Candidate & Horizon & Deep mean & Shortcut mean & Shortcut SD & Final mean\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.residual_diagnostics.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.base_mean|num} &
+\VAR{values.shortcut_mean|num} &
+\VAR{values.shortcut_std|num} &
+\VAR{values.final_mean|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\end{center}
+\normalsize
+
+\clearpage
+\thispagestyle{empty}
+\manualheader
+\section{Probabilistic calibration}
+\small
+\begin{center}
+\begin{longtable}{llrrrr}
+\toprule
+Candidate & Horizon & CRPS & Student-\(t\) NLL & Coverage & Width\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.by_horizon.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.crps_gaussian|num} &
+\VAR{values.student_t_nll|num} &
+\VAR{values.interval_80_coverage|pct} &
+\VAR{values.interval_80_width|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\end{center}
+\normalsize
+
+\section{OOD, selective risk, and serving cost}
+\small
+\begin{center}
+\begin{tabular}{lrrrrr}
+\toprule
+Candidate & Selective RMSE & OOD RMSE & OOD score & ms/sample & samples/s\\
+\midrule
+\BLOCK{ for run in summary.runs }
+\VAR{run.candidate_id|latex} &
+\VAR{run.operational.selective_80_rmse_log10_cn2|num} &
+\VAR{run.operational.ood_top_quintile_rmse_log10_cn2|num} &
+\VAR{run.operational.ood_score_mean|num} &
+\VAR{run.operational.inference_latency_ms_per_sample|num(3)} &
+\VAR{run.operational.throughput_samples_per_second|num(1)}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\section{Training-threshold provenance}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.38\linewidth}X}
+\toprule
+Threshold fit role & training only\\
+Threshold quantile & 0.90\\
+Threshold value & \VAR{summary.training_tail_threshold_log10_cn2|num}\\
+Observed training tail fraction &
+\VAR{summary.control.training_tail_fraction|pct}\\
+Selection used for threshold & No\\
+Calibration used for threshold & No\\
+Confirmation used for threshold & No\\
+\bottomrule
+\end{tabularx}
+
+\vfill
+\begin{center}\thepage\end{center}
+\clearpage
+\thispagestyle{fancy}
+\section{Resources, gate audit, and claim boundary}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.38\linewidth}X}
+\toprule
+Neural wall-clock hours & \VAR{summary.resources.neural_wall_clock_hours|num(3)}\\
+Peak total board VRAM & \VAR{summary.resources.peak_total_board_vram_gib|num(3)} GiB\\
+Peak process allocated VRAM &
+\VAR{summary.resources.peak_process_allocated_vram_gib|num(3)} GiB\\
+Peak process RAM & \VAR{summary.resources.peak_process_rss_gib|num(3)} GiB\\
+Artifact bytes & \VAR{summary.resources.artifact_storage_bytes|latex}\\
+Cloud cost & \$\VAR{summary.resources.cloud_cost_usd|num(2)}\\
+\bottomrule
+\end{tabularx}
+
+\small
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Condition & State\\
+\midrule
+\BLOCK{ for name, state in summary.checks.items() }
+\VAR{name|latex} &
+\BLOCK{ if state == "PASS" }\pass
+\BLOCK{ elif state == "FAIL" }\fail
+\BLOCK{ else }\notevaluated
+\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\section{Limitations and next action}
+This is a single-fold, single-seed development screen from one site. It cannot
+establish seasonal robustness, instrument transfer, operational readiness, or
+a champion. The upper-decile definition is target-level risk, not a physical
+regime label. Only an arm passing every frozen screen condition may proceed,
+unchanged, to three-fold and three-seed robustness. Full success would still
+require the immutable 2\% margins and paired block-bootstrap evidence.
+
+\VAR{summary.plain_language_conclusion|latex}
+
+The source is the public OTBench direct-observation record \cite{otbench}.
+No raw data, sealed identities, or confirmation labels are included in this
+report.
+
+\bibliographystyle{plain}
+\bibliography{references}
+\thispagestyle{fancy}
+\end{document}

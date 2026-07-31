@@ -59,3 +59,5 @@ The program is complete only when:
 - a visually inspected final PDF explains every experiment, negative result, best architecture, limitations, and next research phase.
 
 Do not declare completion after an intermediate null result. Stop early only for a genuine safety, provenance, hardware, permissions, credential, or human-approval blocker. Preserve all completed work and describe the exact blocker if one occurs.
+
+After you finish a larger report - upload it to my google drive, under Strata Research.

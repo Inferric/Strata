@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "report": "reports/generated/fusion-v2-program/fusion-v2-program-report.pdf",
+  "inspected_at": "2026-07-31T02:43:38-05:00",
+  "sha256": "39a086e6ae6428716e5102594b522b7516717b511ebd3208318d688c56ef8784",
+  "bytes": 86039,
+  "pages": 10,
+  "render_engine": "PyMuPDF 1.28.0 (Poppler unavailable)",
+  "render_scale": 2.0,
+  "rendered_pages": [
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-1.png",
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-2.png",
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-3.png",
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-4.png",
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-5.png",
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-6.png",
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-7.png",
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-8.png",
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-9.png",
+    "artifacts/pdf-inspection/fusion-v2-program-final2/page-10.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "all_pages_visually_inspected": "PASS",
+    "tables_legible": "PASS",
+    "content_within_margins": "PASS",
+    "no_clipped_text": "PASS",
+    "no_overlapping_elements": "PASS",
+    "references_present": "PASS",
+    "verdict_matches_frozen_summary": "PASS"
+  },
+  "notes": "The final ten-page report is clean and legible after widening and left-aligning the long selection-table category column. Pages 1-3 cover scope, architecture, cycles, and the complete screen; pages 4-7 preserve the frozen 48-event program ledger; pages 7-9 present the rolling metrics, diagnostics, uncertainty, gates, resources, limitations, and next phase; page 10 finishes the primary-source bibliography."
+}

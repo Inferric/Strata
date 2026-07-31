@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "program_id": "strata-fusion-v2-program",
+  "cycle_id": "fusion-v24-direct-shortcut",
+  "frozen_at": "2026-07-30T23:10:26.132515-05:00",
+  "protocol": "docs/FUSION_V24_DIRECT_SHORTCUT.md",
+  "repository_revision": "8b22197fa6d33adc6c94ae08222fb1514a429dcc",
+  "fold_id": "fold-1",
+  "seed": 17,
+  "run_ids": {
+    "shortcut-none": "46af532e62ed4aaf9f50b9faab1e131d",
+    "shortcut-history-linear": "ed3a0d29834f44e89a8ffe634f9678c1",
+    "shortcut-all-linear": "82b196a66b574bf7b73d51a0c575395b",
+    "shortcut-all-mlp": "92630bd0dcd449818f646af3e13c12dc"
+  },
+  "shortcut_modes": {
+    "shortcut-none": "none",
+    "shortcut-history-linear": "history_linear",
+    "shortcut-all-linear": "all_linear",
+    "shortcut-all-mlp": "all_mlp"
+  },
+  "parameter_counts": {
+    "shortcut-none": 3611530,
+    "shortcut-history-linear": 3611849,
+    "shortcut-all-linear": 3612941,
+    "shortcut-all-mlp": 3885455
+  },
+  "official_mlo_test_loaded": false,
+  "usna_confirmation_labels_loaded": false
+}

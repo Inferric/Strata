@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "program_id": "strata-fusion-v2-program",
+  "cycle_id": "fusion-v22-data-scale",
+  "frozen_at": "2026-07-30T22:42:39.231026-05:00",
+  "protocol": "docs/FUSION_V22_DATA_SCALE.md",
+  "repository_revision": "254e6be108284aba7c5fac70a65abd77ea4b19a1",
+  "fold_id": "fold-1",
+  "seed": 17,
+  "run_ids": {
+    "data-scale-12k": "2bb833b70b7447f1a1ba685a93baeba9",
+    "data-scale-30k": "135670a58f004b248109f2a4e46969a6",
+    "data-scale-50k": "bca82a6b8dc64c4ca978ef6b2ed94832",
+    "data-scale-full": "39a892946ecd4f87861d5286fff3ab8c"
+  },
+  "training_example_caps": {
+    "data-scale-12k": 12000,
+    "data-scale-30k": 30000,
+    "data-scale-50k": 50000,
+    "data-scale-full": 62263
+  },
+  "official_mlo_test_loaded": false,
+  "usna_confirmation_labels_loaded": false
+}

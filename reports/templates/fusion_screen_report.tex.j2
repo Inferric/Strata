@@ -70,7 +70,10 @@ Champion promoted & No; prohibited\\
 
 \section{Public-data provenance and leakage boundary}
 The target is the direct USNA-large \cn{} observation
-\texttt{\VAR{summary.data_identity.target|latex}}. Raw bytes were never edited.
+\texttt{\VAR{summary.data_identity.target|latex}} distributed through the
+public OTBench benchmark \cite{otbench}. Chronological short-horizon
+optical-turbulence forecasting has direct precedent
+\cite{turchi2022optical}. Raw bytes were never edited.
 Preprocessing was fit on each training role only; uncertainty handling used
 the corresponding calibration role; selection controlled iteration. The
 March--April 2022 confirmation interval was represented by time identities
@@ -98,6 +101,9 @@ slow (24 samples at 60 minutes) Cn²/weather branches; horizon Fourier features;
 causal temporal blocks; optional FiLM and cross-attention weather interaction;
 four routed experts; physical refractivity/stability tokens; ordered
 quantiles; a learned Student-t scale; and OOD diagnostics.
+TFT and TimeXer are close multi-horizon/exogenous architectural precedents
+\cite{lim2020tft,wang2024timexer}; Fusion v2 is reported as a custom
+adaptation, not universal novelty.
 
 Only one factor changed inside each preregistered category: context, fusion
 mechanism, physics tokens, pretraining, capacity/regularization, or probability
@@ -208,4 +214,6 @@ diagnostics only. The correct claim is narrower: the implementation is
 reproducible, the complete screen is negative/partial, and balanced Fusion v2
 merits the already frozen robustness characterization.
 
+\bibliographystyle{plain}
+\bibliography{references}
 \end{document}

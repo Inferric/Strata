@@ -1,0 +1,173 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{booktabs,longtable,tabularx,microtype,xcolor,enumitem,fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\definecolor{stratalight}{HTML}{EEF3F8}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
+\newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{N/E}}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.45em}
+\renewcommand{\arraystretch}{1.08}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / public dataset evidence}}
+\rhead{\textcolor{stratagray}{ESO Paranal MASS profile QC}}
+\cfoot{\thepage}
+\fancypagestyle{plain}{
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / public dataset evidence}}
+\rhead{\textcolor{stratagray}{ESO Paranal MASS profile QC}}
+\cfoot{\thepage}
+}
+\title{\textbf{\textcolor{stratablue}{ESO Paranal MASS profile snapshot}}\\
+\large Frozen acquisition, provenance, geometry, and quality-control record}
+\author{Generated from immutable public bytes and a checked-in manifest}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratablue}{stratalight}{
+\begin{minipage}{0.92\linewidth}
+\textbf{Beginner-readable result.}
+\VAR{summary.plain_language_question|latex}
+\VAR{summary.plain_language_conclusion|latex}
+\end{minipage}}
+\end{center}
+
+\section{Frozen purpose and decision boundary}
+This acquisition follows
+\texttt{\VAR{summary.protocol|latex}} at repository revision
+\texttt{\VAR{summary.repository_revision|shortid}}. It validates a public
+profile observation source after the Fusion v2 surface program closed. It does
+not train Strata-OT Column, release any reserved labels, or promote a model.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.34\linewidth}X}
+\toprule
+Dataset & \texttt{\VAR{summary.dataset_id|latex}}\\
+QC status &
+\BLOCK{ if summary.status == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
+Manifest SHA-256 & \texttt{\VAR{summary.data_identity.manifest_sha256|shortid}}\\
+Accessed & \VAR{summary.provenance.accessed_at|latex}\\
+Terms & \VAR{summary.provenance.terms_status|latex};
+\VAR{summary.provenance.redistribution|latex}\\
+Label provenance & \VAR{summary.provenance.label_provenance|latex}\\
+Cloud / GPU cost & \$\VAR{summary.resources.cloud_cost_usd|num(2)} /
+\VAR{summary.resources.gpu_hours|num(1)} h\\
+\bottomrule
+\end{tabularx}
+
+\section{Source, citation, and terms}
+\begin{itemize}
+\item Query source: \url{\VAR{summary.provenance.source_url}}
+\item Field definitions: \url{\VAR{summary.provenance.help_url}}
+\item Archive terms: \url{\VAR{summary.provenance.license_url}}
+\item Citation: \VAR{summary.provenance.citation|latex}
+\end{itemize}
+
+The request used anonymous HTTPS. No credentials, login, click-through
+acceptance, cloud service, official MLO test, or USNA confirmation label was
+used. Raw archive bytes were preserved without editing.
+
+\section{Observation semantics and geometry}
+\textbf{Observation operator.}
+\VAR{summary.provenance.observation_operator|latex}
+
+The archive's layer values have units
+\texttt{\VAR{summary.units.layer_strength|latex}}. They are integrated
+turbulence strengths \(J_i\), not local pointwise \(C_n^2\) values. The
+measurement wavelength is \VAR{summary.wavelength_nm|num(0)} nm.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.34\linewidth}X}
+\toprule
+Site & \VAR{summary.geometry.site|latex}\\
+Coordinates & \VAR{summary.geometry.latitude_deg|num(4)},
+\VAR{summary.geometry.longitude_deg|num(4)}\\
+Observatory altitude & \VAR{summary.geometry.observatory_altitude_m|num(0)} m\\
+Instrument & \VAR{summary.instrument.name|latex}\\
+Profile heights &
+\VAR{summary.geometry.layer_heights_m|join(", ")|latex} m\\
+\bottomrule
+\end{tabularx}
+
+\section{Frozen request and coverage}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.42\linewidth}X}
+\toprule
+UTC request interval & \texttt{\VAR{summary.request.interval|latex}}\\
+Requested archive fields & \VAR{summary.request.requested_field_count|latex}\\
+Maximum rows / bytes & \VAR{summary.request.row_limit|latex} /
+\VAR{summary.request.maximum_download_bytes|latex}\\
+Observed rows / columns & \VAR{summary.coverage.rows|latex} /
+\VAR{summary.coverage.columns|latex}\\
+Observed temporal range & \VAR{summary.coverage.temporal_start|latex} to
+\VAR{summary.coverage.temporal_end|latex}\\
+Tracked bytes & \VAR{summary.resources.downloaded_bytes|latex}\\
+Median / p95 cadence &
+\VAR{summary.qc.cadence_seconds.median|num(1)} /
+\VAR{summary.qc.cadence_seconds.p95|num(1)} s\\
+Maximum gap & \VAR{summary.qc.cadence_seconds.maximum|num(1)} s\\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Nonzero missingness}
+\BLOCK{ if summary.qc.nonzero_missing_fields }
+\begin{tabularx}{\linewidth}{Xrr}
+\toprule
+Field & Missing rows & Fraction\\
+\midrule
+\BLOCK{ for item in summary.qc.nonzero_missing_fields }
+\VAR{item.field|latex} & \VAR{item.missing|latex} & \VAR{item.fraction|pct}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabularx}
+\BLOCK{ else }
+No requested field contains missing values.
+\BLOCK{ endif }
+
+\section{Frozen claim-to-evidence map}
+\begin{longtable}{p{0.42\linewidth}p{0.12\linewidth}p{0.36\linewidth}}
+\toprule
+Condition & State & Evidence\\
+\midrule
+\endhead
+\BLOCK{ for name, state in summary.checks.items() }
+\VAR{name|replace("_", " ")|latex} &
+\BLOCK{ if state == "PASS" }\pass
+\BLOCK{ elif state == "FAIL" }\fail
+\BLOCK{ else }\notevaluated
+\BLOCK{ endif } &
+Frozen request, raw-byte hashes, manifest, and adapter QC\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{Limitations and next phase}
+\begin{itemize}
+\BLOCK{ for limitation in summary.limitations }
+\item \VAR{limitation|latex}
+\BLOCK{ endfor }
+\end{itemize}
+
+\textbf{Recommendation.} \VAR{summary.next_phase|latex}
+
+\section*{Primary-source references}
+\begin{enumerate}
+\item European Southern Observatory, Paranal Ambient Conditions Database,
+MASS query and instrument documentation,
+\url{https://archive.eso.org/wdb/help/eso/ambient_paranal.html}.
+\item V. Kornilov et al., ``Combined MASS--DIMM instruments for atmospheric
+turbulence studies,'' \emph{MNRAS}, 382, 1268--1278, 2007.
+\item European Southern Observatory, ESO Science Archive open-data and reuse
+policy, \url{https://www.eso.org/public/science/archive/}.
+\end{enumerate}
+
+\end{document}

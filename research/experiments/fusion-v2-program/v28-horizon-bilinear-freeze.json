@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "program_id": "strata-fusion-v2-program",
+  "cycle_id": "fusion-v28-horizon-bilinear",
+  "frozen_at": "2026-07-31T01:36:42.052927-05:00",
+  "protocol": "docs/FUSION_V28_HORIZON_BILINEAR.md",
+  "repository_revision": "acf3b7773a3ad1b7cf871416ad7d0f1e4b53973d",
+  "fold_id": "fold-1",
+  "seed": 17,
+  "run_ids": {
+    "horizon-bilinear-control": "61235019a4014e9cae4d2012bf7fc12e",
+    "horizon-bilinear-r4": "522ddd26e3d246c299e07befa836031f",
+    "horizon-bilinear-r8": "20ffa601d9584829b0f255e1fd03faf1",
+    "horizon-bilinear-r16": "9425ecabffc344f58300700d0e2f9ee8"
+  },
+  "shortcut_ranks": {
+    "horizon-bilinear-control": 0,
+    "horizon-bilinear-r4": 4,
+    "horizon-bilinear-r8": 8,
+    "horizon-bilinear-r16": 16
+  },
+  "parameter_counts": {
+    "horizon-bilinear-control": 3611849,
+    "horizon-bilinear-r4": 3613125,
+    "horizon-bilinear-r8": 3614401,
+    "horizon-bilinear-r16": 3616953
+  },
+  "zero_initialization_verified_by_tests": true,
+  "official_mlo_test_loaded": false,
+  "usna_confirmation_labels_loaded": false
+}

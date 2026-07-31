@@ -1,0 +1,255 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.68in]{geometry}
+\usepackage{booktabs,tabularx,microtype,xcolor,enumitem,fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\definecolor{stratalight}{HTML}{EEF3F8}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
+\newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
+\newcommand{\cn}{\(C_n^2\)}
+\newcommand{\manualheader}{
+\noindent\textcolor{stratagray}{Strata-OT / bounded development evidence}
+\hfill\textcolor{stratagray}{Fusion v2.5 convergence}\par
+\vspace{0.15em}\hrule\vspace{0.55in}
+}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.22em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.45em}
+\renewcommand{\arraystretch}{1.04}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
+\rhead{\textcolor{stratagray}{Fusion v2.5 convergence}}
+\cfoot{\thepage}
+\fancypagestyle{plain}{
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
+\rhead{\textcolor{stratagray}{Fusion v2.5 convergence}}
+\cfoot{\thepage}
+}
+\title{\textbf{\textcolor{stratablue}{Strata-OT Fusion v2.5}}\\
+\large Frozen fixed-architecture convergence screen}
+\author{Generated from four paired rolling-development runs}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratablue}{stratalight}{
+\begin{minipage}{0.92\linewidth}
+\textbf{Executive summary.}
+\VAR{summary.plain_language_question|latex}
+\VAR{summary.plain_language_conclusion|latex}
+The confirmation labels and official MLO test remained sealed.
+\end{minipage}}
+\end{center}
+
+\section{Frozen hypothesis and isolated change}
+\textbf{Hypothesis.} \VAR{summary.hypothesis|latex}
+
+All arms retain the exact 3,611,849-parameter history-linear shortcut model:
+\[
+  \widehat y=y_{\mathrm{latest}}+
+  \delta_{\mathrm{deep}}+\delta_{\mathrm{history\ shortcut}}.
+\]
+Only the maximum optimization duration changes: 3, 6, 9, or 12 epochs.
+The frozen no-shortcut run remains the decision baseline. No data, input,
+width, initialization, objective, or uncertainty-head change is permitted.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.36\linewidth}X}
+\toprule
+Protocol & \texttt{\VAR{summary.protocol|latex}}\\
+Fold / seed & fold 1 / 17\\
+Training / selection sequences & 12,000 / 4,000\\
+Primary horizons & 15, 30, 60 minutes; 5-minute anchor\\
+Repository revision & \texttt{\VAR{summary.repository_revision|shortid}}\\
+Source SHA-256 & \texttt{\VAR{summary.data_identity.source_sha256|shortid}}\\
+Split SHA-256 & \texttt{\VAR{summary.data_identity.split_sha256|shortid}}\\
+Frozen baseline run & \texttt{\VAR{summary.baseline.run_id|shortid}}\\
+Family verdict &
+\BLOCK{ if summary.status == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
+Confirmation & \notevaluated\\
+\bottomrule
+\end{tabularx}
+
+\section{Complete four-arm screen}
+\small
+\begin{center}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Candidate & Cap & Done & Steps & RMSE & Bias & Tail & CRPS & Cov.\ 80\\
+\midrule
+\BLOCK{ for run in summary.runs }
+\VAR{run.candidate_id|latex} &
+\VAR{run.max_epochs_requested|latex} &
+\VAR{run.epochs_completed|latex} &
+\VAR{run.optimizer_steps|latex} &
+\VAR{run.primary.rmse_log10_cn2|num} &
+\VAR{run.primary.bias_log10_cn2|num} &
+\VAR{run.primary.tail_mae_top_decile|num} &
+\VAR{run.primary.crps_gaussian|num} &
+\VAR{run.primary.interval_80_coverage|pct}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\subsection*{Frozen-baseline decisions}
+\small
+\begin{center}
+\begin{tabular}{lrrrrrr}
+\toprule
+Candidate & RMSE change & 2\% RMSE & Tail & CRPS & Coverage & Advances\\
+\midrule
+\BLOCK{ for candidate_id, decision in summary.decisions.items() }
+\VAR{candidate_id|latex} &
+\VAR{decision.relative_improvement_over_control|pct} &
+\BLOCK{ if decision.checks.two_percent_rmse_improvement == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.checks.tail_no_two_percent_regression == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.checks.crps_no_two_percent_regression == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.checks.coverage_70_to_90_percent == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.advances }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\clearpage
+\thispagestyle{fancy}
+\vspace*{0.35in}
+\section{Horizon-resolved error and residual convergence}
+\small
+\begin{center}
+\begin{tabular}{llrrrr}
+\toprule
+Candidate & Horizon & RMSE & MAE & Bias & Tail MAE\\
+\midrule
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.by_horizon.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.rmse_log10_cn2|num} &
+\VAR{values.mae_log10_cn2|num} &
+\VAR{values.bias_log10_cn2|num} &
+\VAR{values.tail_mae_top_decile|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\subsection*{Residual-component audit}
+\small
+\begin{center}
+\begin{tabular}{llrrrr}
+\toprule
+Candidate & Horizon & Deep mean & Shortcut mean & Shortcut SD & Final mean\\
+\midrule
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.convergence_diagnostics.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.base_mean|num} &
+\VAR{values.shortcut_mean|num} &
+\VAR{values.shortcut_std|num} &
+\VAR{values.final_mean|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\clearpage
+\thispagestyle{empty}
+\manualheader
+\section{Probabilistic calibration and operational risk}
+\subsection*{Horizon-resolved probabilistic results}
+\small
+\begin{center}
+\begin{tabular}{llrrrr}
+\toprule
+Candidate & Horizon & CRPS & Student-\(t\) NLL & Coverage & Width\\
+\midrule
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.by_horizon.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.crps_gaussian|num} &
+\VAR{values.student_t_nll|num} &
+\VAR{values.interval_80_coverage|pct} &
+\VAR{values.interval_80_width|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\subsection*{OOD and selective risk}
+\small
+\begin{center}
+\begin{tabular}{lrrrrr}
+\toprule
+Candidate & Selective RMSE & OOD RMSE & OOD score & ms/sample & samples/s\\
+\midrule
+\BLOCK{ for run in summary.runs }
+\VAR{run.candidate_id|latex} &
+\VAR{run.operational.selective_80_rmse_log10_cn2|num} &
+\VAR{run.operational.ood_top_quintile_rmse_log10_cn2|num} &
+\VAR{run.operational.ood_score_mean|num} &
+\VAR{run.operational.inference_latency_ms_per_sample|num(3)} &
+\VAR{run.operational.throughput_samples_per_second|num(1)}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+\normalsize
+
+\vfill
+\begin{center}\thepage\end{center}
+\clearpage
+\thispagestyle{fancy}
+\vspace*{0.35in}
+\section{Resource envelope and claim boundary}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.38\linewidth}X}
+\toprule
+Neural wall-clock hours & \VAR{summary.resources.neural_wall_clock_hours|num(3)}\\
+Peak total board VRAM & \VAR{summary.resources.peak_total_board_vram_gib|num(3)} GiB\\
+Peak process allocated VRAM &
+\VAR{summary.resources.peak_process_allocated_vram_gib|num(3)} GiB\\
+Peak process RAM & \VAR{summary.resources.peak_process_rss_gib|num(3)} GiB\\
+Artifact bytes & \VAR{summary.resources.artifact_storage_bytes|latex}\\
+Cloud cost & \$\VAR{summary.resources.cloud_cost_usd|num(2)}\\
+\bottomrule
+\end{tabularx}
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Condition & State\\
+\midrule
+\BLOCK{ for name, state in summary.checks.items() }
+\VAR{name|latex} &
+\BLOCK{ if state == "PASS" }\pass
+\BLOCK{ elif state == "FAIL" }\fail
+\BLOCK{ else }\notevaluated
+\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+
+This single-fold, single-seed convergence screen cannot establish seasonal
+robustness, transfer, or a champion. Only a longer-duration arm passing every
+frozen condition may retain its exact architecture for the unchanged rolling
+protocol. If all three longer durations fail, the convergence family closes
+without confirmation release.
+\end{document}

@@ -1,0 +1,373 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.64in]{geometry}
+\usepackage{booktabs,longtable,tabularx,array,microtype,xcolor,enumitem,fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\definecolor{stratalight}{HTML}{EEF3F8}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
+\newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
+\newcommand{\cn}{\(C_n^2\)}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.45em}
+\renewcommand{\arraystretch}{1.12}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LO,LE]{\textcolor{stratagray}{Strata-OT / rolling development evidence}}
+\fancyhead[RO,RE]{\textcolor{stratagray}{\VAR{summary.report_short_title|latex}}}
+\cfoot{\thepage}
+\fancypagestyle{plain}{
+\fancyhf{}
+\fancyhead[LO,LE]{\textcolor{stratagray}{Strata-OT / rolling development evidence}}
+\fancyhead[RO,RE]{\textcolor{stratagray}{\VAR{summary.report_short_title|latex}}}
+\cfoot{\thepage}
+}
+\title{\textbf{\textcolor{stratablue}{\VAR{summary.report_model_label|latex}}}\\
+\large Three-fold, three-seed rolling robustness experiment}
+\author{Generated from frozen run manifests and paired chronological predictions}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratablue}{stratalight}{
+\begin{minipage}{0.93\linewidth}
+\textbf{Executive summary for a new reader.}
+\VAR{summary.plain_language_question|latex}
+\VAR{summary.plain_language_conclusion|latex}
+This is development evidence. It neither promotes a model nor opens the
+official MLO test or USNA confirmation labels.
+\end{minipage}}
+\end{center}
+
+\section{Frozen question and decision rule}
+\textbf{Hypothesis.} \VAR{summary.hypothesis|latex}
+
+The experiment was frozen before full-run metrics. The primary endpoint is
+mean log-space RMSE at 15, 30, and 60 minutes; 5 minutes is a registered
+anchor. Success requires at least 2\% improvement over persistence and the
+stronger MLP/TCN control, positive paired 24-hour bootstrap intervals, the
+same direction for all three seeds, 70--90\% interval coverage, and no
+material bias, tail, CRPS, or stability regression.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.39\linewidth}X}
+\toprule
+Frozen candidate &
+\VAR{summary.frozen_configuration.candidate.id|latex};
+\VAR{summary.frozen_configuration.parameters|latex} parameters\\
+Folds / neural seeds & 3 / 3 (17, 41, 73)\\
+Completed matrix runs & \VAR{summary.resources.matrix_run_count|latex}\\
+Primary RMSE, Fusion v2 & \VAR{summary.result.selected_primary_rmse|num}\\
+Primary RMSE, persistence & \VAR{summary.result.persistence_primary_rmse|num}\\
+Primary RMSE, stronger neural control &
+\VAR{summary.result.stronger_neural_primary_rmse|num}
+(\VAR{summary.stronger_neural_control|latex})\\
+Primary RMSE, diagnostic LightGBM &
+\VAR{summary.result.diagnostic_lightgbm_primary_rmse|num}\\
+Relative change vs persistence &
+\VAR{summary.result.relative_improvement_over_persistence|pct}\\
+Relative change vs stronger neural &
+\VAR{summary.result.relative_improvement_over_stronger_neural|pct}\\
+Relative change vs diagnostic LightGBM &
+\VAR{summary.result.relative_improvement_over_diagnostic_lightgbm|pct}\\
+Rolling verdict &
+\BLOCK{ if summary.status == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
+Confirmation & \notevaluated; labels remained sealed\\
+\bottomrule
+\end{tabularx}
+
+\section{Provenance, split, and leakage boundary}
+The source is the public OTBench USNA-large surface record and the target is a
+direct \cn{} observation \cite{otbench}. The broader short-timescale
+optical-turbulence forecasting precedent motivates chronological rather than
+random evaluation \cite{turchi2022optical}. Each fold fits preprocessing on
+its training role, uncertainty handling on its calibration role, and
+early-stopping on selection only. The three rolling periods cover different
+weather seasons. No confirmation labels enter these runs.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.34\linewidth}X}
+\toprule
+Protocol & \texttt{\VAR{summary.protocol|latex}}\\
+Exact run freeze & \nolinkurl{\VAR{summary.freeze|latex}}\\
+Source SHA-256 & \texttt{\VAR{summary.data_identity.source_sha256|shortid}}\\
+Materialized split SHA-256 &
+\texttt{\VAR{summary.data_identity.split_sha256|shortid}}\\
+Evidence revision & \texttt{\VAR{summary.repository_revision|shortid}}\\
+Official MLO test loaded & No\\
+USNA confirmation labels loaded & No\\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Exact rolling roles and training policy}
+Every adjacent role is separated by at least
+\VAR{summary.rolling_split.minimum_boundary_purge_minutes|latex} minutes.
+\small
+\begin{longtable}{llllll}
+\toprule
+Fold & Train start & Train end & Calibration start & Selection start & Selection end\\
+\midrule
+\endhead
+\BLOCK{ for fold in summary.rolling_split.folds }
+\VAR{fold.id|latex} &
+\VAR{fold.train.start|shortid(10)|latex} &
+\VAR{fold.train.end|shortid(10)|latex} &
+\VAR{fold.calibration.start|shortid(10)|latex} &
+\VAR{fold.selection.start|shortid(10)|latex} &
+\VAR{fold.selection.end|shortid(10)|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.34\linewidth}X}
+\toprule
+Resolved input columns &
+\VAR{summary.frozen_configuration.feature_names|join(", ")|latex}\\
+Trainer &
+\VAR{summary.frozen_configuration.trainer.precision|latex};
+\VAR{summary.frozen_configuration.trainer.full_max_epochs|latex} epochs max;
+batch \VAR{summary.frozen_configuration.trainer.batch_size|latex}
+\(\times\)\VAR{summary.frozen_configuration.trainer.gradient_accumulation|latex}
+accumulation; LR
+\VAR{summary.frozen_configuration.trainer.learning_rate|latex}; weight decay
+\VAR{summary.frozen_configuration.trainer.weight_decay|latex}; patience
+\VAR{summary.frozen_configuration.trainer.early_stopping_patience|latex}\\
+Bounded sample / runtime &
+\VAR{summary.frozen_configuration.trainer.full_max_train_examples|latex}
+train;
+\VAR{summary.frozen_configuration.trainer.full_max_evaluation_examples|latex}
+selection;
+\VAR{summary.frozen_configuration.trainer.full_max_seconds|latex} seconds max\\
+\bottomrule
+\end{tabularx}
+
+\section{Architecture and honest controls}
+Fusion v2 is persistence anchored and decodes 5/15/30/60-minute horizons from
+short, medium, and slow Cn²/weather histories. It uses causal temporal blocks,
+horizon Fourier features, a scale router, four diagnostic experts, physical
+refractivity/stability tokens, ordered quantiles, and a Student-\(t\) head.
+The selected concatenative weather interaction cannot be suppressed by a
+single final scalar gate. Related multi-horizon and exogenous-attention
+architectures include TFT and TimeXer \cite{lim2020tft,wang2024timexer}; this
+implementation is a custom adaptation, not a universal novelty claim.
+
+Persistence and climatology are operational anchors. MLP, TCN, and Horizon v1
+are neural controls on identical endpoints. LightGBM is retained only as a
+diagnostic of learnable weather signal, never as the intended flagship.
+
+\section{Aggregate rolling results}
+\small
+\begin{longtable}{p{0.26\linewidth}rrrrrr}
+\toprule
+Candidate & Runs & RMSE & Tail MAE & CRPS & Cov.\ 80 & Rel.\ std\\
+\midrule
+\endhead
+\BLOCK{ for candidate_id, candidate in summary.aggregates.items() }
+\VAR{candidate_id|latex} &
+\VAR{candidate.runs|length|latex} &
+\VAR{candidate.primary.rmse_log10_cn2|num} &
+\VAR{candidate.primary.tail_mae_top_decile|num} &
+\VAR{candidate.primary.crps_gaussian|num} &
+\VAR{candidate.primary.interval_80_coverage|pct} &
+\VAR{candidate.relative_run_rmse_std|pct}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection*{Per-horizon error metrics}
+\small
+\begin{longtable}{p{0.27\linewidth}lrrrr}
+\toprule
+Candidate & Horizon & RMSE & MAE & Bias & Tail MAE\\
+\midrule
+\endhead
+\BLOCK{ for candidate_id, candidate in summary.aggregates.items() }
+\BLOCK{ for horizon, metrics in candidate.by_horizon.items() }
+\VAR{candidate_id|latex} &
+\VAR{horizon|latex} min &
+\VAR{metrics.rmse_log10_cn2|num} &
+\VAR{metrics.mae_log10_cn2|num} &
+\VAR{metrics.bias_log10_cn2|num} &
+\VAR{metrics.tail_mae_top_decile|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection*{Per-horizon probabilistic metrics}
+\small
+\begin{longtable}{p{0.27\linewidth}lrrrr}
+\toprule
+Candidate & Horizon & CRPS & Student-\(t\) NLL & Cov.\ 80 & Width 80\\
+\midrule
+\endhead
+\BLOCK{ for candidate_id, candidate in summary.aggregates.items() }
+\BLOCK{ for horizon, metrics in candidate.by_horizon.items() }
+\VAR{candidate_id|latex} &
+\VAR{horizon|latex} min &
+\VAR{metrics.crps_gaussian|num} &
+\VAR{metrics.student_t_nll|num} &
+\VAR{metrics.interval_80_coverage|pct} &
+\VAR{metrics.interval_80_width|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{OOD, selective risk, and serving cost}
+OOD and selective-risk scores use the unchanged run implementation. They are
+descriptive development diagnostics and do not create a new success gate.
+\scriptsize
+\begin{longtable}{p{0.23\linewidth}rrrrr}
+\toprule
+Candidate & Selective RMSE & OOD-tail RMSE & OOD score &
+ms/sample & samples/s\\
+\midrule
+\endhead
+\BLOCK{ for candidate_id, candidate in summary.aggregates.items() }
+\VAR{candidate_id|latex} &
+\VAR{candidate.operational.get("selective_80_rmse_log10_cn2")|num} &
+\VAR{candidate.operational.get("ood_top_quintile_rmse_log10_cn2")|num} &
+\VAR{candidate.operational.get("ood_score_mean")|num} &
+\VAR{candidate.operational.get("inference_latency_ms_per_sample")|num(3)} &
+\VAR{candidate.operational.get("throughput_samples_per_second")|num(1)}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Selected candidate by fold and seed}
+\small
+\begin{longtable}{llrrrrrr}
+\toprule
+Fold & Seed & RMSE & Bias & Tail MAE & CRPS & Cov.\ 80 & Seconds\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.selected_aggregate.runs }
+\VAR{run.fold_id|latex} &
+\VAR{run.seed|latex} &
+\VAR{run.primary.rmse_log10_cn2|num} &
+\VAR{run.primary.bias_log10_cn2|num} &
+\VAR{run.primary.tail_mae_top_decile|num} &
+\VAR{run.primary.crps_gaussian|num} &
+\VAR{run.primary.interval_80_coverage|pct} &
+\VAR{run.wall_clock_seconds|num(1)}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Paired uncertainty and seed direction}
+The bootstrap first averages squared errors across neural seeds at each exact
+timestamp/horizon, then resamples 24-hour chronological blocks. Thus random
+seeds are not counted as independent weather periods. It uses exactly 2,000
+resamples and seed 20260730.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.36\linewidth}X}
+\toprule
+Vs persistence, relative 95\% interval &
+[\VAR{summary.result.bootstrap_vs_persistence.relative_improvement_ci95.0|pct},
+\VAR{summary.result.bootstrap_vs_persistence.relative_improvement_ci95.1|pct}]\\
+Complete paired 24-hour blocks &
+\VAR{summary.result.bootstrap_vs_persistence.blocks|latex}\\
+Excluded incomplete edge blocks &
+\VAR{summary.result.bootstrap_vs_persistence.excluded_incomplete_blocks|latex}\\
+Vs stronger neural, relative 95\% interval &
+[\VAR{summary.result.bootstrap_vs_stronger_neural.relative_improvement_ci95.0|pct},
+\VAR{summary.result.bootstrap_vs_stronger_neural.relative_improvement_ci95.1|pct}]\\
+\BLOCK{ for seed, value in summary.result.seed_directions.items() }
+Seed \VAR{seed|latex} change vs persistence & \VAR{value|pct}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabularx}
+
+\section{What the model used}
+Weights are descriptive diagnostics, not causal atmospheric regimes. The
+selected concatenation arm naturally records zero cross-attention and FiLM
+norms because those mechanisms are inactive; weather still enters every
+scale's temporal projection.
+
+\small
+\begin{longtable}{rrrrrrr}
+\toprule
+Horizon & Residual mean & Residual SD & Short & Medium & Slow & Physics norm\\
+\midrule
+\endhead
+\BLOCK{ for horizon, diagnostic in summary.selected_aggregate.diagnostics.items() }
+\VAR{horizon|latex} &
+\VAR{diagnostic.residual_mean|num} &
+\VAR{diagnostic.residual_std|num} &
+\VAR{diagnostic.scale_weights_mean.0|pct} &
+\VAR{diagnostic.scale_weights_mean.1|pct} &
+\VAR{diagnostic.scale_weights_mean.2|pct} &
+\VAR{diagnostic.physics_token_norm_mean|num}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Gate audit}
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Condition & State\\
+\midrule
+\BLOCK{ for name, state in summary.checks.items() }
+\VAR{name|latex} &
+\BLOCK{ if state == "PASS" }\pass
+\BLOCK{ elif state == "FAIL" }\fail
+\BLOCK{ else }\notevaluated
+\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Resources and failures}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.38\linewidth}X}
+\toprule
+Neural wall-clock hours & \VAR{summary.resources.neural_wall_clock_hours|num(3)}\\
+Excluded dirty-run wall-clock &
+\VAR{summary.resources.excluded_dirty_neural_wall_clock_hours|num(3)} h\\
+Total consumed neural wall-clock &
+\VAR{summary.resources.consumed_neural_wall_clock_hours|num(3)} h\\
+Peak total board VRAM & \VAR{summary.resources.peak_total_board_vram_gib|num(3)} GiB\\
+Peak process allocated VRAM &
+\VAR{summary.resources.peak_process_allocated_vram_gib|num(3)} GiB\\
+Peak process RAM & \VAR{summary.resources.peak_process_rss_gib|num(3)} GiB\\
+Recorded artifact bytes & \VAR{summary.resources.artifact_storage_bytes|latex}\\
+Excluded dirty-run artifact bytes &
+\VAR{summary.resources.excluded_dirty_artifact_storage_bytes|latex}\\
+Total consumed artifact bytes &
+\VAR{summary.resources.consumed_artifact_storage_bytes|latex}\\
+Cloud cost & \$\VAR{summary.resources.cloud_cost_usd|num(2)}\\
+Dirty provenance runs excluded & \VAR{summary.excluded_dirty_runs|length|latex}\\
+\bottomrule
+\end{tabularx}
+
+\VAR{summary.resource_narrative|latex}
+
+\section{Limitations, verdict, and next cycle}
+These results are from one site, capped training examples, three seasonal
+development windows, and direct near-surface observations. They do not
+establish operational readiness, transfer to another instrument, or causal
+regimes. A point-estimate gain cannot override failed uncertainty, tail,
+bootstrap, or seed-direction conditions.
+
+\VAR{summary.plain_language_conclusion|latex}
+\VAR{summary.next_cycle_narrative|latex}
+
+\bibliographystyle{plain}
+\bibliography{references}
+\thispagestyle{fancy}
+\end{document}

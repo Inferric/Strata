@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "screen_complete_candidate_frozen",
+  "status": "program_complete_no_promotion",
   "events": [
     {
       "sequence": 0,
@@ -168,6 +168,638 @@
       "result": "PASS",
       "evidence": "research/experiments/fusion-v2-program/screen-report-inspection.json",
       "notes": "The complete 24-arm screen report compiled from LaTeX to a four-page PDF. All pages were rendered and visually inspected after correcting one long path and one category-label overlap."
+    },
+    {
+      "sequence": 14,
+      "recorded_at": "2026-07-30T21:06:20-05:00",
+      "kind": "substantial_report_uploaded",
+      "hypothesis_family": "fusion-v2-screen",
+      "evidence_role": "report",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/drive-upload-index.json",
+      "drive_url": "https://drive.google.com/file/d/12IC30pe8vO6G7bBKALflicMmQstzgha3/view?usp=drivesdk",
+      "notes": "The inspected screen PDF was uploaded to the existing private Strata Research program folder and verified by Drive metadata; sharing permissions were unchanged."
+    },
+    {
+      "sequence": 15,
+      "recorded_at": "2026-07-30T22:03:40-05:00",
+      "kind": "rolling_robustness_matrix_complete",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "three-fold-three-seed-development",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/robustness-freeze.json",
+      "run_id": "459ed5a12cd2458db368d62c24a7799c",
+      "excluded_run_id": "f77178861de049c5873665c89885d118",
+      "notes": "All 45 required clean identities completed at the frozen revision. One run made dirty by an external goal-file edit was retained as failure evidence, excluded before analysis, and replaced by a clean deterministic retry with identical primary RMSE."
+    },
+    {
+      "sequence": 16,
+      "recorded_at": "2026-07-30T22:04:30-05:00",
+      "kind": "rolling_robustness_assessed",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "three-fold-three-seed-development",
+      "result": "FAIL",
+      "candidate_id": "selected-fusion-v2",
+      "primary_rmse": 0.255197121587286,
+      "relative_improvement_over_persistence": 0.0406950353006213,
+      "relative_improvement_over_stronger_neural": -0.012560858813114,
+      "bootstrap_vs_persistence_95": [
+        0.0285210534918628,
+        0.0485374511676131
+      ],
+      "bootstrap_vs_stronger_neural_95": [
+        -0.0205060018880942,
+        -0.00532271854234872
+      ],
+      "failed_conditions": [
+        "two_percent_over_stronger_neural",
+        "bootstrap_vs_stronger_neural_positive",
+        "tail_mae_no_material_regression"
+      ],
+      "notes": "Fusion v2 improved 4.07% over persistence with the same direction for seeds 17, 41, and 73, but was 1.26% worse than the stronger MLP control and materially regressed tail MAE. Coverage, CRPS, bias, and stability passed. Confirmation remains sealed and the model is not promotion-eligible."
+    },
+    {
+      "sequence": 17,
+      "recorded_at": "2026-07-30T22:17:18-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "fusion-v2-robustness",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "5b2f104cb416450eb82b7ef957df10cf",
+      "evidence": "research/experiments/fusion-v2-program/robustness-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1ThoZGnQelqhE5nK8DsYaQrLdFxm4U2G5/view?usp=drivesdk",
+      "notes": "The six-page LaTeX robustness report was compiled, rendered at 2x, visually inspected, logged as a finished MLflow evidence run, uploaded to the private Strata Research program folder, and verified as a 67,833-byte unshared PDF."
+    },
+    {
+      "sequence": 18,
+      "recorded_at": "2026-07-30T22:18:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "explicit_point_loss",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "5b2f104cb416450eb82b7ef957df10cf",
+      "evidence": "docs/FUSION_V21_POINT_LOSS.md",
+      "notes": "A four-arm paired Smooth L1 objective screen is frozen before its metrics. Architecture, data, probability head, sample caps, thresholds, and the already-reported robustness result remain unchanged."
+    },
+    {
+      "sequence": 19,
+      "recorded_at": "2026-07-30T22:26:14-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "explicit_point_loss",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "e67a2cb0319b4f28a836016e38819064",
+        "e2ddbe35ccd74826b977d76cd8b58176",
+        "2f4244938626499ba1717cf54579e51a",
+        "ae6439ae7f2846ea80251e9112bcb5e8"
+      ],
+      "control_primary_rmse": 0.30082541675299396,
+      "best_candidate": "point-huber-0p50",
+      "best_primary_rmse": 0.2987955912452492,
+      "best_relative_improvement": 0.006747519972394666,
+      "notes": "No intervention reached the frozen 2% paired RMSE improvement. The 0.50 and 1.00 weights also failed the tail-regression condition. Three non-improvements close the explicit point-loss family without a rolling advance."
+    },
+    {
+      "sequence": 20,
+      "recorded_at": "2026-07-30T22:28:04-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "explicit_point_loss",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "359831309fba4724be654f38ba81f7cc",
+      "evidence": "research/experiments/fusion-v2-program/point-loss-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1UkVQ6QbIHe-bWqww_H07beqhEHG_6uVt/view?usp=drivesdk",
+      "notes": "The three-page LaTeX point-loss report was compiled, rendered at 2x, visually inspected, logged as a finished MLflow evidence run, uploaded to the private Strata Research program folder, and verified as a 50,554-byte unshared PDF."
+    },
+    {
+      "sequence": 21,
+      "recorded_at": "2026-07-30T22:32:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "training_sequence_density",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "359831309fba4724be654f38ba81f7cc",
+      "evidence": "docs/FUSION_V22_DATA_SCALE.md",
+      "notes": "A four-arm 12k/30k/50k/all-62,263 training-sequence screen is frozen before metrics. It changes only deterministic within-fold sample density and explicitly does not claim broader temporal coverage."
+    },
+    {
+      "sequence": 22,
+      "recorded_at": "2026-07-30T22:42:39-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "training_sequence_density",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "2bb833b70b7447f1a1ba685a93baeba9",
+        "135670a58f004b248109f2a4e46969a6",
+        "bca82a6b8dc64c4ca978ef6b2ed94832",
+        "39a892946ecd4f87861d5286fff3ab8c"
+      ],
+      "control_primary_rmse": 0.30082541675299396,
+      "relative_improvements": {
+        "data-scale-30k": -0.0032696153456767355,
+        "data-scale-50k": -0.005620420291135143,
+        "data-scale-full": -0.00024864616616218546
+      },
+      "notes": "All three denser sample caps slightly worsened primary RMSE. The 30k arm also failed tail, CRPS, and coverage gates; the full arm failed CRPS and coverage. Three non-improvements close this within-fold density family."
+    },
+    {
+      "sequence": 23,
+      "recorded_at": "2026-07-30T22:45:48-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "training_sequence_density",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "c8685b9bea5d4ad391e50045809d51d1",
+      "evidence": "research/experiments/fusion-v2-program/data-scale-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1H3qwU91dzcBwD4zxNpsEa9plBf8cMFnJ/view?usp=drivesdk",
+      "notes": "The three-page LaTeX data-scale report was compiled, rendered at 2x, visually inspected, logged as a finished MLflow evidence run, uploaded to the private Strata Research program folder, and verified as a 48,166-byte unshared PDF."
+    },
+    {
+      "sequence": 24,
+      "recorded_at": "2026-07-30T22:50:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "horizon_scaled_residual",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "c8685b9bea5d4ad391e50045809d51d1",
+      "evidence": "docs/FUSION_V23_RESIDUAL_SCALING.md",
+      "notes": "A paired exponent 0/0.25/0.50/1.00 screen is frozen before metrics. It changes only a fixed, interpretable power-law scale on the persistence residual and keeps model parameters, objective, data, and evidence gates unchanged."
+    },
+    {
+      "sequence": 25,
+      "recorded_at": "2026-07-30T22:58:11-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "horizon_scaled_residual",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "1dddd4208a39473aa6d302671dd774be",
+        "f83ab2be4a05440cbe8ba4a403a27e1f",
+        "156061a36aae481eb3744700423c8508",
+        "0e9cb876f4294303ba269972b59c3192"
+      ],
+      "control_primary_rmse": 0.30082541675299396,
+      "relative_improvements": {
+        "residual-exp-0p25": 0.001326958384414841,
+        "residual-exp-0p50": -0.004264652037626427,
+        "residual-exp-1p00": -0.040087916403335214
+      },
+      "notes": "No fixed horizon exponent reached the frozen 2% paired RMSE improvement. The 0.25 arm also failed tail; 1.00 materially worsened RMSE and CRPS. Three non-improvements close the fixed power-law residual-scaling family."
+    },
+    {
+      "sequence": 26,
+      "recorded_at": "2026-07-30T23:01:35-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "horizon_scaled_residual",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "ab248fd98f0f47e8b5bcaca79fe70f21",
+      "evidence": "research/experiments/fusion-v2-program/residual-scale-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1_kKyDbHxhbi_UTR3fkYD-dUbLYfY_std/view?usp=drivesdk",
+      "notes": "The three-page LaTeX residual-scaling report was compiled, rendered, visually inspected, logged as a finished MLflow evidence run, uploaded to the private program folder, and verified as a 52,360-byte unshared PDF."
+    },
+    {
+      "sequence": 27,
+      "recorded_at": "2026-07-30T23:05:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "direct_residual_shortcut",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "ab248fd98f0f47e8b5bcaca79fe70f21",
+      "evidence": "docs/FUSION_V24_DIRECT_SHORTCUT.md",
+      "notes": "A four-arm no-shortcut/history-linear/all-linear/all-MLP architecture screen is frozen before metrics. Every shortcut consumes only past context, starts with a zero final projection, retains the deep branch, and uses unchanged data, optimization, and evidence gates."
+    },
+    {
+      "sequence": 28,
+      "recorded_at": "2026-07-30T23:10:26-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "direct_residual_shortcut",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "46af532e62ed4aaf9f50b9faab1e131d",
+        "ed3a0d29834f44e89a8ffe634f9678c1",
+        "82b196a66b574bf7b73d51a0c575395b",
+        "92630bd0dcd449818f646af3e13c12dc"
+      ],
+      "control_primary_rmse": 0.30082541675299396,
+      "relative_improvements": {
+        "shortcut-history-linear": 0.03049366640713492,
+        "shortcut-all-linear": 0.0019532631014312486,
+        "shortcut-all-mlp": -0.013603434402769982
+      },
+      "notes": "History-linear cleared the 2% RMSE threshold but failed tail and 70--90% coverage gates. All-linear missed the RMSE threshold and failed tail; all-MLP regressed RMSE, tail, and CRPS. Three constraint-respecting non-advances close this shortcut family."
+    },
+    {
+      "sequence": 29,
+      "recorded_at": "2026-07-30T23:20:21-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "direct_residual_shortcut",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "0e8b0f954fa14af9a714cd67adbecbd7",
+      "evidence": "research/experiments/fusion-v2-program/shortcut-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1NVO1KUTnEdq9N1hf2IjOIIBQ6z-nYQXQ/view?usp=drivesdk",
+      "notes": "The final four-page LaTeX shortcut report was compiled without overflow warnings, rendered at 2x, visually inspected, logged to the finished MLflow evidence run, uploaded to the private program folder, and verified as a 51,119-byte owner-only PDF."
+    },
+    {
+      "sequence": 30,
+      "recorded_at": "2026-07-30T23:25:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "fixed_architecture_convergence",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "0e8b0f954fa14af9a714cd67adbecbd7",
+      "evidence": "docs/FUSION_V25_CONVERGENCE.md",
+      "notes": "A paired 3/6/9/12-epoch convergence screen is frozen before metrics. It changes only the optimization cap for the fixed 3,611,849-parameter history-linear shortcut architecture and retains the same baseline, data, objective, and evidence gates."
+    },
+    {
+      "sequence": 31,
+      "recorded_at": "2026-07-30T23:37:00-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "fixed_architecture_convergence",
+      "evidence_role": "fold-1-selection",
+      "result": "PASS",
+      "run_ids": [
+        "09d57b570c0a437195afca57cf6a8d3f",
+        "a7f4c54519d64ea48df2cbd3ac6412d1",
+        "5f5db4121b80490e982c86f014c398b2",
+        "44afd42051444be593cc63643e6fe471"
+      ],
+      "selected_candidate": "convergence-9",
+      "selected_primary_rmse": 0.28857593436713513,
+      "control_primary_rmse": 0.30082541675299396,
+      "relative_improvement": 0.04071957256163898,
+      "notes": "Nine epochs improved the frozen no-shortcut baseline by 4.07% while passing tail, CRPS, coverage, bias, provenance, artifact, and resource gates. The 12-epoch cap early-stopped at 11 epochs on the same best checkpoint; the frozen efficiency tie rule selects nine epochs for rolling robustness."
+    },
+    {
+      "sequence": 32,
+      "recorded_at": "2026-07-30T23:40:17-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "fixed_architecture_convergence",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "dd8ab8627c2f4e418c6d23ed078fa7f7",
+      "evidence": "research/experiments/fusion-v2-program/convergence-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1CMSucSdZ-hGS2WmLU62RiojRxdoswUNf/view?usp=drivesdk",
+      "notes": "The final four-page LaTeX convergence report was compiled, rendered at 2x, visually inspected, logged to a finished MLflow evidence run, uploaded to the private program folder, and verified as a 50,740-byte owner-only PDF."
+    },
+    {
+      "sequence": 33,
+      "recorded_at": "2026-07-30T23:43:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "history_shortcut_rolling_robustness",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "dd8ab8627c2f4e418c6d23ed078fa7f7",
+      "evidence": "docs/FUSION_V25_ROBUSTNESS.md",
+      "notes": "Nine fresh full-data runs of the exact selected 9-epoch history-linear shortcut are frozen across three chronological folds and seeds 17/41/73. The 45 unchanged control runs are reused only by their previously frozen exact IDs and paired endpoint identities."
+    },
+    {
+      "sequence": 34,
+      "recorded_at": "2026-07-31T00:18:10-05:00",
+      "kind": "rolling_robustness_assessed",
+      "hypothesis_family": "history_shortcut_rolling_robustness",
+      "evidence_role": "three-fold-three-seed-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "6035f9ddad2940c089ce6a8e8d152ec6",
+        "bd354ab0b4f54961a97ece29e5147ddb",
+        "28468cd3374b45f1bfad6cd1515b30c4",
+        "ccb50200e0344b40b724219a7b46d2f6",
+        "3d0712b018a7464fab3684bb52edf864",
+        "612625cac7ee4259a042309175113e27",
+        "cc156c7864ea4b3d917e2e838b1a1e48",
+        "a2dcc9c080234fddb8db904af8755f60",
+        "4da1fd251d5041988e44d048e441bbc1"
+      ],
+      "selected_primary_rmse": 0.24870485755455096,
+      "persistence_primary_rmse": 0.26602293428894946,
+      "stronger_neural_primary_rmse": 0.2520313908700938,
+      "relative_improvement_over_persistence": 0.0650999391486942,
+      "relative_improvement_over_stronger_neural": 0.013198887279802458,
+      "failed_conditions": [
+        "relative_improvement_over_stronger_neural_at_least_2pct",
+        "tail_mae_no_material_regression"
+      ],
+      "notes": "Fusion v2.5 improved on persistence by 6.51%, MLP by 1.32%, LightGBM by 12.09%, and Fusion v2 by 2.54%; both paired bootstrap intervals were positive and all seeds agreed. It nevertheless failed the immutable 2% margin over MLP and tail-MAE conditions, so confirmation labels remain sealed and this family closes without promotion."
+    },
+    {
+      "sequence": 35,
+      "recorded_at": "2026-07-31T00:27:00-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "history_shortcut_rolling_robustness",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "7af406bdddf94dd5a355bfbd46f7d94c",
+      "evidence": "research/experiments/fusion-v2-program/v25-robustness-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1KzuoDHZK5KwIID3vmC8zY2LjaaJNlyQP/view?usp=drivesdk",
+      "notes": "The final six-page LaTeX robustness report was compiled, rendered at 2x, visually inspected, logged to a finished MLflow evidence run, uploaded to the private program folder, and verified as a 73,274-byte owner-only PDF."
+    },
+    {
+      "sequence": 36,
+      "recorded_at": "2026-07-31T00:32:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "training_only_tail_objective",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "7af406bdddf94dd5a355bfbd46f7d94c",
+      "evidence": "docs/FUSION_V26_TAIL_OBJECTIVE.md",
+      "notes": "A paired 0/0.5/1/2 masked tail-Huber screen is frozen before metrics. The threshold is the 90th percentile of capped fold-training targets only; the fixed v2.5 architecture, nine-epoch cap, probability head, data roles, and full robustness gates remain unchanged."
+    },
+    {
+      "sequence": 37,
+      "recorded_at": "2026-07-31T00:44:04-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "training_only_tail_objective",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "d571c8ed4d3e4169aca67041f66d9c10",
+        "564dbb8950534e40acae4e01f2795e5a",
+        "a7e75f3a73264228963935397a4d18e9",
+        "ab056eb4ccca4715b8bac3a719df805f"
+      ],
+      "control_primary_rmse": 0.28857593436713513,
+      "relative_rmse_improvements": {
+        "tail-huber-0p50": -0.00009531417026901142,
+        "tail-huber-1p00": -0.0023223674500567103,
+        "tail-huber-2p00": 0.004936418610211298
+      },
+      "relative_tail_improvements": {
+        "tail-huber-0p50": -0.1430791859988229,
+        "tail-huber-1p00": -0.17290022386000456,
+        "tail-huber-2p00": -0.07473181146724102
+      },
+      "notes": "No masked training-tail weight passed the frozen joint point/tail gate. Weight 2.0 improved primary RMSE by only 0.49%, below the 0.75% advancement threshold, while all three interventions worsened primary tail MAE by 7.5--17.3%. Three non-improvements close this tail-objective family without robustness or confirmation release."
+    },
+    {
+      "sequence": 38,
+      "recorded_at": "2026-07-31T00:46:38-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "training_only_tail_objective",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "f6993c836f6f4708aa340ac5d989a861",
+      "evidence": "research/experiments/fusion-v2-program/v26-tail-objective-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1WksjIGMyGOcdnwf2JJA4WYeFGsXh74Bf/view?usp=drivesdk",
+      "notes": "The final four-page LaTeX tail-objective report was compiled without overflow warnings, rendered at 2x, visually inspected, logged to MLflow, uploaded to the private program folder, and verified as a 65,761-byte owner-only PDF."
+    },
+    {
+      "sequence": 39,
+      "recorded_at": "2026-07-31T01:10:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "bounded_residual_architecture",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "f6993c836f6f4708aa340ac5d989a861",
+      "evidence": "docs/FUSION_V27_RESIDUAL_CAP.md",
+      "notes": "A paired unbounded/0.20/0.35/0.60 hard-residual-cap screen is frozen before metrics. Bounds bracket the target-free 95th/99th/99.9th absolute residual percentiles from completed v2.5 runs; architecture inputs, objective, probability head, data roles, nine-epoch cap, and full gates remain fixed."
+    },
+    {
+      "sequence": 40,
+      "recorded_at": "2026-07-31T01:19:27-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "bounded_residual_architecture",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "e16df460d716433c88e8f011f6552ecc",
+        "49f333a243044cb08dd3c644c6e64382",
+        "96493718437a4d28b7957193e1bdc2a4",
+        "aabcccf1ca7a4e29965d1e2c9058d7fa"
+      ],
+      "control_primary_rmse": 0.28857593436713513,
+      "relative_rmse_improvements": {
+        "residual-cap-0p20": -0.0077746813956425295,
+        "residual-cap-0p35": -0.00011726702094365474,
+        "residual-cap-0p60": 0.0008812516932240305
+      },
+      "relative_tail_improvements": {
+        "residual-cap-0p20": -0.13723387908747886,
+        "residual-cap-0p35": -0.007951874955076849,
+        "residual-cap-0p60": -0.06764897247330415
+      },
+      "notes": "No residual cap passed the frozen joint point/tail gate. Cap 0.60 changed RMSE by only +0.09% and worsened tail MAE 6.8%; cap 0.35 was effectively neutral and cap 0.20 regressed both metrics. Three non-improvements close this bounded-residual family without robustness or confirmation release."
+    },
+    {
+      "sequence": 41,
+      "recorded_at": "2026-07-31T01:22:09-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "bounded_residual_architecture",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "5164a7dec2854bb28439ced00b78227e",
+      "evidence": "research/experiments/fusion-v2-program/v27-residual-cap-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1HdCbTIg8d9fABb6bRpsgepOA4far6u8h/view?usp=drivesdk",
+      "notes": "The final four-page LaTeX residual-cap report was compiled without overflow warnings, rendered at 2x, visually inspected, logged to MLflow, uploaded to the private program folder, and verified as a 60,867-byte owner-only PDF."
+    },
+    {
+      "sequence": 42,
+      "recorded_at": "2026-07-31T01:27:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "horizon_conditioned_bilinear_shortcut",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "5164a7dec2854bb28439ced00b78227e",
+      "evidence": "docs/FUSION_V28_HORIZON_BILINEAR.md",
+      "notes": "A paired history-linear/rank-4/rank-8/rank-16 horizon-bilinear shortcut screen is frozen before metrics. It adds a zero-initialized low-rank multiplicative interaction between the existing multiscale history vector and Fourier horizon embedding while retaining the deep weather branch, objective, data roles, nine-epoch cap, and full gates."
+    },
+    {
+      "sequence": 43,
+      "recorded_at": "2026-07-31T01:36:42-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "horizon_conditioned_bilinear_shortcut",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "61235019a4014e9cae4d2012bf7fc12e",
+        "522ddd26e3d246c299e07befa836031f",
+        "20ffa601d9584829b0f255e1fd03faf1",
+        "9425ecabffc344f58300700d0e2f9ee8"
+      ],
+      "control_primary_rmse": 0.28857593436713513,
+      "relative_rmse_improvements": {
+        "horizon-bilinear-r4": -0.004409130258226457,
+        "horizon-bilinear-r8": -0.003507788555861769,
+        "horizon-bilinear-r16": -0.008124714321273199
+      },
+      "relative_tail_improvements": {
+        "horizon-bilinear-r4": -0.06898051655897564,
+        "horizon-bilinear-r8": -0.025277017260016115,
+        "horizon-bilinear-r16": -0.2173409474930775
+      },
+      "notes": "All three positive ranks regressed both primary RMSE and primary tail MAE. Rank 8 was closest but still changed RMSE by -0.35% and tail MAE by -2.53%; rank 4 and rank 16 also failed coverage. The three preregistered non-improvements close the horizon-bilinear family without rolling robustness or confirmation release."
+    },
+    {
+      "sequence": 44,
+      "recorded_at": "2026-07-31T01:48:15-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "horizon_conditioned_bilinear_shortcut",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "5707013bbcd24ff4977d4557c11779ed",
+      "evidence": "research/experiments/fusion-v2-program/v28-horizon-bilinear-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1mHb0CCSln6Ky9zhDjut_rk_a-k8z_wM0/view?usp=drivesdk",
+      "notes": "The final five-page LaTeX horizon-bilinear report was compiled, rendered at 2x, visually inspected, logged to MLflow, uploaded to the private program folder, and verified as a 62,264-byte owner-only PDF."
+    },
+    {
+      "sequence": 45,
+      "recorded_at": "2026-07-31T02:01:57-05:00",
+      "kind": "program_synthesis_completed",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "final-synthesis",
+      "result": "PASS",
+      "run_id": "f391ae16ea31499cbeb62fb21e40ee43",
+      "evidence": "research/experiments/fusion-v2-program/program-report-inspection.json",
+      "scientific_status": "FAIL",
+      "best_custom_candidate_id": "selected-fusion-v25",
+      "notes": "Program execution completed with an honest scientific FAIL. Fusion v2.5 was the strongest custom candidate: 6.51% better than persistence and 1.32% better than MLP, but below the immutable 2% MLP margin and slightly outside the tail-MAE condition. All 111 indexed training runs and 12 evidence runs retain sealed official-test and confirmation boundaries."
+    },
+    {
+      "sequence": 46,
+      "recorded_at": "2026-07-31T02:02:46-05:00",
+      "kind": "program_report_uploaded",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "drive-delivery",
+      "result": "PASS",
+      "run_id": "f391ae16ea31499cbeb62fb21e40ee43",
+      "evidence": "research/experiments/fusion-v2-program/drive-upload-index.json",
+      "drive_url": "https://drive.google.com/file/d/1GNgQYmh1R79xru3ezP5XNTWUjnK-N0YA/view?usp=drivesdk",
+      "run_index_drive_url": "https://drive.google.com/file/d/1BGZAJq_7YtddZ0i16arzQ8kwBZpFatSO/view?usp=drivesdk",
+      "notes": "The visually inspected 85,653-byte synthesis PDF and 28,285-byte compact run index were uploaded to the existing private program folder. Exact parent, MIME type, size, shared=false state, and sole owner permission were verified; sharing permissions were unchanged."
+    },
+    {
+      "sequence": 47,
+      "recorded_at": "2026-07-31T02:04:00-05:00",
+      "kind": "program_closed",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "terminal-decision",
+      "result": "PASS",
+      "scientific_status": "FAIL",
+      "confirmation_evaluation": "NOT_EVALUATED",
+      "champion_promotion": "NOT_EVALUATED",
+      "notes": "The bounded Fusion v2 research program is closed without confirmation release, official MLO test access, or champion promotion. The next recommendation is provenance-checked expansion of clearly open training coverage followed by a separately preregistered architecture family; closed shortcut, loss, scale, cap, and bilinear searches are not reopened."
+    },
+    {
+      "sequence": 48,
+      "recorded_at": "2026-07-31T02:18:00-05:00",
+      "kind": "data_cycle_preregistered",
+      "hypothesis_family": "public-profile-provenance",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "evidence": "docs/ESO_PARANAL_MASS_DATASET.md",
+      "notes": "A one-month, anonymous, 25 MB-capped ESO Paranal MASS profile request and exact provenance, schema, time, geometry, unit, checksum, and boundary checks were frozen before materialization. The protocol explicitly does not authorize Column training or promotion."
+    },
+    {
+      "sequence": 49,
+      "recorded_at": "2026-07-31T02:24:00-05:00",
+      "kind": "public_profile_acquisition_assessed",
+      "hypothesis_family": "public-profile-provenance",
+      "evidence_role": "dataset-qc",
+      "result": "PASS",
+      "evidence": "data/manifests/eso-paranal-mass-profile-2020-01-v1.json",
+      "rows": 7857,
+      "csv_bytes": 1655957,
+      "csv_sha256": "737430b9fd764f5732664c02a16ae2601261c10dc9fb1b58edcb3dab631e7afc",
+      "column_training_authorized": false,
+      "notes": "The exact frozen request returned 7,857 unique observations with the seven expected profile heights. Provenance, byte cap, requested schema, timestamps, finite nonnegative profile values, geometry, and immediate manifest verification passed. The direct observational label remains a scintillation-inverted integrated layer strength rather than pointwise Cn2."
+    },
+    {
+      "sequence": 50,
+      "recorded_at": "2026-07-31T02:30:59-05:00",
+      "kind": "dataset_qc_report",
+      "hypothesis_family": "public-profile-provenance",
+      "evidence_role": "report-mlflow-drive",
+      "result": "PASS",
+      "run_id": "0c8f91571aae45b4a7057ed0aefc25f0",
+      "evidence": "research/experiments/fusion-v2-program/eso-mass-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8/view?usp=drivesdk",
+      "notes": "The final three-page LaTeX dataset-QC report was compiled, rendered at 2x, visually inspected, logged to MLflow without raw data, uploaded to the existing private program folder, and verified as a 45,799-byte owner-only PDF. Column training, confirmation evaluation, and promotion remain unevaluated."
+    },
+    {
+      "sequence": 51,
+      "recorded_at": "2026-07-31T02:43:38-05:00",
+      "kind": "final_report_binaries_verified",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "latex-visual-drive",
+      "result": "PASS",
+      "program_report_sha256": "39a086e6ae6428716e5102594b522b7516717b511ebd3208318d688c56ef8784",
+      "dataset_qc_report_sha256": "bc68e4d0763a4c87c6135d6c9fc47d720ac5ba7da8bbd91d120fd6bea0ebbecb",
+      "evidence": "research/experiments/fusion-v2-program/drive-upload-index.json",
+      "notes": "Final validation recompiled both reports. All ten program pages and all three dataset-QC pages were rerendered at 2x and visually reinspected; one selection-table spacing issue was corrected. The existing Drive objects were replaced in place and exact final size, parent, MIME type, shared=false state, and sole-owner permission were reverified without changing sharing."
+    },
+    {
+      "sequence": 52,
+      "recorded_at": "2026-07-31T02:58:00-05:00",
+      "kind": "service_and_console_validation",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "api-console-health",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/service-validation.json",
+      "notes": "PostgreSQL, MLflow, Prefect, the isolated branch API, and the isolated research console passed final health checks. API assertions preserved the scientific FAIL and sealed confirmation boundaries. Browser DOM and visual inspection verified the Fusion matrix and ESO manifest-QC display, with zero console warnings or errors. Only the temporary branch validation services were then stopped."
+    },
+    {
+      "sequence": 53,
+      "recorded_at": "2026-07-31T03:09:41-05:00",
+      "kind": "final_integrity_audit",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "handoff",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
+      "notes": "The final audit revalidated 86 tests, 43 proposal contracts, three manifests, two sealed split hashes without label release, 123 indexed FINISHED MLflow runs, 13 visual-inspection records, 59 rendered report pages, production frontend output, service health, and branch scope. All 14 Drive-indexed uploads were rechecked against observed name, byte size, parent, shared=false state, and sole-owner permission. Scientific status remains FAIL, with confirmation and promotion unevaluated."
+    },
+    {
+      "sequence": 54,
+      "recorded_at": "2026-07-31T03:15:17-05:00",
+      "kind": "independent_scientific_recomputation",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "metric-integrity",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
+      "notes": "Primary RMSE was independently recalculated from the stored prediction archives for persistence, MLP, diagnostic LightGBM, Fusion v2, and Fusion v2.5. A fresh deterministic build exactly reproduced the frozen Fusion v2.5 checks and both 2,000-resample paired bootstrap records with seed 20260730. The positive [0.53%, 2.13%] bootstrap interval versus MLP does not rescue the 1.32% point improvement below the immutable 2% rule; tail MAE also remains failed."
+    },
+    {
+      "sequence": 55,
+      "recorded_at": "2026-07-31T03:19:00-05:00",
+      "kind": "clean_checkout_validation",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "reproducibility",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
+      "notes": "PR head 3b85304 was checked out into a clean detached worktree with no raw data or ignored run artifacts. Ruff, mypy, the repository contract, frontend lint/build, and 85 tests passed; the sole skip correctly reported that the public MLO raw snapshot is intentionally absent from Git. The validation worktree was clean and then removed without touching shared dependencies or unrelated services."
+    },
+    {
+      "sequence": 56,
+      "recorded_at": "2026-07-31T03:24:23-05:00",
+      "kind": "manifest_portability_repair",
+      "hypothesis_family": "public-profile-provenance",
+      "evidence_role": "reproducibility",
+      "result": "PASS",
+      "evidence": "89738d130a0c0b3704f7231f953a25294cef15da",
+      "notes": "A final cross-platform review found that Windows-generated manifest records used backslashes. New records now use portable POSIX-relative paths, verification accepts legacy separators on either platform, and unsafe absolute or parent-traversal paths are rejected. The complete 86-test suite, Ruff, mypy, repository contract, and all three real manifests passed without changing checked-in manifest bytes, raw data, report hashes, or scientific results."
+    },
+    {
+      "sequence": 57,
+      "recorded_at": "2026-07-31T03:31:00-05:00",
+      "kind": "cycle_report_interface_repair",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "api-console-mlflow",
+      "result": "PASS",
+      "evidence": "db2ec69004f6c5f97983dc23c4bc00eb6936620d",
+      "notes": "A final MLflow-to-console audit found four completed cycle PDFs whose source summaries predated the report_pdf field. Synthesis now resolves every Fusion cycle's report path and observed Drive URL from the verified upload index. The exact hash-verified Cycle 0 report was restored to the local evidence tree, all twelve cycle PDFs are API-addressable, and no report content or scientific metric changed."
+    },
+    {
+      "sequence": 58,
+      "recorded_at": "2026-07-31T03:41:38-05:00",
+      "kind": "final_clean_checkout_validation",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "reproducibility",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
+      "notes": "PR head 87b478a was independently validated in a second clean detached worktree. Ruff, mypy across 52 source files, the repository contract, frontend lint/build, and 86 tests passed; the sole skip correctly reported that the public MLO raw snapshot is intentionally absent from Git. The clean worktree contained no tracked changes and was removed without touching the shared dependency installation."
     }
   ]
 }

@@ -1,0 +1,33 @@
+{
+  "proposal_id": "fusion-v24-shortcut-history-linear",
+  "hypothesis": "A zero-initialized linear shortcut from multiscale Cn2 histories and horizon features will recover useful persistence-residual information compressed by the deep Fusion v2 path.",
+  "parent_run_id": "ab248fd98f0f47e8b5bcaca79fe70f21",
+  "dataset_manifest_id": "otbench-usna-cn2-lg-v1",
+  "split_id": "otbench-usna-lg-fusion-v2",
+  "horizon_minutes": [5, 15, 30, 60],
+  "model": {
+    "family": "strata_ot_fusion",
+    "config_path": "configs/model/strata_fusion_v2.yaml"
+  },
+  "changes": [
+    {
+      "parameter": "residual_shortcut",
+      "old": "none",
+      "new": "history_linear",
+      "reason": "Test a direct autoregressive path around the deep temporal bottleneck."
+    }
+  ],
+  "evaluation_gate_id": "public-evidence-gates-v1",
+  "budget": {
+    "max_runs": 1,
+    "max_local_gpu_hours": 0.5,
+    "max_cloud_cost_usd": 0
+  },
+  "stop_conditions": [
+    "budget_exhausted",
+    "nan_or_divergence",
+    "oom_after_one_recovery",
+    "data_or_split_gate_failure",
+    "no_validation_improvement"
+  ]
+}

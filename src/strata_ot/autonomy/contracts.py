@@ -25,6 +25,15 @@ ALLOWED_MODEL_PARAMETERS = {
     "physics_tokens",
     "pretraining",
     "calibration",
+    "point_loss_weight",
+    "tail_huber_weight",
+    "max_train_examples",
+    "residual_horizon_exponent",
+    "residual_cap",
+    "residual_shortcut",
+    "shortcut_rank",
+    "screen_max_epochs",
+    "full_max_epochs",
 }
 
 REQUIRED_STOP_CONDITIONS = {
@@ -36,9 +45,7 @@ REQUIRED_STOP_CONDITIONS = {
 
 EXPECTED_DATASET_SPLITS = {
     "otbench-mlo-cn2-15m-v1": "otbench-mlo-blocked-v1",
-    "otbench-mlo-cn2-15m-weather-horizon-v1": (
-        "otbench-mlo-weather-horizon-v1"
-    ),
+    "otbench-mlo-cn2-15m-weather-horizon-v1": ("otbench-mlo-weather-horizon-v1"),
     "otbench-usna-cn2-3m-forecast-6min-v1": "otbench-usna-sm-forecast-v1",
     "otbench-usna-cn2-lg-v1": "otbench-usna-lg-fusion-v2",
 }
@@ -52,17 +59,33 @@ NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
     "context": (6, 128),
     "learning_rate": (1e-5, 3e-3),
     "weight_decay": (0.0, 0.2),
+    "point_loss_weight": (0.0, 2.0),
+    "tail_huber_weight": (0.0, 2.0),
+    "max_train_examples": (1000, 500000),
+    "residual_horizon_exponent": (0.0, 1.5),
+    "residual_cap": (0.0, 1.5),
+    "shortcut_rank": (1, 32),
+    "screen_max_epochs": (1, 20),
+    "full_max_epochs": (1, 20),
 }
 
-INTEGER_PARAMETERS = {"hidden_dim", "depth", "num_heads", "num_experts", "context"}
+INTEGER_PARAMETERS = {
+    "hidden_dim",
+    "depth",
+    "num_heads",
+    "num_experts",
+    "context",
+    "max_train_examples",
+    "screen_max_epochs",
+    "full_max_epochs",
+    "shortcut_rank",
+}
 
 
 def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> None:
     repository = root or find_repo_root()
     schema = json.loads(
-        (repository / "schemas" / "experiment_proposal.schema.json").read_text(
-            encoding="utf-8"
-        )
+        (repository / "schemas" / "experiment_proposal.schema.json").read_text(encoding="utf-8")
     )
     jsonschema.Draft202012Validator(schema).validate(proposal)
     if float(proposal["budget"]["max_cloud_cost_usd"]) != 0:
@@ -92,6 +115,10 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
         else model_config
     )
     trainer_config = load_yaml("configs/trainer/local_16gb.yaml", root=repository)
+    fusion_trainer_config = load_yaml(
+        "configs/trainer/fusion_local_16gb.yaml",
+        root=repository,
+    )
 
     changed: set[str] = set()
     for change in proposal["changes"]:
@@ -101,14 +128,21 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
         if parameter in changed:
             raise ValueError(f"Autonomous proposal changes {parameter} more than once")
         changed.add(parameter)
-        source = (
-            trainer_config
-            if parameter in {"learning_rate", "weight_decay"}
-            else parent_config
-        )
+        if parameter == "max_train_examples":
+            source = {"max_train_examples": fusion_trainer_config["screen_max_train_examples"]}
+        elif parameter in {"screen_max_epochs", "full_max_epochs"}:
+            source = {parameter: fusion_trainer_config[parameter]}
+        else:
+            source = (
+                trainer_config if parameter in {"learning_rate", "weight_decay"} else parent_config
+            )
         defaults: dict[str, Any] = {
             "scale_parameterization": "clamp",
             "mlp_flatten_context": False,
+            "point_loss_weight": 0.0,
+            "tail_huber_weight": 0.0,
+            "residual_cap": 0.0,
+            "shortcut_rank": 0,
         }
         old_value = source.get(parameter, defaults.get(parameter))
         if old_value is None or change["old"] != old_value:
@@ -132,6 +166,13 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
             "physics_tokens": {"none", "base", "full"},
             "pretraining": {"none", "reconstruction", "full_multitask"},
             "calibration": {"none", "conformal", "student_t_conformal"},
+            "residual_shortcut": {
+                "none",
+                "history_linear",
+                "history_bilinear",
+                "all_linear",
+                "all_mlp",
+            },
         }
         if parameter in categorical:
             comparable = (
@@ -140,9 +181,7 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
                 else new_value
             )
             if comparable not in categorical[parameter]:
-                raise ValueError(
-                    f"Autonomous categorical value is invalid for {parameter}"
-                )
+                raise ValueError(f"Autonomous categorical value is invalid for {parameter}")
             continue
         if isinstance(new_value, bool) or not isinstance(new_value, (int, float)):
             raise ValueError(f"Autonomous value for {parameter} must be numeric")
@@ -162,8 +201,7 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
             and model_config[parameter] != new_value
         ):
             raise ValueError(
-                f"Proposal final value does not match {config_path.name} "
-                f"for {parameter}"
+                f"Proposal final value does not match {config_path.name} for {parameter}"
             )
 
     resolved_model = dict(parent_config)

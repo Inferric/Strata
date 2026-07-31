@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "validated_at": "2026-07-31T02:58:00-05:00",
+  "repository_commit": "fef4e2d8e3d98b01c533b3381a8c676b8832fdb7",
+  "status": "PASS",
+  "services": {
+    "postgresql": {
+      "status": "PASS",
+      "evidence": "/var/run/postgresql:5432 - accepting connections"
+    },
+    "mlflow": {
+      "status": "PASS",
+      "health_http_status": 200
+    },
+    "prefect": {
+      "status": "PASS",
+      "health_http_status": 200
+    },
+    "api": {
+      "status": "PASS",
+      "isolated_validation_port": 8003,
+      "assertions": {
+        "fusion_program_status": "FAIL",
+        "fusion_selected_candidate": "selected-fusion-v25",
+        "fusion_cycle_count": 12,
+        "confirmation_evaluation": "NOT_EVALUATED",
+        "champion_promotion": "NOT_EVALUATED",
+        "eso_manifest_qc": "verified 11/11",
+        "official_mlo_test_loaded": false,
+        "latest_report_sha256": "39a086e6ae6428716e5102594b522b7516717b511ebd3208318d688c56ef8784"
+      }
+    },
+    "research_console": {
+      "status": "PASS",
+      "isolated_validation_port": 3003,
+      "dom_checks": [
+        "Fusion v2.5 rolling evidence",
+        "primary RMSE +6.51% versus persistence",
+        "primary RMSE +1.32% versus MLP",
+        "primary RMSE +12.09% versus diagnostic LightGBM",
+        "three-fold by three-seed seasonal matrix",
+        "24-arm frozen selection matrix",
+        "ESO Paranal MASS dataset verified 11/11"
+      ],
+      "visual_checks": [
+        "Fusion evidence matrix, metrics, and FAIL verdict render without collision",
+        "dataset registry and evidence gates render with explicit PASS/BLOCKED states",
+        "ESO dataset displays verified 11/11 rather than unverified"
+      ],
+      "browser_console_warnings_or_errors": 0
+    }
+  },
+  "report_binaries": {
+    "fusion_v2_program": {
+      "path": "reports/generated/fusion-v2-program/fusion-v2-program-report.pdf",
+      "bytes": 86039,
+      "sha256": "39a086e6ae6428716e5102594b522b7516717b511ebd3208318d688c56ef8784"
+    },
+    "eso_paranal_mass_qc": {
+      "path": "reports/generated/eso-paranal-mass-qc/eso-paranal-mass-qc-report.pdf",
+      "bytes": 45787,
+      "sha256": "bc68e4d0763a4c87c6135d6c9fc47d720ac5ba7da8bbd91d120fd6bea0ebbecb"
+    }
+  },
+  "cleanup": {
+    "temporary_api_ports_stopped": [
+      8001,
+      8003
+    ],
+    "temporary_console_port_stopped": 3003,
+    "unrelated_services_touched": false
+  }
+}

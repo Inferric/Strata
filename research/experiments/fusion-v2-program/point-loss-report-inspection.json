@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "report_pdf": "reports/generated/fusion-v21-point-loss/fusion-v21-point-loss-report.pdf",
+  "report_tex": "reports/generated/fusion-v21-point-loss/fusion-v21-point-loss-report.tex",
+  "inspected_at": "2026-07-30T22:27:16.3808705-05:00",
+  "page_count": 3,
+  "bytes": 50554,
+  "sha256": "fe3d0b21cb8387bf75b10eba6f10d47cce2f44bb6a39244e961d28efc14c1099",
+  "render_engine": "PyMuPDF 1.28.0 (Poppler unavailable)",
+  "render_scale": 2.0,
+  "rendered_pages": [
+    "tmp/pdfs/fusion-v21-point-loss-final/page-01.png",
+    "tmp/pdfs/fusion-v21-point-loss-final/page-02.png",
+    "tmp/pdfs/fusion-v21-point-loss-final/page-03.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "no_clipping_or_truncation": "PASS",
+    "tables_readable": "PASS",
+    "page_numbers_and_header_styles_consistent": "PASS",
+    "no_overlapping_elements": "PASS",
+    "no_unresolved_placeholders": "PASS",
+    "citations_and_references_readable": "PASS"
+  },
+  "notes": [
+    "The final continuation page uses the long-table plain style with a centered page number and no running header.",
+    "The report states the failed advancement decision and sealed confirmation boundary without reinterpretation."
+  ],
+  "status": "PASS"
+}

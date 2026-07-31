@@ -1,0 +1,80 @@
+id: eso-paranal-mass-profile-2020-01-v1
+adapter: eso_paranal_mass
+source_url: https://archive.eso.org/wdb/wdb/asm/mass_paranal/form
+query_url: https://archive.eso.org/wdb/wdb/asm/mass_paranal/query
+help_url: https://archive.eso.org/wdb/help/eso/ambient_paranal.html
+license_url: https://www.eso.org/public/science/archive/
+citation: >-
+  European Southern Observatory, Paranal Ambient Conditions Database,
+  Multi-Aperture Scintillation Sensor (MASS), January 2020 bounded
+  snapshot; acknowledge ESO and cite Kornilov et al. (2007),
+  MNRAS 382, 1268-1278.
+access: anonymous_public_archive_cc_by
+query:
+  start_date: 2020-01-01..2020-02-01
+  max_rows_returned: 50000
+  output_fields:
+    - fwhm
+    - fwhmerr
+    - tau
+    - tauerr
+    - tet
+    - teterr
+    - fracgl
+    - turbfwhm
+    - tau0
+    - tet0
+    - turb_speed
+    - airmass
+    - residual
+    - turb
+    - turberr
+    - turb1
+    - turberr1
+    - alt1
+    - turb2
+    - turberr2
+    - alt2
+    - turb3
+    - turberr3
+    - alt3
+    - turb4
+    - turberr4
+    - alt4
+    - turb5
+    - turberr5
+    - alt5
+    - turb6
+    - turberr6
+    - alt6
+    - dimm_turb
+    - dimm_turberr
+    - dimm_alt
+    - gridsize
+cache_dir: data/raw/eso-paranal-mass/canonical-v1
+snapshot_file: mass-profile-2020-01.csv
+request_record_file: request.json
+manifest_path: data/manifests/eso-paranal-mass-profile-2020-01-v1.json
+maximum_download_bytes: 25000000
+geometry:
+  kind: six_layer_profile_plus_ground_layer
+  site: Cerro Paranal
+  latitude_deg: -24.6167
+  longitude_deg: -70.4
+  observatory_altitude_m: 2635
+  layer_heights_m:
+    - 0
+    - 500
+    - 1000
+    - 2000
+    - 4000
+    - 8000
+    - 16000
+instrument:
+  name: Multi-Aperture Scintillation Sensor plus DIMM
+  observation_operator: scintillation inversion into integrated layer strengths
+  wavelength_nm: 500
+notes:
+  - The layer values are integrated turbulence strengths J, not pointwise Cn2.
+  - This is a provenance/QC snapshot only and does not authorize Column training.
+  - No login, proprietary data, click-through terms, or official MLO test are used.

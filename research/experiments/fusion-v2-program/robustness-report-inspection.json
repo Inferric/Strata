@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "report_pdf": "reports/generated/fusion-v2-robustness/fusion-v2-robustness-report.pdf",
+  "report_tex": "reports/generated/fusion-v2-robustness/fusion-v2-robustness-report.tex",
+  "inspected_at": "2026-07-30T22:16:29.9296361-05:00",
+  "page_count": 6,
+  "bytes": 67833,
+  "sha256": "c000ef6efc76ec7df9dfbd3e5c9933a15635497d445c0886d21c7cc742d614f2",
+  "render_engine": "PyMuPDF 1.28.0 (Poppler unavailable)",
+  "render_scale": 2.0,
+  "rendered_pages": [
+    "tmp/pdfs/fusion-v2-robustness-final/page-01.png",
+    "tmp/pdfs/fusion-v2-robustness-final/page-02.png",
+    "tmp/pdfs/fusion-v2-robustness-final/page-03.png",
+    "tmp/pdfs/fusion-v2-robustness-final/page-04.png",
+    "tmp/pdfs/fusion-v2-robustness-final/page-05.png",
+    "tmp/pdfs/fusion-v2-robustness-final/page-06.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "no_clipping_or_truncation": "PASS",
+    "tables_readable": "PASS",
+    "page_numbers_and_header_styles_consistent": "PASS",
+    "no_overlapping_elements": "PASS",
+    "no_unresolved_placeholders": "PASS",
+    "citations_and_references_readable": "PASS"
+  },
+  "corrections_before_pass": [
+    "Restricted the paired bootstrap to complete calendar-day 24-hour blocks and recorded excluded edge blocks.",
+    "Added full per-horizon error and probabilistic metric tables.",
+    "Restored the plain-page running-header style used after long tables."
+  ],
+  "notes": [
+    "The title page intentionally omits a running header.",
+    "A long-table continuation page retains the footer and page number while omitting the running header; the body remains fully readable."
+  ],
+  "status": "PASS"
+}

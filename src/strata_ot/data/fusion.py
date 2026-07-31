@@ -398,6 +398,27 @@ class FusionSequenceDataset(Dataset[dict[str, Tensor]]):
     def __len__(self) -> int:
         return len(self.examples)
 
+    def target_quantile(self, quantile: float) -> float:
+        """Return a target quantile from this role's materialized sequences."""
+        if not 0.0 <= quantile <= 1.0:
+            raise ValueError("Target quantile must be between zero and one")
+        targets = np.asarray(
+            [self.log_target[target_index] for _, target_index, _ in self.examples],
+            dtype=np.float64,
+        )
+        if not len(targets) or not np.all(np.isfinite(targets)):
+            raise ValueError("Sequence targets are unavailable for quantile fitting")
+        return float(np.quantile(targets, quantile))
+
+    def target_fraction_at_or_above(self, threshold: float) -> float:
+        targets = np.asarray(
+            [self.log_target[target_index] for _, target_index, _ in self.examples],
+            dtype=np.float64,
+        )
+        if not len(targets) or not np.all(np.isfinite(targets)):
+            raise ValueError("Sequence targets are unavailable for tail accounting")
+        return float(np.mean(targets >= threshold))
+
     def __getitem__(self, index: int) -> dict[str, Tensor]:
         origin, target_index, scale_indices = self.examples[index]
         item: dict[str, Tensor] = {}
@@ -485,8 +506,13 @@ class FusionDataModule(L.LightningDataModule):
     def prepare_data(self) -> None:
         root = find_repo_root()
         manifest = root / str(self.data_config["manifest_path"])
-        if manifest.is_file() and not verify_manifest(manifest, root):
-            pass
+        if manifest.is_file():
+            failures = verify_manifest(manifest, root)
+            if failures:
+                raise RuntimeError(
+                    "Fusion dataset manifest verification failed: "
+                    + ", ".join(failures)
+                )
         else:
             write_fusion_manifest(self.data_config)
         materialized = root / str(self.split_config["materialized_path"])

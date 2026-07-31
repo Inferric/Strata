@@ -18,6 +18,119 @@ export type Run = {
   parameters: Record<string, string>;
 };
 
+export type GateState = "PASS" | "FAIL" | "NOT_EVALUATED";
+
+export type FusionRunEvidence = {
+  run_id: string;
+  fold_id: string;
+  seed: number;
+  primary: Record<string, number>;
+  wall_clock_seconds: number;
+  peak_total_board_vram_gib: number;
+};
+
+export type FusionAggregate = {
+  candidate_id: string;
+  family: string;
+  kind: string;
+  parameters?: number | null;
+  primary: Record<string, number>;
+  fold_primary_rmse: Record<string, number>;
+  seed_primary_rmse: Record<string, number>;
+  relative_run_rmse_std: number;
+  operational?: {
+    ood_score_mean: number;
+    selective_80_rmse_log10_cn2: number;
+    ood_top_quintile_rmse_log10_cn2: number;
+    inference_latency_ms_per_sample: number;
+    throughput_samples_per_second: number;
+    peak_process_reserved_vram_gib?: number;
+  };
+  diagnostics?: Record<string, {
+    residual_mean: number;
+    residual_std: number;
+    scale_weights_mean: number[];
+    expert_weights_mean: number[];
+    physics_token_norm_mean: number;
+    weather_attention_mean: number;
+    modulation_norm_mean: number;
+  }>;
+  runs: FusionRunEvidence[];
+};
+
+export type FusionSummary = {
+  experiment_id: string;
+  program_id: string;
+  task_kind: "fusion_v2_screen" | "fusion_v2_robustness" | "fusion_v2_program";
+  status: GateState;
+  hypothesis: string;
+  plain_language_question: string;
+  plain_language_conclusion: string;
+  evaluation_partition: string;
+  best_custom_candidate_id?: string;
+  best_custom_candidate_label?: string;
+  stronger_neural_control?: string;
+  aggregates?: Record<string, FusionAggregate>;
+  result?: {
+    selected_primary_rmse: number;
+    persistence_primary_rmse: number;
+    stronger_neural_primary_rmse: number;
+    diagnostic_lightgbm_primary_rmse?: number;
+    relative_improvement_over_persistence: number;
+    relative_improvement_over_stronger_neural: number;
+    relative_improvement_over_diagnostic_lightgbm?: number;
+    seed_directions: Record<string, number>;
+    confirmation_eligible: boolean;
+    failed_conditions: string[];
+  };
+  cycles?: Array<{
+    cycle_id: string;
+    role: string;
+    status: GateState;
+    question: string;
+    conclusion: string;
+    report_pdf?: string | null;
+    drive_url?: string | null;
+  }>;
+  ledger_events?: Array<{
+    sequence: number;
+    recorded_at: string;
+    kind: string;
+    hypothesis_family: string;
+    evidence_role: string;
+    result: GateState;
+    candidate_id?: string;
+    notes: string;
+  }>;
+  screen_evidence?: {
+    run_count: number;
+    runs: Array<{
+      run_id?: string;
+      candidate_id: string;
+      category: string;
+      family: string;
+      primary_rmse: number;
+      primary_tail_mae: number;
+      primary_coverage_80: number;
+    }>;
+    closed_hypothesis_families: Record<string, string>;
+    selected_for_robustness_characterization: {
+      candidate_id?: string;
+    };
+  };
+  checks: Record<string, GateState>;
+  resources: {
+    matrix_run_count?: number;
+    neural_run_count?: number;
+    neural_wall_clock_hours: number;
+    peak_total_board_vram_gib: number;
+    peak_process_allocated_vram_gib?: number;
+    artifact_storage_bytes: number;
+    cloud_cost_usd: number;
+  };
+  report_pdf?: string | null;
+};
+
 export type Overview = {
   run_count: number;
   completed_count: number;
@@ -71,7 +184,7 @@ export type Overview = {
         weather_contribution: { mean: number };
       }>;
     }>;
-    checks: Record<string, boolean>;
+    checks: Record<string, boolean | GateState>;
     gate_result?: {
       passed: boolean;
       failures: string[];

@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "folder": {
+    "name": "2026-07-30 Strata-OT Fusion v2 Program",
+    "id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+    "url": "https://drive.google.com/drive/folders/1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+    "parent_name": "Strata Research",
+    "parent_id": "11c_CDkSDBBRZVmXsgUBMgLUvDSi0hXnP"
+  },
+  "sharing_permissions_changed": false,
+  "uploads": [
+    {
+      "role": "fusion_v2_selection_screen",
+      "local_path": "reports/generated/fusion-v2-screen/fusion-v2-screen-report.pdf",
+      "local_bytes": 58724,
+      "local_sha256": "f38e1e2abd2c989fe66db4be7fe20837a3acaf6d3ddda10a1bf45dd4746e48b2",
+      "drive_id": "12IC30pe8vO6G7bBKALflicMmQstzgha3",
+      "drive_url": "https://drive.google.com/file/d/12IC30pe8vO6G7bBKALflicMmQstzgha3/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v2-screen-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 58724,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "not_shared"
+      }
+    },
+    {
+      "role": "fusion_v2_rolling_robustness",
+      "local_path": "reports/generated/fusion-v2-robustness/fusion-v2-robustness-report.pdf",
+      "local_bytes": 67833,
+      "local_sha256": "c000ef6efc76ec7df9dfbd3e5c9933a15635497d445c0886d21c7cc742d614f2",
+      "drive_id": "1ThoZGnQelqhE5nK8DsYaQrLdFxm4U2G5",
+      "drive_url": "https://drive.google.com/file/d/1ThoZGnQelqhE5nK8DsYaQrLdFxm4U2G5/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v2-robustness-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 67833,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v21_point_loss",
+      "local_path": "reports/generated/fusion-v21-point-loss/fusion-v21-point-loss-report.pdf",
+      "local_bytes": 50554,
+      "local_sha256": "fe3d0b21cb8387bf75b10eba6f10d47cce2f44bb6a39244e961d28efc14c1099",
+      "drive_id": "1UkVQ6QbIHe-bWqww_H07beqhEHG_6uVt",
+      "drive_url": "https://drive.google.com/file/d/1UkVQ6QbIHe-bWqww_H07beqhEHG_6uVt/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v21-point-loss-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 50554,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v22_data_scale",
+      "local_path": "reports/generated/fusion-v22-data-scale/fusion-v22-data-scale-report.pdf",
+      "local_bytes": 48166,
+      "local_sha256": "7a6b3afba9484ead412108ca373d970494a74844f3e0710accfbd75695934d35",
+      "drive_id": "1H3qwU91dzcBwD4zxNpsEa9plBf8cMFnJ",
+      "drive_url": "https://drive.google.com/file/d/1H3qwU91dzcBwD4zxNpsEa9plBf8cMFnJ/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v22-data-scale-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 48166,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v23_residual_scaling",
+      "local_path": "reports/generated/fusion-v23-residual-scaling/fusion-v23-residual-scaling-report.pdf",
+      "local_bytes": 52360,
+      "local_sha256": "06bcfd308ab3ce2f750abfd8d6831f1201b28eadc75aa4bb1326b308d37934e4",
+      "drive_id": "1_kKyDbHxhbi_UTR3fkYD-dUbLYfY_std",
+      "drive_url": "https://drive.google.com/file/d/1_kKyDbHxhbi_UTR3fkYD-dUbLYfY_std/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v23-residual-scaling-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 52360,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v24_direct_shortcut",
+      "local_path": "reports/generated/fusion-v24-direct-shortcut/fusion-v24-direct-shortcut-report.pdf",
+      "local_bytes": 51119,
+      "local_sha256": "097104c61858401043108bf97b68ad5ca494ce92143b7450693be21fe5b38bf9",
+      "drive_id": "1NVO1KUTnEdq9N1hf2IjOIIBQ6z-nYQXQ",
+      "drive_url": "https://drive.google.com/file/d/1NVO1KUTnEdq9N1hf2IjOIIBQ6z-nYQXQ/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v24-direct-shortcut-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 51119,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v25_convergence",
+      "local_path": "reports/generated/fusion-v25-convergence/fusion-v25-convergence-report.pdf",
+      "local_bytes": 50740,
+      "local_sha256": "a83fd8bb1a1e602fcdeed14e89e13a569787e922d15a5e38834929c7dd91e577",
+      "drive_id": "1CMSucSdZ-hGS2WmLU62RiojRxdoswUNf",
+      "drive_url": "https://drive.google.com/file/d/1CMSucSdZ-hGS2WmLU62RiojRxdoswUNf/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v25-convergence-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 50740,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v25_rolling_robustness",
+      "local_path": "reports/generated/fusion-v25-robustness/fusion-v25-robustness-report.pdf",
+      "local_bytes": 73274,
+      "local_sha256": "e45850b75ebca900349c0da4f5538bc248b50452219e59248018469c831e8f4b",
+      "drive_id": "1KzuoDHZK5KwIID3vmC8zY2LjaaJNlyQP",
+      "drive_url": "https://drive.google.com/file/d/1KzuoDHZK5KwIID3vmC8zY2LjaaJNlyQP/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v25-robustness-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 73274,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v26_tail_objective",
+      "local_path": "reports/generated/fusion-v26-tail-objective/fusion-v26-tail-objective-report.pdf",
+      "local_bytes": 65761,
+      "local_sha256": "a0e4b4c07dbe058212fe8fb12f4f874e688b30e6efcfb6b9e443c36022398850",
+      "drive_id": "1WksjIGMyGOcdnwf2JJA4WYeFGsXh74Bf",
+      "drive_url": "https://drive.google.com/file/d/1WksjIGMyGOcdnwf2JJA4WYeFGsXh74Bf/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v26-tail-objective-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 65761,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v27_residual_cap",
+      "local_path": "reports/generated/fusion-v27-residual-cap/fusion-v27-residual-cap-report.pdf",
+      "local_bytes": 60867,
+      "local_sha256": "75ba7ca16131b411c7f7cc4afc38ba8c4e536e23f8ad074282ed7c81c104f87a",
+      "drive_id": "1HdCbTIg8d9fABb6bRpsgepOA4far6u8h",
+      "drive_url": "https://drive.google.com/file/d/1HdCbTIg8d9fABb6bRpsgepOA4far6u8h/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v27-residual-cap-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 60867,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v28_horizon_bilinear",
+      "local_path": "reports/generated/fusion-v28-horizon-bilinear/fusion-v28-horizon-bilinear-report.pdf",
+      "local_bytes": 62264,
+      "local_sha256": "b293c58857d35ed1a10daf5cf5e22d0cbdfc676519c2dc6872f9a425d76dab78",
+      "drive_id": "1mHb0CCSln6Ky9zhDjut_rk_a-k8z_wM0",
+      "drive_url": "https://drive.google.com/file/d/1mHb0CCSln6Ky9zhDjut_rk_a-k8z_wM0/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v28-horizon-bilinear-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 62264,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v2_program_synthesis",
+      "local_path": "reports/generated/fusion-v2-program/fusion-v2-program-report.pdf",
+      "local_bytes": 86039,
+      "local_sha256": "39a086e6ae6428716e5102594b522b7516717b511ebd3208318d688c56ef8784",
+      "drive_id": "1GNgQYmh1R79xru3ezP5XNTWUjnK-N0YA",
+      "drive_url": "https://drive.google.com/file/d/1GNgQYmh1R79xru3ezP5XNTWUjnK-N0YA/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v2-program-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 86039,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v2_compact_run_index",
+      "local_path": "reports/generated/fusion-v2-program/fusion-v2-run-index.json",
+      "local_bytes": 28285,
+      "local_sha256": "10e6204ddde73f5a90853d8e7afb6ecf63ca5ab38c1630bdb225fee141e4ba82",
+      "drive_id": "1BGZAJq_7YtddZ0i16arzQ8kwBZpFatSO",
+      "drive_url": "https://drive.google.com/file/d/1BGZAJq_7YtddZ0i16arzQ8kwBZpFatSO/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v2-run-index.json",
+        "mime_type": "application/json",
+        "size": 28285,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "eso_paranal_mass_dataset_qc",
+      "local_path": "reports/generated/eso-paranal-mass-qc/eso-paranal-mass-qc-report.pdf",
+      "local_bytes": 45787,
+      "local_sha256": "bc68e4d0763a4c87c6135d6c9fc47d720ac5ba7da8bbd91d120fd6bea0ebbecb",
+      "drive_id": "1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8",
+      "drive_url": "https://drive.google.com/file/d/1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "eso-paranal-mass-qc-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 45787,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "owned_by_current_user": true,
+        "permission_count": 1,
+        "owner_permission_only": true,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    }
+  ],
+  "updated_at": "2026-07-31T02:43:38-05:00"
+}

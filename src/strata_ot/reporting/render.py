@@ -80,10 +80,21 @@ def _environment(template_dir: Path) -> Environment:
 
 
 def _compile(tex_path: Path, output_dir: Path) -> Path:
-    environment_tectonic = Path(sys.executable).with_name("tectonic")
     tectonic = shutil.which("tectonic")
-    if tectonic is None and environment_tectonic.is_file():
-        tectonic = str(environment_tectonic)
+    if tectonic is None:
+        environment_tectonic = next(
+            (
+                candidate
+                for candidate in (
+                    Path(sys.executable).with_name("tectonic"),
+                    Path(sys.executable).with_name("tectonic.exe"),
+                )
+                if candidate.is_file()
+            ),
+            None,
+        )
+        if environment_tectonic is not None:
+            tectonic = str(environment_tectonic)
     latexmk = shutil.which("latexmk")
     if tectonic:
         command = [tectonic, "-X", "compile", tex_path.name, "--outdir", str(output_dir)]
@@ -543,45 +554,99 @@ def _prepare_horizon_report_context(
 
 
 def render_report(summary_path: Path, output_dir: Path) -> Path:
-    root = find_repo_root(summary_path.parent)
+    try:
+        root = find_repo_root()
+    except FileNotFoundError:
+        root = find_repo_root(summary_path.parent)
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     output_dir.mkdir(parents=True, exist_ok=True)
     task_kind = summary.get("task_kind")
     is_forecast = task_kind == "one_step_forecast"
     is_horizon = task_kind == "multi_horizon_forecast"
-    is_fusion_screen = task_kind == "fusion_v2_screen"
+    fusion_reports = {
+        "fusion_v2_screen": (
+            "fusion_screen_report.tex.j2",
+            "fusion-v2-screen-report.tex",
+        ),
+        "fusion_v2_robustness": (
+            "fusion_robustness_report.tex.j2",
+            "fusion-v2-robustness-report.tex",
+        ),
+        "fusion_v21_point_loss": (
+            "fusion_point_loss_report.tex.j2",
+            "fusion-v21-point-loss-report.tex",
+        ),
+        "fusion_v22_data_scale": (
+            "fusion_data_scale_report.tex.j2",
+            "fusion-v22-data-scale-report.tex",
+        ),
+        "fusion_v23_residual_scaling": (
+            "fusion_residual_scale_report.tex.j2",
+            "fusion-v23-residual-scaling-report.tex",
+        ),
+        "fusion_v24_direct_shortcut": (
+            "fusion_shortcut_report.tex.j2",
+            "fusion-v24-direct-shortcut-report.tex",
+        ),
+        "fusion_v25_convergence": (
+            "fusion_convergence_report.tex.j2",
+            "fusion-v25-convergence-report.tex",
+        ),
+        "fusion_v25_robustness": (
+            "fusion_robustness_report.tex.j2",
+            "fusion-v25-robustness-report.tex",
+        ),
+        "fusion_v26_tail_objective": (
+            "fusion_tail_objective_report.tex.j2",
+            "fusion-v26-tail-objective-report.tex",
+        ),
+        "fusion_v27_residual_cap": (
+            "fusion_residual_cap_report.tex.j2",
+            "fusion-v27-residual-cap-report.tex",
+        ),
+        "fusion_v28_horizon_bilinear": (
+            "fusion_horizon_bilinear_report.tex.j2",
+            "fusion-v28-horizon-bilinear-report.tex",
+        ),
+        "fusion_v2_program": (
+            "fusion_program_report.tex.j2",
+            "fusion-v2-program-report.tex",
+        ),
+        "dataset_qc": (
+            "dataset_qc_report.tex.j2",
+            "eso-paranal-mass-qc-report.tex",
+        ),
+    }
+    fusion_report = fusion_reports.get(str(task_kind))
+    is_fusion = fusion_report is not None
     if is_horizon:
         _prepare_horizon_report_context(summary, root, output_dir)
     elif is_forecast:
         _prepare_forecast_report_context(summary, root, output_dir)
-    elif not is_fusion_screen:
+    elif not is_fusion:
         _prepare_report_context(summary, root, output_dir)
     template_dir = root / "reports" / "templates"
-    template_name = (
-        "fusion_screen_report.tex.j2"
-        if is_fusion_screen
-        else (
-            "horizon_report.tex.j2"
-            if is_horizon
-            else (
-                "forecast_report.tex.j2"
-                if is_forecast
-                else "experiment_report.tex.j2"
-            )
-        )
-    )
+    if fusion_report is not None:
+        template_name = fusion_report[0]
+    elif is_horizon:
+        template_name = "horizon_report.tex.j2"
+    elif is_forecast:
+        template_name = "forecast_report.tex.j2"
+    else:
+        template_name = "experiment_report.tex.j2"
     template = _environment(template_dir).get_template(template_name)
     summary.setdefault("checks", {})["latex_pdf_compiled"] = (
-        "PASS" if is_fusion_screen else True
+        "PASS" if is_fusion else True
     )
     tex = template.render(summary=summary)
-    tex_name = (
-        "fusion-v2-screen-report.tex"
-        if is_fusion_screen
-        else ("forecast-report.tex" if is_forecast else "experiment-report.tex")
-    )
-    if is_horizon:
+    if fusion_report is not None:
+        tex_name = fusion_report[1]
+    elif is_horizon:
         tex_name = "mlo-weather-horizon-report.tex"
+    elif is_forecast:
+        tex_name = "forecast-report.tex"
+    else:
+        tex_name = "experiment-report.tex"
     tex_path = output_dir / tex_name
     tex_path.write_text(tex, encoding="utf-8")
     shutil.copy2(root / "research" / "references.bib", output_dir / "references.bib")
@@ -589,7 +654,7 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
         pdf = _compile(tex_path, output_dir)
     except Exception:
         summary["checks"]["latex_pdf_compiled"] = (
-            "FAIL" if is_fusion_screen else False
+            "FAIL" if is_fusion else False
         )
         summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
         raise

@@ -253,3 +253,494 @@ candidates:
     pretraining: none
     calibration: none
     screen_program: false
+  - id: point-huber-0p25
+    category: point_loss
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.25
+    point_loss_beta: 0.10
+    screen_program: false
+  - id: point-huber-0p00
+    category: point_loss
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    point_loss_beta: 0.10
+    screen_program: false
+  - id: point-huber-0p50
+    category: point_loss
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.50
+    point_loss_beta: 0.10
+    screen_program: false
+  - id: point-huber-1p00
+    category: point_loss
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 1.00
+    point_loss_beta: 0.10
+    screen_program: false
+  - id: data-scale-12k
+    category: data_scale
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    max_train_examples: 12000
+    screen_program: false
+  - id: data-scale-30k
+    category: data_scale
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    max_train_examples: 30000
+    screen_program: false
+  - id: data-scale-50k
+    category: data_scale
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    max_train_examples: 50000
+    screen_program: false
+  - id: data-scale-full
+    category: data_scale
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    max_train_examples: 62263
+    screen_program: false
+  - id: residual-exp-0p00
+    category: residual_scaling
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    screen_program: false
+  - id: residual-exp-0p25
+    category: residual_scaling
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.25
+    screen_program: false
+  - id: residual-exp-0p50
+    category: residual_scaling
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.50
+    screen_program: false
+  - id: residual-exp-1p00
+    category: residual_scaling
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 1.00
+    screen_program: false
+  - id: shortcut-none
+    category: direct_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: none
+    screen_program: false
+  - id: shortcut-history-linear
+    category: direct_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_program: false
+  - id: shortcut-all-linear
+    category: direct_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: all_linear
+    screen_program: false
+  - id: shortcut-all-mlp
+    category: direct_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: all_mlp
+    screen_program: false
+  - id: convergence-3
+    category: convergence_duration
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 3
+    screen_program: false
+  - id: convergence-6
+    category: convergence_duration
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 6
+    screen_program: false
+  - id: convergence-9
+    category: convergence_duration
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 9
+    screen_program: false
+  - id: convergence-12
+    category: convergence_duration
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 12
+    screen_program: false
+  - id: selected-fusion-v25
+    category: robustness
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    full_max_epochs: 9
+    screen_program: false
+  - id: tail-huber-0p00
+    category: tail_objective
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 9
+    screen_program: false
+  - id: tail-huber-0p50
+    category: tail_objective
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.50
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 9
+    screen_program: false
+  - id: tail-huber-1p00
+    category: tail_objective
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 1.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 9
+    screen_program: false
+  - id: tail-huber-2p00
+    category: tail_objective
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 2.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 9
+    screen_program: false
+  - id: residual-cap-unbounded
+    category: residual_cap
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.00
+    screen_max_epochs: 9
+    screen_program: false
+  - id: residual-cap-0p20
+    category: residual_cap
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.20
+    screen_max_epochs: 9
+    screen_program: false
+  - id: residual-cap-0p35
+    category: residual_cap
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.35
+    screen_max_epochs: 9
+    screen_program: false
+  - id: residual-cap-0p60
+    category: residual_cap
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.60
+    screen_max_epochs: 9
+    screen_program: false
+  - id: horizon-bilinear-control
+    category: horizon_bilinear_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.00
+    shortcut_rank: 0
+    screen_max_epochs: 9
+    screen_program: false
+  - id: horizon-bilinear-r4
+    category: horizon_bilinear_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_bilinear
+    residual_cap: 0.00
+    shortcut_rank: 4
+    screen_max_epochs: 9
+    screen_program: false
+  - id: horizon-bilinear-r8
+    category: horizon_bilinear_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_bilinear
+    residual_cap: 0.00
+    shortcut_rank: 8
+    screen_max_epochs: 9
+    screen_program: false
+  - id: horizon-bilinear-r16
+    category: horizon_bilinear_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_bilinear
+    residual_cap: 0.00
+    shortcut_rank: 16
+    screen_max_epochs: 9
+    screen_program: false
