@@ -790,6 +790,16 @@
       "result": "PASS",
       "evidence": "db2ec69004f6c5f97983dc23c4bc00eb6936620d",
       "notes": "A final MLflow-to-console audit found four completed cycle PDFs whose source summaries predated the report_pdf field. Synthesis now resolves every Fusion cycle's report path and observed Drive URL from the verified upload index. The exact hash-verified Cycle 0 report was restored to the local evidence tree, all twelve cycle PDFs are API-addressable, and no report content or scientific metric changed."
+    },
+    {
+      "sequence": 58,
+      "recorded_at": "2026-07-31T03:41:38-05:00",
+      "kind": "final_clean_checkout_validation",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "reproducibility",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
+      "notes": "PR head 87b478a was independently validated in a second clean detached worktree. Ruff, mypy across 52 source files, the repository contract, frontend lint/build, and 86 tests passed; the sole skip correctly reported that the public MLO raw snapshot is intentionally absent from Git. The clean worktree contained no tracked changes and was removed without touching the shared dependency installation."
     }
   ]
 }
