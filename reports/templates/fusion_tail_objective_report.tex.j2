@@ -1,6 +1,6 @@
 \documentclass[9pt]{article}
 \usepackage[margin=0.68in]{geometry}
-\usepackage{booktabs,tabularx,longtable,microtype,xcolor,enumitem,fancyhdr}
+\usepackage{amsmath,booktabs,tabularx,longtable,microtype,xcolor,enumitem,fancyhdr}
 \usepackage[hidelinks]{hyperref}
 \definecolor{stratablue}{HTML}{0B5FFF}
 \definecolor{stratateal}{HTML}{087F75}
@@ -11,6 +11,11 @@
 \newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
 \newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
 \newcommand{\cn}{\(C_n^2\)}
+\newcommand{\manualheader}{
+\noindent\textcolor{stratagray}{Strata-OT / bounded development evidence}
+\hfill\textcolor{stratagray}{Fusion v2.6 tail objective}\par
+\vspace{0.15em}\hrule\vspace{0.42in}
+}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.28em}
 \setlength{\emergencystretch}{3em}
@@ -54,10 +59,10 @@ Every arm retains the exact 3,611,849-parameter Fusion v2.5 history-shortcut
 architecture. The only intervention is an extra Smooth L1 location term on
 training targets at or above the fold-training 90th percentile:
 \[
-\mathcal L=\mathcal L_{\mathrm{Student}\text{-}t}
-+0.20\mathcal L_{\mathrm{pinball}}
+\mathcal{L}=\mathcal{L}_{\mathrm{Student}\text{-}t}
++0.20\mathcal{L}_{\mathrm{pinball}}
 +\lambda B^{-1}\sum_i
-\mathbf 1[y_i\ge q_{0.90}^{\mathrm{train}}]
+\mathbf{1}[y_i\ge q_{0.90}^{\mathrm{train}}]
 \operatorname{SmoothL1}(\hat y_i-y_i;\beta=0.10).
 \]
 The threshold is \VAR{summary.training_tail_threshold_log10_cn2|num} in
@@ -171,7 +176,8 @@ Candidate & Horizon & Deep mean & Shortcut mean & Shortcut SD & Final mean\\
 \normalsize
 
 \clearpage
-\thispagestyle{fancy}
+\thispagestyle{empty}
+\manualheader
 \section{Probabilistic calibration}
 \small
 \begin{center}
@@ -228,6 +234,8 @@ Confirmation used for threshold & No\\
 \bottomrule
 \end{tabularx}
 
+\vfill
+\begin{center}\thepage\end{center}
 \clearpage
 \thispagestyle{fancy}
 \section{Resources, gate audit, and claim boundary}

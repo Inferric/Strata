@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "v26_tail_objective_frozen",
+  "status": "v26_tail_objective_complete_next_cycle_pending",
   "events": [
     {
       "sequence": 0,
@@ -508,6 +508,44 @@
       "parent_run_id": "7af406bdddf94dd5a355bfbd46f7d94c",
       "evidence": "docs/FUSION_V26_TAIL_OBJECTIVE.md",
       "notes": "A paired 0/0.5/1/2 masked tail-Huber screen is frozen before metrics. The threshold is the 90th percentile of capped fold-training targets only; the fixed v2.5 architecture, nine-epoch cap, probability head, data roles, and full robustness gates remain unchanged."
+    },
+    {
+      "sequence": 37,
+      "recorded_at": "2026-07-31T00:44:04-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "training_only_tail_objective",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "d571c8ed4d3e4169aca67041f66d9c10",
+        "564dbb8950534e40acae4e01f2795e5a",
+        "a7e75f3a73264228963935397a4d18e9",
+        "ab056eb4ccca4715b8bac3a719df805f"
+      ],
+      "control_primary_rmse": 0.28857593436713513,
+      "relative_rmse_improvements": {
+        "tail-huber-0p50": -0.00009531417026901142,
+        "tail-huber-1p00": -0.0023223674500567103,
+        "tail-huber-2p00": 0.004936418610211298
+      },
+      "relative_tail_improvements": {
+        "tail-huber-0p50": -0.1430791859988229,
+        "tail-huber-1p00": -0.17290022386000456,
+        "tail-huber-2p00": -0.07473181146724102
+      },
+      "notes": "No masked training-tail weight passed the frozen joint point/tail gate. Weight 2.0 improved primary RMSE by only 0.49%, below the 0.75% advancement threshold, while all three interventions worsened primary tail MAE by 7.5--17.3%. Three non-improvements close this tail-objective family without robustness or confirmation release."
+    },
+    {
+      "sequence": 38,
+      "recorded_at": "2026-07-31T00:46:38-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "training_only_tail_objective",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "f6993c836f6f4708aa340ac5d989a861",
+      "evidence": "research/experiments/fusion-v2-program/v26-tail-objective-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1WksjIGMyGOcdnwf2JJA4WYeFGsXh74Bf/view?usp=drivesdk",
+      "notes": "The final four-page LaTeX tail-objective report was compiled without overflow warnings, rendered at 2x, visually inspected, logged to MLflow, uploaded to the private program folder, and verified as a 65,761-byte owner-only PDF."
     }
   ]
 }

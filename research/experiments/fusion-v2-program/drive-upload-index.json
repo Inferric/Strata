@@ -136,7 +136,23 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "fusion_v26_tail_objective",
+      "local_path": "reports/generated/fusion-v26-tail-objective/fusion-v26-tail-objective-report.pdf",
+      "local_bytes": 65761,
+      "local_sha256": "a0e4b4c07dbe058212fe8fb12f4f874e688b30e6efcfb6b9e443c36022398850",
+      "drive_id": "1WksjIGMyGOcdnwf2JJA4WYeFGsXh74Bf",
+      "drive_url": "https://drive.google.com/file/d/1WksjIGMyGOcdnwf2JJA4WYeFGsXh74Bf/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v26-tail-objective-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 65761,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-31T00:27:00-05:00"
+  "updated_at": "2026-07-31T00:46:38-05:00"
 }

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_pdf": "reports/generated/fusion-v26-tail-objective/fusion-v26-tail-objective-report.pdf",
+  "report_tex": "reports/generated/fusion-v26-tail-objective/fusion-v26-tail-objective-report.tex",
+  "inspected_at": "2026-07-31T00:46:15-05:00",
+  "page_count": 4,
+  "render_scale": 2,
+  "pdf_bytes": 65761,
+  "pdf_sha256": "a0e4b4c07dbe058212fe8fb12f4f874e688b30e6efcfb6b9e443c36022398850",
+  "rendered_pages": [
+    "tmp/pdfs/fusion-v26-tail-objective-final-v2/page-01.png",
+    "tmp/pdfs/fusion-v26-tail-objective-final-v2/page-02.png",
+    "tmp/pdfs/fusion-v26-tail-objective-final-v2/page-03.png",
+    "tmp/pdfs/fusion-v26-tail-objective-final-v2/page-04.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "tables_fit_page": "PASS",
+    "text_legible": "PASS",
+    "headers_and_footers_consistent": "PASS",
+    "no_overlap_or_clipping": "PASS",
+    "negative_result_visible": "PASS",
+    "sealed_confirmation_visible": "PASS"
+  },
+  "notes": "All four final pages were visually inspected at 2x. The objective equation, paired screen, horizon, component, probabilistic, OOD, threshold-provenance, resource, and gate tables are legible; the explicit manual header on the longtable page restores header/footer consistency; the FAIL result and sealed-confirmation statement are visible; and the final compile log contains no overfull-box warning."
+}
