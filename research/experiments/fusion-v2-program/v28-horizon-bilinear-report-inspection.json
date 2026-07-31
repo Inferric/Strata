@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "report": "reports/generated/fusion-v28-horizon-bilinear/fusion-v28-horizon-bilinear-report.pdf",
+  "inspected_at": "2026-07-31T01:40:00-05:00",
+  "sha256": "b293c58857d35ed1a10daf5cf5e22d0cbdfc676519c2dc6872f9a425d76dab78",
+  "bytes": 62264,
+  "pages": 5,
+  "render_engine": "PyMuPDF 1.28.0 (Poppler unavailable)",
+  "render_scale": 2.0,
+  "rendered_pages": [
+    "artifacts/pdf-inspection/fusion-v28-horizon-bilinear-final/page-1.png",
+    "artifacts/pdf-inspection/fusion-v28-horizon-bilinear-final/page-2.png",
+    "artifacts/pdf-inspection/fusion-v28-horizon-bilinear-final/page-3.png",
+    "artifacts/pdf-inspection/fusion-v28-horizon-bilinear-final/page-4.png",
+    "artifacts/pdf-inspection/fusion-v28-horizon-bilinear-final/page-5.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "all_pages_visually_inspected": "PASS",
+    "tables_legible": "PASS",
+    "content_within_margins": "PASS",
+    "no_clipped_text": "PASS",
+    "no_overlapping_elements": "PASS",
+    "references_present": "PASS",
+    "verdict_matches_frozen_summary": "PASS"
+  },
+  "notes": "The five-page report is clean and legible. Pages 1-4 contain the protocol, complete results, component diagnostics, resources, limitations, and null verdict; page 5 contains the preserved primary-source citation."
+}

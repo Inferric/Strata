@@ -604,6 +604,10 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
             "fusion_residual_cap_report.tex.j2",
             "fusion-v27-residual-cap-report.tex",
         ),
+        "fusion_v28_horizon_bilinear": (
+            "fusion_horizon_bilinear_report.tex.j2",
+            "fusion-v28-horizon-bilinear-report.tex",
+        ),
         "fusion_v2_program": (
             "fusion_program_report.tex.j2",
             "fusion-v2-program-report.tex",

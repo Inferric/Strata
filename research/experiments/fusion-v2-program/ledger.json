@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "v28_horizon_bilinear_frozen",
+  "status": "v28_horizon_bilinear_complete_program_synthesis_pending",
   "events": [
     {
       "sequence": 0,
@@ -606,6 +606,44 @@
       "parent_run_id": "5164a7dec2854bb28439ced00b78227e",
       "evidence": "docs/FUSION_V28_HORIZON_BILINEAR.md",
       "notes": "A paired history-linear/rank-4/rank-8/rank-16 horizon-bilinear shortcut screen is frozen before metrics. It adds a zero-initialized low-rank multiplicative interaction between the existing multiscale history vector and Fourier horizon embedding while retaining the deep weather branch, objective, data roles, nine-epoch cap, and full gates."
+    },
+    {
+      "sequence": 43,
+      "recorded_at": "2026-07-31T01:36:42-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "horizon_conditioned_bilinear_shortcut",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "61235019a4014e9cae4d2012bf7fc12e",
+        "522ddd26e3d246c299e07befa836031f",
+        "20ffa601d9584829b0f255e1fd03faf1",
+        "9425ecabffc344f58300700d0e2f9ee8"
+      ],
+      "control_primary_rmse": 0.28857593436713513,
+      "relative_rmse_improvements": {
+        "horizon-bilinear-r4": -0.004409130258226457,
+        "horizon-bilinear-r8": -0.003507788555861769,
+        "horizon-bilinear-r16": -0.008124714321273199
+      },
+      "relative_tail_improvements": {
+        "horizon-bilinear-r4": -0.06898051655897564,
+        "horizon-bilinear-r8": -0.025277017260016115,
+        "horizon-bilinear-r16": -0.2173409474930775
+      },
+      "notes": "All three positive ranks regressed both primary RMSE and primary tail MAE. Rank 8 was closest but still changed RMSE by -0.35% and tail MAE by -2.53%; rank 4 and rank 16 also failed coverage. The three preregistered non-improvements close the horizon-bilinear family without rolling robustness or confirmation release."
+    },
+    {
+      "sequence": 44,
+      "recorded_at": "2026-07-31T01:48:15-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "horizon_conditioned_bilinear_shortcut",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "5707013bbcd24ff4977d4557c11779ed",
+      "evidence": "research/experiments/fusion-v2-program/v28-horizon-bilinear-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1mHb0CCSln6Ky9zhDjut_rk_a-k8z_wM0/view?usp=drivesdk",
+      "notes": "The final five-page LaTeX horizon-bilinear report was compiled, rendered at 2x, visually inspected, logged to MLflow, uploaded to the private program folder, and verified as a 62,264-byte owner-only PDF."
     }
   ]
 }

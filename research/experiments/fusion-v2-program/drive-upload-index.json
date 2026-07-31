@@ -168,7 +168,23 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "fusion_v28_horizon_bilinear",
+      "local_path": "reports/generated/fusion-v28-horizon-bilinear/fusion-v28-horizon-bilinear-report.pdf",
+      "local_bytes": 62264,
+      "local_sha256": "b293c58857d35ed1a10daf5cf5e22d0cbdfc676519c2dc6872f9a425d76dab78",
+      "drive_id": "1mHb0CCSln6Ky9zhDjut_rk_a-k8z_wM0",
+      "drive_url": "https://drive.google.com/file/d/1mHb0CCSln6Ky9zhDjut_rk_a-k8z_wM0/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v28-horizon-bilinear-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 62264,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-31T01:22:09-05:00"
+  "updated_at": "2026-07-31T01:48:15-05:00"
 }
