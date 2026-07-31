@@ -36,7 +36,11 @@ def _headers() -> list[str]:
     return headers
 
 
-def _payload(*, duplicate_time: bool = False, leading_blank: bool = False) -> bytes:
+def _payload(
+    *,
+    duplicate_time: bool = False,
+    wdb_envelope: bool = False,
+) -> bytes:
     headers = _headers()
     rows: list[list[str]] = []
     for row_index, timestamp in enumerate(
@@ -53,8 +57,9 @@ def _payload(*, duplicate_time: bool = False, leading_blank: bool = False) -> by
         row.extend(("7.0", "0.2", "0", "7"))
         rows.append(row)
     lines = [",".join(headers), *(",".join(row) for row in rows)]
-    prefix = "\n" if leading_blank else ""
-    return (prefix + "\n".join(lines) + "\n").encode()
+    prefix = "\n" if wdb_envelope else ""
+    suffix = "# A total of 2 records were found.\n" if wdb_envelope else ""
+    return (prefix + "\n".join(lines) + "\n" + suffix).encode()
 
 
 def _config(tmp_path: Path) -> dict[str, Any]:
@@ -110,7 +115,7 @@ def test_eso_mass_acquisition_records_provenance_and_refuses_overwrite(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     config = _config(tmp_path)
-    payload = _payload(leading_blank=True)
+    payload = _payload(wdb_envelope=True)
     monkeypatch.setattr(
         "strata_ot.data.acquire.urlopen",
         lambda request, timeout: _Response(payload, config["query_url"]),

@@ -194,9 +194,11 @@ def _validate_eso_mass_csv(
     config: dict[str, Any],
 ) -> dict[str, Any]:
     text = payload.decode("utf-8-sig")
-    csv_lines = text.splitlines()
-    while csv_lines and not csv_lines[0].strip():
-        csv_lines.pop(0)
+    csv_lines = [
+        line
+        for line in text.splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
     reader = csv.DictReader(io.StringIO("\n".join(csv_lines)))
     headers = list(reader.fieldnames or [])
     output_fields = list(config["query"]["output_fields"])
