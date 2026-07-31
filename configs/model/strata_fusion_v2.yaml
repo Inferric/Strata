@@ -4,6 +4,7 @@ num_heads: 6
 num_experts: 4
 dropout: 0.10
 horizon_fourier_bands: 8
+residual_horizon_exponent: 0.0
 active_scales: [short, medium, slow]
 fusion: film_cross_attention
 physics_tokens: full

@@ -1,0 +1,230 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.68in]{geometry}
+\usepackage{booktabs,longtable,tabularx,microtype,xcolor,enumitem,fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\definecolor{stratalight}{HTML}{EEF3F8}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
+\newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
+\newcommand{\cn}{\(C_n^2\)}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.45em}
+\renewcommand{\arraystretch}{1.13}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
+\rhead{\textcolor{stratagray}{Fusion v2.3 residual scale}}
+\cfoot{\thepage}
+\fancypagestyle{plain}{
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
+\rhead{\textcolor{stratagray}{Fusion v2.3 residual scale}}
+\cfoot{\thepage}
+}
+\title{\textbf{\textcolor{stratablue}{Strata-OT Fusion v2.3}}\\
+\large Frozen horizon-scaled persistence-residual screen}
+\author{Generated from four paired rolling-development runs}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratablue}{stratalight}{
+\begin{minipage}{0.92\linewidth}
+\textbf{Executive summary.}
+\VAR{summary.plain_language_question|latex}
+\VAR{summary.plain_language_conclusion|latex}
+The confirmation labels and official MLO test remained sealed.
+\end{minipage}}
+\end{center}
+
+\section{Frozen hypothesis and isolated change}
+\textbf{Hypothesis.} \VAR{summary.hypothesis|latex}
+
+Each arm predicts
+\(\widehat y_h=y_{\mathrm{latest}}+(h/5)^\alpha\delta_\theta\).
+The exponent is a fixed training and representation bias, not a fitted
+physical law. It changes no parameter count. Architecture, weather features,
+objective, raw uncertainty head, fold, seed, sample cap, and optimizer are
+identical.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.36\linewidth}X}
+\toprule
+Protocol & \texttt{\VAR{summary.protocol|latex}}\\
+Fold / seed & fold 1 / 17\\
+Training / selection sequences & 12,000 / 4,000\\
+Primary horizons & 15, 30, 60 minutes; 5-minute anchor\\
+Repository revision & \texttt{\VAR{summary.repository_revision|shortid}}\\
+Source SHA-256 & \texttt{\VAR{summary.data_identity.source_sha256|shortid}}\\
+Split SHA-256 & \texttt{\VAR{summary.data_identity.split_sha256|shortid}}\\
+Family verdict &
+\BLOCK{ if summary.status == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
+Confirmation & \notevaluated\\
+\bottomrule
+\end{tabularx}
+
+\section{Complete four-arm screen}
+\begin{longtable}{lrrrrrrrr}
+\toprule
+Candidate & \(\alpha\) & RMSE & MAE & Bias & Tail & CRPS & Cov.\ 80 & Sec.\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\VAR{run.candidate_id|latex} &
+\VAR{run.residual_horizon_exponent|num(2)} &
+\VAR{run.primary.rmse_log10_cn2|num} &
+\VAR{run.primary.mae_log10_cn2|num} &
+\VAR{run.primary.bias_log10_cn2|num} &
+\VAR{run.primary.tail_mae_top_decile|num} &
+\VAR{run.primary.crps_gaussian|num} &
+\VAR{run.primary.interval_80_coverage|pct} &
+\VAR{run.wall_clock_seconds|num(1)}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{Intervention decisions}
+\begin{longtable}{lrrrrrr}
+\toprule
+Candidate & RMSE change & 2\% RMSE & Tail & CRPS & Coverage & Advances\\
+\midrule
+\endhead
+\BLOCK{ for candidate_id, decision in summary.decisions.items() }
+\VAR{candidate_id|latex} &
+\VAR{decision.relative_improvement_over_control|pct} &
+\BLOCK{ if decision.checks.two_percent_rmse_improvement == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.checks.tail_no_two_percent_regression == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.checks.crps_no_two_percent_regression == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.checks.coverage_70_to_90_percent == "PASS" }\pass\BLOCK{ else }\fail\BLOCK{ endif } &
+\BLOCK{ if decision.advances }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{Horizon-resolved error results}
+\small
+\begin{longtable}{llrrrr}
+\toprule
+Candidate & Horizon & RMSE & MAE & Bias & Tail MAE\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.by_horizon.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.rmse_log10_cn2|num} &
+\VAR{values.mae_log10_cn2|num} &
+\VAR{values.bias_log10_cn2|num} &
+\VAR{values.tail_mae_top_decile|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection*{Residual-component audit}
+\small
+\begin{longtable}{llrrrrr}
+\toprule
+Candidate & Horizon & Raw mean & Raw SD & Scale & Final mean & Final SD\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.residual_diagnostics.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.raw_residual_mean|num} &
+\VAR{values.raw_residual_std|num} &
+\VAR{values.residual_scale_mean|num(3)} &
+\VAR{values.residual_mean|num} &
+\VAR{values.residual_std|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection*{Horizon-resolved probabilistic results}
+\small
+\begin{longtable}{llrrrr}
+\toprule
+Candidate & Horizon & CRPS & Student-\(t\) NLL & Coverage & Width\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.by_horizon.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.crps_gaussian|num} &
+\VAR{values.student_t_nll|num} &
+\VAR{values.interval_80_coverage|pct} &
+\VAR{values.interval_80_width|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{OOD, selective risk, and latency}
+\small
+\begin{longtable}{p{0.25\linewidth}rrrrr}
+\toprule
+Candidate & Selective 80 RMSE & OOD top-quintile RMSE & OOD score &
+Latency (ms/sample) & Throughput\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\VAR{run.candidate_id|latex} &
+\VAR{run.operational.selective_80_rmse_log10_cn2|num} &
+\VAR{run.operational.ood_top_quintile_rmse_log10_cn2|num} &
+\VAR{run.operational.ood_score_mean|num} &
+\VAR{run.operational.inference_latency_ms_per_sample|num(3)} &
+\VAR{run.operational.throughput_samples_per_second|num(1)}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Gate, resources, and claim boundary}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.38\linewidth}X}
+\toprule
+Neural wall-clock hours & \VAR{summary.resources.neural_wall_clock_hours|num(3)}\\
+Peak total board VRAM & \VAR{summary.resources.peak_total_board_vram_gib|num(3)} GiB\\
+Peak process allocated VRAM &
+\VAR{summary.resources.peak_process_allocated_vram_gib|num(3)} GiB\\
+Peak process RAM & \VAR{summary.resources.peak_process_rss_gib|num(3)} GiB\\
+Artifact bytes & \VAR{summary.resources.artifact_storage_bytes|latex}\\
+Cloud cost & \$\VAR{summary.resources.cloud_cost_usd|num(2)}\\
+\bottomrule
+\end{tabularx}
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Condition & State\\
+\midrule
+\BLOCK{ for name, state in summary.checks.items() }
+\VAR{name|latex} &
+\BLOCK{ if state == "PASS" }\pass
+\BLOCK{ elif state == "FAIL" }\fail
+\BLOCK{ else }\notevaluated
+\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+
+This is a single-fold, single-seed representation screen. It cannot establish
+seasonal robustness, transfer, or a champion. A passing exponent would retain
+its exact value for the unchanged three-fold/three-seed protocol. Three failed
+interventions close this fixed power-law family and do not authorize exponent
+retuning or confirmation release.
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}

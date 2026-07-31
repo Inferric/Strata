@@ -59,6 +59,8 @@ PREDICTION_OUTPUT_KEYS = (
     "student_t_df",
     "quantiles",
     "embedding",
+    "raw_residual",
+    "residual_scale",
     "residual",
     "scale_weights",
     "horizon_attention",
@@ -247,6 +249,12 @@ def _build_model(
             active_scales=tuple(str(value) for value in candidate["active_scales"]),
             horizon_fourier_bands=int(model_config["horizon_fourier_bands"]),
             physics_start=physics_start,
+            residual_horizon_exponent=float(
+                candidate.get(
+                    "residual_horizon_exponent",
+                    model_config.get("residual_horizon_exponent", 0.0),
+                )
+            ),
         )
     if family == "mlp":
         return FusionMLPControl(
@@ -388,6 +396,8 @@ def _ood_score(embedding: np.ndarray, fit: dict[str, np.ndarray]) -> np.ndarray:
 def _component_summary(payload: dict[str, np.ndarray]) -> dict[str, Any]:
     diagnostic_keys = (
         "residual",
+        "raw_residual",
+        "residual_scale",
         "scale_weights",
         "horizon_attention",
         "weather_attention",
@@ -1124,6 +1134,15 @@ def _neural_run(
                     )
                 ),
                 "training_examples_actual": len(datamodule.train_set),
+                "residual_horizon_exponent": float(
+                    candidate.get(
+                        "residual_horizon_exponent",
+                        model_config.get(
+                            "residual_horizon_exponent",
+                            0.0,
+                        ),
+                    )
+                ),
             }
         )
         logger.log_metrics(metrics, step=trainer.global_step)

@@ -157,6 +157,7 @@ class StrataOTFusionV2(nn.Module):
         active_scales: tuple[str, ...] = ("short", "medium", "slow"),
         horizon_fourier_bands: int = 8,
         physics_start: int | None = None,
+        residual_horizon_exponent: float = 0.0,
     ) -> None:
         super().__init__()
         if fusion not in {"concat", "film", "film_cross_attention"}:
@@ -167,11 +168,18 @@ class StrataOTFusionV2(nn.Module):
             raise ValueError("Fusion v2 requires known active scales")
         if "short" not in active_scales:
             raise ValueError("Fusion v2 keeps the short branch as its anchor")
+        if not 0.0 <= residual_horizon_exponent <= 1.5:
+            raise ValueError(
+                "residual_horizon_exponent must be between 0 and 1.5"
+            )
         self.weather_dim = weather_dim
         self.hidden_dim = hidden_dim
         self.fusion = fusion
         self.active_scales = active_scales
         self.physics_start = physics_start
+        self.residual_horizon_exponent = float(
+            residual_horizon_exponent
+        )
         self.scale_encoders = nn.ModuleDict(
             {
                 scale: ScaleEncoder(
@@ -273,7 +281,11 @@ class StrataOTFusionV2(nn.Module):
             (stacked * weights.unsqueeze(-1)).sum(dim=1) + horizon
         )
         routed, expert_weights = self.regimes(fused)
-        residual = self.residual_head(routed).squeeze(-1)
+        raw_residual = self.residual_head(routed).squeeze(-1)
+        residual_scale = (
+            batch["horizon_minutes"].clamp_min(5.0) / 5.0
+        ).pow(self.residual_horizon_exponent)
+        residual = raw_residual * residual_scale
         location = batch["persistence"] + residual
         predictive_scale = 1e-3 + F.softplus(
             self.raw_scale(routed).squeeze(-1)
@@ -305,6 +317,8 @@ class StrataOTFusionV2(nn.Module):
             "student_t_df": degrees_of_freedom,
             "quantiles": quantiles,
             "embedding": routed,
+            "raw_residual": raw_residual,
+            "residual_scale": residual_scale,
             "residual": residual,
             "scale_weights": weights,
             "horizon_attention": torch.cat(horizon_attentions, dim=-1),

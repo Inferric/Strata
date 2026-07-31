@@ -27,6 +27,7 @@ ALLOWED_MODEL_PARAMETERS = {
     "calibration",
     "point_loss_weight",
     "max_train_examples",
+    "residual_horizon_exponent",
 }
 
 REQUIRED_STOP_CONDITIONS = {
@@ -56,6 +57,7 @@ NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
     "weight_decay": (0.0, 0.2),
     "point_loss_weight": (0.0, 2.0),
     "max_train_examples": (1000, 500000),
+    "residual_horizon_exponent": (0.0, 1.5),
 }
 
 INTEGER_PARAMETERS = {

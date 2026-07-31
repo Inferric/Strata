@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "report_pdf": "reports/generated/fusion-v22-data-scale/fusion-v22-data-scale-report.pdf",
+  "report_tex": "reports/generated/fusion-v22-data-scale/fusion-v22-data-scale-report.tex",
+  "inspected_at": "2026-07-30T22:44:55.7067749-05:00",
+  "page_count": 3,
+  "bytes": 48166,
+  "sha256": "7a6b3afba9484ead412108ca373d970494a74844f3e0710accfbd75695934d35",
+  "render_engine": "PyMuPDF 1.28.0 (Poppler unavailable)",
+  "render_scale": 2.0,
+  "rendered_pages": [
+    "tmp/pdfs/fusion-v22-data-scale-final/page-01.png",
+    "tmp/pdfs/fusion-v22-data-scale-final/page-02.png",
+    "tmp/pdfs/fusion-v22-data-scale-final/page-03.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "no_clipping_or_truncation": "PASS",
+    "tables_readable": "PASS",
+    "page_numbers_and_header_styles_consistent": "PASS",
+    "no_overlapping_elements": "PASS",
+    "no_unresolved_placeholders": "PASS",
+    "citations_and_references_readable": "PASS"
+  },
+  "notes": [
+    "Long-table continuation pages repeat their column headers and retain centered page numbers.",
+    "The report distinguishes denser use of identical dates from broader temporal coverage and preserves the failed advancement decision."
+  ],
+  "status": "PASS"
+}

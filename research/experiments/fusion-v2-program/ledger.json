@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "point_loss_complete_data_scale_frozen",
+  "status": "data_scale_complete_residual_scaling_frozen",
   "events": [
     {
       "sequence": 0,
@@ -282,6 +282,50 @@
       "parent_run_id": "359831309fba4724be654f38ba81f7cc",
       "evidence": "docs/FUSION_V22_DATA_SCALE.md",
       "notes": "A four-arm 12k/30k/50k/all-62,263 training-sequence screen is frozen before metrics. It changes only deterministic within-fold sample density and explicitly does not claim broader temporal coverage."
+    },
+    {
+      "sequence": 22,
+      "recorded_at": "2026-07-30T22:42:39-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "training_sequence_density",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "2bb833b70b7447f1a1ba685a93baeba9",
+        "135670a58f004b248109f2a4e46969a6",
+        "bca82a6b8dc64c4ca978ef6b2ed94832",
+        "39a892946ecd4f87861d5286fff3ab8c"
+      ],
+      "control_primary_rmse": 0.30082541675299396,
+      "relative_improvements": {
+        "data-scale-30k": -0.0032696153456767355,
+        "data-scale-50k": -0.005620420291135143,
+        "data-scale-full": -0.00024864616616218546
+      },
+      "notes": "All three denser sample caps slightly worsened primary RMSE. The 30k arm also failed tail, CRPS, and coverage gates; the full arm failed CRPS and coverage. Three non-improvements close this within-fold density family."
+    },
+    {
+      "sequence": 23,
+      "recorded_at": "2026-07-30T22:45:48-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "training_sequence_density",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "c8685b9bea5d4ad391e50045809d51d1",
+      "evidence": "research/experiments/fusion-v2-program/data-scale-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1H3qwU91dzcBwD4zxNpsEa9plBf8cMFnJ/view?usp=drivesdk",
+      "notes": "The three-page LaTeX data-scale report was compiled, rendered at 2x, visually inspected, logged as a finished MLflow evidence run, uploaded to the private Strata Research program folder, and verified as a 48,166-byte unshared PDF."
+    },
+    {
+      "sequence": 24,
+      "recorded_at": "2026-07-30T22:50:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "horizon_scaled_residual",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "c8685b9bea5d4ad391e50045809d51d1",
+      "evidence": "docs/FUSION_V23_RESIDUAL_SCALING.md",
+      "notes": "A paired exponent 0/0.25/0.50/1.00 screen is frozen before metrics. It changes only a fixed, interpretable power-law scale on the persistence residual and keeps model parameters, objective, data, and evidence gates unchanged."
     }
   ]
 }

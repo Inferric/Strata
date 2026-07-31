@@ -357,3 +357,55 @@ candidates:
     point_loss_weight: 0.00
     max_train_examples: 62263
     screen_program: false
+  - id: residual-exp-0p00
+    category: residual_scaling
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    screen_program: false
+  - id: residual-exp-0p25
+    category: residual_scaling
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.25
+    screen_program: false
+  - id: residual-exp-0p50
+    category: residual_scaling
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.50
+    screen_program: false
+  - id: residual-exp-1p00
+    category: residual_scaling
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 1.00
+    screen_program: false

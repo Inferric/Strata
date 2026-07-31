@@ -56,7 +56,23 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "fusion_v22_data_scale",
+      "local_path": "reports/generated/fusion-v22-data-scale/fusion-v22-data-scale-report.pdf",
+      "local_bytes": 48166,
+      "local_sha256": "7a6b3afba9484ead412108ca373d970494a74844f3e0710accfbd75695934d35",
+      "drive_id": "1H3qwU91dzcBwD4zxNpsEa9plBf8cMFnJ",
+      "drive_url": "https://drive.google.com/file/d/1H3qwU91dzcBwD4zxNpsEa9plBf8cMFnJ/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v22-data-scale-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 48166,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-30T22:28:04-05:00"
+  "updated_at": "2026-07-30T22:45:48-05:00"
 }
