@@ -417,7 +417,7 @@ def _synthesis_fixture(tmp_path: Path) -> None:
         },
     )
     _write_json(
-        tmp_path / "research" / "experiments" / "strata-fusion-v2-program" / "ledger.json",
+        tmp_path / "research" / "experiments" / "fusion-v2-program" / "ledger.json",
         {"events": [{"sequence": 0, "result": "PASS"}]},
     )
 

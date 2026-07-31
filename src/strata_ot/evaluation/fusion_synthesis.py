@@ -15,7 +15,7 @@ from strata_ot.training.train import _configure_utf8_output
 
 PROGRAM_ID = "strata-fusion-v2-program"
 PROGRAM_ROOT = Path("artifacts/experiments") / PROGRAM_ID
-RESEARCH_ROOT = Path("research/experiments") / PROGRAM_ID
+RESEARCH_ROOT = Path("research/experiments/fusion-v2-program")
 
 
 def _load_object(path: Path) -> dict[str, Any]:
