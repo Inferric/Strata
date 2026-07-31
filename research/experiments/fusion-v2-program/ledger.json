@@ -730,6 +730,26 @@
       "dataset_qc_report_sha256": "bc68e4d0763a4c87c6135d6c9fc47d720ac5ba7da8bbd91d120fd6bea0ebbecb",
       "evidence": "research/experiments/fusion-v2-program/drive-upload-index.json",
       "notes": "Final validation recompiled both reports. All ten program pages and all three dataset-QC pages were rerendered at 2x and visually reinspected; one selection-table spacing issue was corrected. The existing Drive objects were replaced in place and exact final size, parent, MIME type, shared=false state, and sole-owner permission were reverified without changing sharing."
+    },
+    {
+      "sequence": 52,
+      "recorded_at": "2026-07-31T02:58:00-05:00",
+      "kind": "service_and_console_validation",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "api-console-health",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/service-validation.json",
+      "notes": "PostgreSQL, MLflow, Prefect, the isolated branch API, and the isolated research console passed final health checks. API assertions preserved the scientific FAIL and sealed confirmation boundaries. Browser DOM and visual inspection verified the Fusion matrix and ESO manifest-QC display, with zero console warnings or errors. Only the temporary branch validation services were then stopped."
+    },
+    {
+      "sequence": 53,
+      "recorded_at": "2026-07-31T03:09:41-05:00",
+      "kind": "final_integrity_audit",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "handoff",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
+      "notes": "The final audit revalidated 86 tests, 43 proposal contracts, three manifests, two sealed split hashes without label release, 123 indexed FINISHED MLflow runs, 13 visual-inspection records, 59 rendered report pages, production frontend output, service health, and branch scope. All 14 Drive-indexed uploads were rechecked against observed name, byte size, parent, shared=false state, and sole-owner permission. Scientific status remains FAIL, with confirmation and promotion unevaluated."
     }
   ]
 }

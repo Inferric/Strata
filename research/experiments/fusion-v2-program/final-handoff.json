@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-07-31T03:09:41-05:00",
+  "validated_implementation_commit": "fef4e2d8e3d98b01c533b3381a8c676b8832fdb7",
+  "program_id": "strata-fusion-v2-program",
+  "scientific_status": "FAIL",
+  "best_custom_candidate": {
+    "id": "selected-fusion-v25",
+    "label": "Fusion v2.5",
+    "primary_rmse_log10_cn2": 0.2487048576,
+    "relative_improvement_vs_persistence": 0.0651,
+    "relative_improvement_vs_mlp": 0.0132,
+    "relative_improvement_vs_diagnostic_lightgbm": 0.1209,
+    "immutable_minimum_improvement_vs_neural_control": 0.02,
+    "tail_mae_log10_cn2": 0.1709815,
+    "tail_mae_gate_limit_log10_cn2": 0.1703856,
+    "conclusion": "Fusion v2.5 was the strongest custom model, but it missed the immutable 2% MLP-margin rule and the tail-MAE condition. The result remains a scientific FAIL."
+  },
+  "program_accounting": {
+    "training_runs": 111,
+    "evidence_runs": 12,
+    "all_indexed_mlflow_runs_finished": true,
+    "all_evidence_runs_have_artifacts": true,
+    "program_neural_wall_clock_hours": 3.3252047222,
+    "prior_cycle0_neural_wall_clock_hours": 0.296055,
+    "total_evidence_neural_wall_clock_hours": 3.6212597222,
+    "peak_total_board_vram_gib": 10.208984375,
+    "artifact_storage_bytes": 3360821227,
+    "cloud_cost_usd": 0.0
+  },
+  "release_boundaries": {
+    "official_mlo_test_loaded": false,
+    "mlo_development_split_sha256": "4f37fea37731a9413c4e2aa48334677c561f5c7cab914f2dc7d546045035350d",
+    "mlo_assessment_labels_loaded_during_final_verification": false,
+    "usna_fusion_split_sha256": "6bd8dc19c67cf7e90010a13055944493a2586aa405b72d3ffee2aff108ed2772",
+    "usna_confirmation_labels_loaded": false,
+    "confirmation_evaluation": "NOT_EVALUATED",
+    "champion_promotion": "NOT_EVALUATED"
+  },
+  "data_bridge": {
+    "dataset_id": "eso-paranal-mass-profile-2020-01-v1",
+    "status": "PASS",
+    "rows": 7857,
+    "manifest_qc": "verified 11/11",
+    "column_training_authorized": false,
+    "promotion_authorized": false
+  },
+  "validation": {
+    "uv_sync": "PASS",
+    "ruff": "PASS",
+    "mypy_source_files": 52,
+    "pytest": {
+      "status": "PASS",
+      "passed": 86,
+      "warnings": 5
+    },
+    "repository_contract": "PASS",
+    "experiment_proposals": {
+      "status": "PASS",
+      "count": 43
+    },
+    "manifests": {
+      "otbench_mlo": "PASS",
+      "otbench_usna_large": "PASS",
+      "eso_paranal_mass": "PASS"
+    },
+    "sealed_split_verification": "PASS",
+    "frontend_lint": "PASS",
+    "frontend_build": "PASS",
+    "latex_reports": {
+      "inspection_records": 13,
+      "inspection_pass_checks": 92,
+      "rendered_pages_present": 59,
+      "final_program_pages_visually_inspected": 10,
+      "final_dataset_qc_pages_visually_inspected": 3
+    },
+    "services": {
+      "postgresql": "PASS",
+      "mlflow": "PASS",
+      "prefect": "PASS",
+      "api": "PASS",
+      "research_console": "PASS",
+      "browser_console_warnings_or_errors": 0
+    },
+    "branch_scope": {
+      "raw_data_changed": false,
+      "sealed_identities_changed": false,
+      "checkpoints_or_mlflow_internals_changed": false,
+      "credential_like_patterns_detected": false,
+      "changed_tracked_files_over_5_mib": 0
+    }
+  },
+  "reports": {
+    "program": {
+      "local_path": "reports/generated/fusion-v2-program/fusion-v2-program-report.pdf",
+      "bytes": 86039,
+      "sha256": "39a086e6ae6428716e5102594b522b7516717b511ebd3208318d688c56ef8784",
+      "drive_url": "https://drive.google.com/file/d/1GNgQYmh1R79xru3ezP5XNTWUjnK-N0YA/view?usp=drivesdk"
+    },
+    "eso_dataset_qc": {
+      "local_path": "reports/generated/eso-paranal-mass-qc/eso-paranal-mass-qc-report.pdf",
+      "bytes": 45787,
+      "sha256": "bc68e4d0763a4c87c6135d6c9fc47d720ac5ba7da8bbd91d120fd6bea0ebbecb",
+      "drive_url": "https://drive.google.com/file/d/1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8/view?usp=drivesdk"
+    }
+  },
+  "drive_delivery": {
+    "folder_url": "https://drive.google.com/drive/folders/1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+    "run_index_url": "https://drive.google.com/file/d/1BGZAJq_7YtddZ0i16arzQ8kwBZpFatSO/view?usp=drivesdk",
+    "indexed_uploads_verified": 14,
+    "all_names_sizes_parents_and_owner_only_permissions_match": true,
+    "sharing_permissions_changed": false
+  },
+  "next_recommendation": "Expand clearly open training coverage with provenance-checked adapters, then preregister a new architecture family without reopening the closed shortcut, loss, scale, cap, or bilinear searches."
+}
