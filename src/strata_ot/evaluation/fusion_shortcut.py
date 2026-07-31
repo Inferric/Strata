@@ -336,6 +336,8 @@ def write_shortcut_summary(root: Path | None = None) -> Path:
     summary = build_shortcut_summary(root)
     if isinstance(existing.get("evidence_run_id"), str):
         summary["evidence_run_id"] = existing["evidence_run_id"]
+    if isinstance(existing.get("report_pdf"), str):
+        summary["report_pdf"] = existing["report_pdf"]
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(
         json.dumps(summary, indent=2) + "\n",
@@ -352,6 +354,25 @@ def log_shortcut_evidence(summary_path: Path, report_path: Path) -> str:
     summary = _load_object(summary_path)
     existing = summary.get("evidence_run_id")
     if isinstance(existing, str) and existing:
+        mlflow.set_tracking_uri(
+            os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
+        )
+        with mlflow.start_run(run_id=existing):
+            for path, artifact_path in (
+                (summary_path, "evidence"),
+                (report_path, "reports"),
+                (report_path.with_suffix(".tex"), "reports"),
+                (
+                    root
+                    / "research"
+                    / "experiments"
+                    / "fusion-v2-program"
+                    / "shortcut-report-inspection.json",
+                    "evidence",
+                ),
+            ):
+                if path.is_file():
+                    mlflow.log_artifact(str(path), artifact_path=artifact_path)
         return existing
     mlflow.set_tracking_uri(
         os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")

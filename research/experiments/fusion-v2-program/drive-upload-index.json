@@ -88,7 +88,23 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "fusion_v24_direct_shortcut",
+      "local_path": "reports/generated/fusion-v24-direct-shortcut/fusion-v24-direct-shortcut-report.pdf",
+      "local_bytes": 51119,
+      "local_sha256": "097104c61858401043108bf97b68ad5ca494ce92143b7450693be21fe5b38bf9",
+      "drive_id": "1NVO1KUTnEdq9N1hf2IjOIIBQ6z-nYQXQ",
+      "drive_url": "https://drive.google.com/file/d/1NVO1KUTnEdq9N1hf2IjOIIBQ6z-nYQXQ/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v24-direct-shortcut-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 51119,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-30T23:01:35-05:00"
+  "updated_at": "2026-07-30T23:20:21-05:00"
 }

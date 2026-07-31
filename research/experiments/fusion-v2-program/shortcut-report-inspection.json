@@ -2,15 +2,16 @@
   "schema_version": 1,
   "report_pdf": "reports/generated/fusion-v24-direct-shortcut/fusion-v24-direct-shortcut-report.pdf",
   "report_tex": "reports/generated/fusion-v24-direct-shortcut/fusion-v24-direct-shortcut-report.tex",
-  "inspected_at": "2026-07-30T23:11:56.7270953-05:00",
-  "page_count": 3,
+  "inspected_at": "2026-07-30T23:18:42-05:00",
+  "page_count": 4,
   "render_scale": 2,
-  "pdf_bytes": 49260,
-  "pdf_sha256": "05480c3793a0abec8ce3e0ad5793c1eb4590995180afd6191ffbc79fb1c6c606",
+  "pdf_bytes": 51119,
+  "pdf_sha256": "097104c61858401043108bf97b68ad5ca494ce92143b7450693be21fe5b38bf9",
   "rendered_pages": [
-    "tmp/pdfs/fusion-v24-direct-shortcut-final/page-01.png",
-    "tmp/pdfs/fusion-v24-direct-shortcut-final/page-02.png",
-    "tmp/pdfs/fusion-v24-direct-shortcut-final/page-03.png"
+    "tmp/pdfs/fusion-v24-direct-shortcut-upload-final-v5/page-01.png",
+    "tmp/pdfs/fusion-v24-direct-shortcut-upload-final-v5/page-02.png",
+    "tmp/pdfs/fusion-v24-direct-shortcut-upload-final-v5/page-03.png",
+    "tmp/pdfs/fusion-v24-direct-shortcut-upload-final-v5/page-04.png"
   ],
   "checks": {
     "all_pages_rendered": "PASS",
@@ -20,5 +21,5 @@
     "no_overlap_or_clipping": "PASS",
     "final_verdict_visible": "PASS"
   },
-  "notes": "All three final pages were visually inspected at 2x. The wide OOD table was relabeled and recompiled; the final TeX log has no overfull-box warning."
+  "notes": "All four final pages were visually inspected at 2x. Tables were split at explicit page boundaries, running headers and footers were verified, and the final TeX log has no overfull-box warning."
 }

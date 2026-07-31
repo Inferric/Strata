@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "residual_scaling_complete_direct_shortcut_frozen",
+  "status": "direct_shortcut_complete_next_cycle_pending",
   "events": [
     {
       "sequence": 0,
@@ -370,6 +370,39 @@
       "parent_run_id": "ab248fd98f0f47e8b5bcaca79fe70f21",
       "evidence": "docs/FUSION_V24_DIRECT_SHORTCUT.md",
       "notes": "A four-arm no-shortcut/history-linear/all-linear/all-MLP architecture screen is frozen before metrics. Every shortcut consumes only past context, starts with a zero final projection, retains the deep branch, and uses unchanged data, optimization, and evidence gates."
+    },
+    {
+      "sequence": 28,
+      "recorded_at": "2026-07-30T23:10:26-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "direct_residual_shortcut",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "46af532e62ed4aaf9f50b9faab1e131d",
+        "ed3a0d29834f44e89a8ffe634f9678c1",
+        "82b196a66b574bf7b73d51a0c575395b",
+        "92630bd0dcd449818f646af3e13c12dc"
+      ],
+      "control_primary_rmse": 0.30082541675299396,
+      "relative_improvements": {
+        "shortcut-history-linear": 0.03049366640713492,
+        "shortcut-all-linear": 0.0019532631014312486,
+        "shortcut-all-mlp": -0.013603434402769982
+      },
+      "notes": "History-linear cleared the 2% RMSE threshold but failed tail and 70--90% coverage gates. All-linear missed the RMSE threshold and failed tail; all-MLP regressed RMSE, tail, and CRPS. Three constraint-respecting non-advances close this shortcut family."
+    },
+    {
+      "sequence": 29,
+      "recorded_at": "2026-07-30T23:20:21-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "direct_residual_shortcut",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "0e8b0f954fa14af9a714cd67adbecbd7",
+      "evidence": "research/experiments/fusion-v2-program/shortcut-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1NVO1KUTnEdq9N1hf2IjOIIBQ6z-nYQXQ/view?usp=drivesdk",
+      "notes": "The final four-page LaTeX shortcut report was compiled without overflow warnings, rendered at 2x, visually inspected, logged to the finished MLflow evidence run, uploaded to the private program folder, and verified as a 51,119-byte owner-only PDF."
     }
   ]
 }

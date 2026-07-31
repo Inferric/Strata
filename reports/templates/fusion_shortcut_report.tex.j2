@@ -11,6 +11,11 @@
 \newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
 \newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
 \newcommand{\cn}{\(C_n^2\)}
+\newcommand{\manualheader}{
+\noindent\textcolor{stratagray}{Strata-OT / bounded development evidence}
+\hfill\textcolor{stratagray}{Fusion v2.4 direct shortcut}\par
+\vspace{0.15em}\hrule\vspace{0.55in}
+}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.22em}
 \setlength{\emergencystretch}{3em}
@@ -74,11 +79,12 @@ Confirmation & \notevaluated\\
 \end{tabularx}
 
 \section{Complete four-arm screen}
-\begin{longtable}{p{0.26\linewidth}p{0.15\linewidth}rrrrrr}
+\small
+\begin{center}
+\begin{tabular}{llrrrrrr}
 \toprule
 Candidate & Shortcut & Parameters & RMSE & Bias & Tail & CRPS & Cov.\ 80\\
 \midrule
-\endhead
 \BLOCK{ for run in summary.runs }
 \VAR{run.candidate_id|latex} &
 \VAR{run.residual_shortcut|latex} &
@@ -90,14 +96,17 @@ Candidate & Shortcut & Parameters & RMSE & Bias & Tail & CRPS & Cov.\ 80\\
 \VAR{run.primary.interval_80_coverage|pct}\\
 \BLOCK{ endfor }
 \bottomrule
-\end{longtable}
+\end{tabular}
+\end{center}
+\normalsize
 
-\subsection*{Intervention decisions}
-\begin{longtable}{p{0.31\linewidth}rrrrrr}
+\par\noindent{\large\bfseries Intervention decisions}\par
+\small
+\begin{center}
+\begin{tabular}{lrrrrrr}
 \toprule
 Candidate & RMSE change & 2\% RMSE & Tail & CRPS & Coverage & Advances\\
 \midrule
-\endhead
 \BLOCK{ for candidate_id, decision in summary.decisions.items() }
 \VAR{candidate_id|latex} &
 \VAR{decision.relative_improvement_over_control|pct} &
@@ -108,9 +117,15 @@ Candidate & RMSE change & 2\% RMSE & Tail & CRPS & Coverage & Advances\\
 \BLOCK{ if decision.advances }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
 \BLOCK{ endfor }
 \bottomrule
-\end{longtable}
+\end{tabular}
+\end{center}
+\normalsize
 
-\section{Horizon-resolved error results}\leavevmode\par
+\clearpage
+\thispagestyle{fancy}
+\vspace*{0.35in}
+\section{Horizon-resolved error results}
+\vspace{0.1em}
 \small
 \begin{longtable}{llrrrr}
 \toprule
@@ -153,13 +168,17 @@ Combined & Final\\
 \end{longtable}
 \normalsize
 
+\clearpage
+\thispagestyle{empty}
+\manualheader
+\section{Probabilistic calibration and operational risk}
 \subsection*{Horizon-resolved probabilistic results}
 \small
-\begin{longtable}{llrrrr}
+\begin{center}
+\begin{tabular}{llrrrr}
 \toprule
 Candidate & Horizon & CRPS & Student-\(t\) NLL & Coverage & Width\\
 \midrule
-\endhead
 \BLOCK{ for run in summary.runs }
 \BLOCK{ for horizon, values in run.by_horizon.items() }
 \VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
@@ -170,17 +189,18 @@ Candidate & Horizon & CRPS & Student-\(t\) NLL & Coverage & Width\\
 \BLOCK{ endfor }
 \BLOCK{ endfor }
 \bottomrule
-\end{longtable}
+\end{tabular}
+\end{center}
 \normalsize
 
-\section{OOD, selective risk, resources, and claim boundary}\leavevmode\par
+\subsection*{OOD and selective risk}
 \small
-\begin{longtable}{p{0.25\linewidth}rrrrr}
+\begin{center}
+\begin{tabular}{lrrrrr}
 \toprule
 Candidate & Selective RMSE & OOD RMSE & OOD score &
 ms/sample & samples/s\\
 \midrule
-\endhead
 \BLOCK{ for run in summary.runs }
 \VAR{run.candidate_id|latex} &
 \VAR{run.operational.selective_80_rmse_log10_cn2|num} &
@@ -190,9 +210,16 @@ ms/sample & samples/s\\
 \VAR{run.operational.throughput_samples_per_second|num(1)}\\
 \BLOCK{ endfor }
 \bottomrule
-\end{longtable}
+\end{tabular}
+\end{center}
 \normalsize
 
+\vfill
+\begin{center}\thepage\end{center}
+\clearpage
+\thispagestyle{empty}
+\manualheader
+\section{Resource envelope and claim boundary}
 \begin{tabularx}{\linewidth}{>{\bfseries}p{0.38\linewidth}X}
 \toprule
 Neural wall-clock hours & \VAR{summary.resources.neural_wall_clock_hours|num(3)}\\
@@ -226,4 +253,6 @@ robustness, transfer, or a champion. A passing shortcut would retain its exact
 input and function for the unchanged rolling protocol. Three failed
 interventions close this direct-shortcut family without confirmation release.
 
+\vfill
+\begin{center}\thepage\end{center}
 \end{document}
