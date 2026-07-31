@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "v26_tail_objective_complete_next_cycle_pending",
+  "status": "v27_residual_cap_frozen",
   "events": [
     {
       "sequence": 0,
@@ -546,6 +546,17 @@
       "evidence": "research/experiments/fusion-v2-program/v26-tail-objective-report-inspection.json",
       "drive_url": "https://drive.google.com/file/d/1WksjIGMyGOcdnwf2JJA4WYeFGsXh74Bf/view?usp=drivesdk",
       "notes": "The final four-page LaTeX tail-objective report was compiled without overflow warnings, rendered at 2x, visually inspected, logged to MLflow, uploaded to the private program folder, and verified as a 65,761-byte owner-only PDF."
+    },
+    {
+      "sequence": 39,
+      "recorded_at": "2026-07-31T01:10:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "bounded_residual_architecture",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "f6993c836f6f4708aa340ac5d989a861",
+      "evidence": "docs/FUSION_V27_RESIDUAL_CAP.md",
+      "notes": "A paired unbounded/0.20/0.35/0.60 hard-residual-cap screen is frozen before metrics. Bounds bracket the target-free 95th/99th/99.9th absolute residual percentiles from completed v2.5 runs; architecture inputs, objective, probability head, data roles, nine-epoch cap, and full gates remain fixed."
     }
   ]
 }
