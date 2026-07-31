@@ -60,6 +60,29 @@ def hardware_snapshot(root: Path) -> dict[str, Any]:
     return snapshot
 
 
+def resource_peaks(samples: list[dict[str, Any]]) -> dict[str, float]:
+    """Aggregate board and process CUDA peaks without conflating them."""
+    gpu_samples = [
+        sample["gpu"]
+        for sample in samples
+        if isinstance(sample.get("gpu"), dict)
+    ]
+    return {
+        "peak_total_board_vram_gib": max(
+            (float(gpu["used_memory_gib"]) for gpu in gpu_samples),
+            default=0.0,
+        ),
+        "peak_process_allocated_vram_gib": max(
+            (float(gpu["process_peak_allocated_gib"]) for gpu in gpu_samples),
+            default=0.0,
+        ),
+        "peak_process_reserved_vram_gib": max(
+            (float(gpu["process_peak_reserved_gib"]) for gpu in gpu_samples),
+            default=0.0,
+        ),
+    }
+
+
 def preflight_hardware(root: Path, safety: dict[str, Any]) -> dict[str, Any]:
     snapshot = hardware_snapshot(root)
     cpu_limit = float(safety["start_max_cpu_percent"])
@@ -177,9 +200,11 @@ class HardwareSafetyCallback(L.Callback):
         ):
             self._request_stop(trainer, "board_vram_above_limit")
             return
-        if float(gpu["process_peak_allocated_gib"]) > float(
-            self.safety["stop_max_process_vram_gib"]
-        ):
+        process_peak = max(
+            float(gpu["process_peak_allocated_gib"]),
+            float(gpu["process_peak_reserved_gib"]),
+        )
+        if process_peak > float(self.safety["stop_max_process_vram_gib"]):
             self._request_stop(trainer, "process_vram_above_limit")
             return
         temperature = float(gpu["temperature_c"])
@@ -203,3 +228,18 @@ class HardwareSafetyCallback(L.Callback):
     ) -> None:
         del pl_module, outputs, batch, batch_idx
         self._check(trainer)
+
+    def on_fit_start(
+        self,
+        trainer: L.Trainer,
+        pl_module: L.LightningModule,
+    ) -> None:
+        del pl_module
+        self._last_checked = 0.0
+        self._check(trainer)
+
+    def capture_final(self) -> dict[str, Any]:
+        """Record an unconditional final sample for short and fast-dev runs."""
+        snapshot = hardware_snapshot(self.root)
+        self.samples.append(snapshot)
+        return snapshot

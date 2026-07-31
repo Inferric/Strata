@@ -1,0 +1,54 @@
+id: strata-fusion-v2-program
+status: preregistered
+goal: docs/goals/auto-run-1.md
+protocol: docs/FUSION_V2_PROGRAM.md
+source_dataset_id: otbench-usna-cn2-lg-v1
+source_sha256: c38a974d71ba58b9029687ad3397d6c1330c16c53e8a51ad1a94a3fcec3dbd4f
+split_id: otbench-usna-lg-fusion-v2
+cycle_0:
+  experiment_id: mlo-weather-horizon-v1
+  assessment_consumed: true
+  official_mlo_test_loaded: false
+assumptions:
+  - The pinned public USNA-large source and its repository acknowledgement are sufficient for this bounded program.
+  - Aggregate USNA validation targets touched during audit make that partition ineligible as untouched confirmation.
+  - Only the exact preregistered March-April 2022 confirmation slice may be released once.
+  - All development, pretraining, imputation, normalization, and learned transforms use fold training roles only.
+  - LightGBM is diagnostic and is not the intended flagship or a component of Strata-OT.
+  - Negative ablations are retained and three non-improvements close a hypothesis family.
+  - Completed gate conditions use only PASS, FAIL, or NOT_EVALUATED.
+authority_boundaries:
+  cloud_cost_usd: 0
+  champion_promotion: prohibited
+  official_mlo_test_release: prohibited
+  autonomous_merge: prohibited
+  confirmation_release_requires_flag: true
+budget:
+  max_wall_clock_hours: 12
+  target_productive_hours: 10
+  max_local_gpu_hours: 8
+  max_cloud_cost_usd: 0
+  max_new_storage_gib: 25
+  min_free_c_drive_gib: 50
+safety:
+  one_training_process: true
+  num_workers: 0
+  max_cpu_threads: 4
+  start_max_cpu_percent: 85
+  start_cpu_sustained_seconds: 180
+  start_min_free_ram_gib: 12
+  start_min_free_gpu_gib: 4
+  start_max_gpu_temperature_c: 75
+  stop_min_free_ram_gib: 8
+  stop_max_board_vram_gib: 15
+  stop_max_process_vram_gib: 14
+  stop_max_gpu_temperature_c: 84
+  stop_gpu_temperature_sustained_seconds: 60
+  one_oom_recovery: true
+deadline:
+  timezone: America/Chicago
+  started_at: "2026-07-30T18:06:00-05:00"
+  no_new_work_after: "2026-07-31T06:06:00-05:00"
+delivery:
+  draft_pull_request: new_required_because_pr_2_was_merged_by_user
+  merge: prohibited

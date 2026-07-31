@@ -1,0 +1,58 @@
+id: otbench-usna-cn2-lg-fusion-v2
+source_dataset_id: otbench-usna-cn2-lg-v1
+adapter: otbench_usna_large
+task: forecasting.usna_cn2_lg.multihorizon.Cn2_3m
+upstream_repository: https://github.com/CDJellen/otbench.git
+upstream_commit: 53cab9d53648b4870b43e35d48f19143786fa12e
+source_path: >-
+  data/raw/otbench/canonical-v1/otbench-mlo-cn2-15m-v1/upstream/otbench/data/usna_cn2_lg/usna_cn2_lg.nc
+source_sha256: c38a974d71ba58b9029687ad3397d6c1330c16c53e8a51ad1a94a3fcec3dbd4f
+citation: >-
+  Jellen, Nelson, Brownell, and Burkhardt (2024), Effective Benchmarks for
+  Optical Turbulence Modeling, doi:10.1175/AIES-D-24-0003.1. Preserve the
+  OTBench USNA, ONR, and DE-JTO acknowledgement in reports.
+license: MIT repository; dataset acknowledgement requirements preserved
+label:
+  name: Cn2_3m
+  representation: log10_cn2_m_minus_2_over_3
+  provenance_class: direct_observation
+  units: m^-2/3
+features:
+  raw_allowlist: [T_3m, P_3m, RH_3m, Spd_3m, Rad_1m, T_0m, Dir_3m]
+  derived_allowlist:
+    - dew_point
+    - vapor_pressure
+    - dry_refractivity
+    - wet_refractivity
+    - total_refractivity
+    - air_surface_temperature_difference
+    - weather_tendencies
+    - wind_sin
+    - wind_cos
+    - cyclic_time
+  include_missingness_masks: true
+site: United States Naval Academy
+geometry:
+  latitude_deg: 38.98
+  longitude_deg: -76.48
+  measurement_height_m: 3
+  path_type: surface_layer
+instrument:
+  cn2: ScinTec BLS450 scintillometer
+  local_weather: Davis Vantage Pro2
+  auxiliary_weather: TPLM2 buoy
+access: public_pinned_repository_snapshot
+upstream_terms: no_clickthrough; preserve acknowledgements
+manifest_path: data/manifests/otbench-usna-cn2-lg-fusion-v2.json
+split_config: configs/splits/frozen/otbench_usna_lg_fusion_v2.yaml
+sampling:
+  endpoint_cadence_minutes: 5
+  horizons_minutes: [5, 15, 30, 60]
+  contexts:
+    short: {rows: 6, spacing_minutes: 5}
+    medium: {rows: 12, spacing_minutes: 15}
+    slow: {rows: 24, spacing_minutes: 60}
+  maximum_source_gap_minutes: 2
+release:
+  confirmation_flag: --release-confirmation
+  official_mlo_test_forbidden: true

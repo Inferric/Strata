@@ -39,6 +39,7 @@ from strata_ot.training.safety import (
     TrainingProcessLock,
     hardware_snapshot,
     preflight_hardware,
+    resource_peaks,
 )
 from strata_ot.training.train import (
     _configure_torch_runtime,
@@ -431,6 +432,19 @@ def _write_json(
     return path
 
 
+def _tracked_artifact_bytes(
+    root: Path,
+    artifacts: dict[str, str],
+    *,
+    checkpoint: str | None = None,
+) -> int:
+    """Count unique stable run outputs and checkpoint bytes exactly."""
+    paths = {(root / relative).resolve() for relative in artifacts.values()}
+    if checkpoint:
+        paths.add(Path(checkpoint).resolve())
+    return sum(path.stat().st_size for path in paths if path.is_file())
+
+
 def _data_identity(
     root: Path,
     experiment: dict[str, Any],
@@ -585,7 +599,6 @@ def _log_baseline(
     )
     run_name = f"{name}-{datamodule.feature_set}-mlo"
     with mlflow.start_run(run_name=run_name, tags=tags) as run:
-        mlflow.log_metrics(metrics)
         mlflow.log_params({"model_family": name, **parameters})
         components: dict[str, Any] = {}
         artifacts = _save_run_artifacts(
@@ -625,6 +638,14 @@ def _log_baseline(
         evidence_path = _write_json(
             root, run.info.run_id, "run-manifest.json", evidence
         )
+        artifact_bytes = _tracked_artifact_bytes(root, artifacts)
+        metrics["artifact_storage_bytes"] = float(artifact_bytes)
+        metrics["storage_delta_gib"] = float(artifact_bytes / (1024**3))
+        evidence["metrics"] = metrics
+        evidence_path = _write_json(
+            root, run.info.run_id, "run-manifest.json", evidence
+        )
+        mlflow.log_metrics(metrics)
         mlflow.log_dict(evidence["data_identity"], "data-identity.json")
         mlflow.log_dict(environment, "environment.json")
         mlflow.log_dict(repository, "repository-identity.json")
@@ -748,11 +769,6 @@ def _train_neural(
         torch.cuda.empty_cache()
         torch.cuda.reset_peak_memory_stats()
     started = time.monotonic()
-    storage_start = sum(
-        path.stat().st_size
-        for path in (root / "artifacts").rglob("*")
-        if path.is_file()
-    )
     trainer = L.Trainer(
         accelerator=accelerator,
         devices=int(trainer_config["devices"]),
@@ -864,26 +880,13 @@ def _train_neural(
         del raw_by_horizon
         metrics.update({f"raw/{key}": value for key, value in raw_metrics.items()})
         elapsed = time.monotonic() - started
-        peak_allocated = (
-            float(torch.cuda.max_memory_allocated() / (1024**3))
-            if torch.cuda.is_available()
-            else 0.0
-        )
-        peak_reserved = (
-            float(torch.cuda.max_memory_reserved() / (1024**3))
-            if torch.cuda.is_available()
-            else 0.0
-        )
-        storage_end = sum(
-            path.stat().st_size
-            for path in (root / "artifacts").rglob("*")
-            if path.is_file()
-        )
+        safety_callback.capture_final()
+        peaks = resource_peaks(safety_callback.samples)
         metrics.update(
             {
                 "wall_clock_seconds": elapsed,
-                "peak_vram_gb": peak_allocated,
-                "peak_reserved_vram_gb": peak_reserved,
+                "peak_vram_gb": peaks["peak_total_board_vram_gib"],
+                **peaks,
                 "scale_calibration_factor": scale_factor,
                 "evaluation_samples": float(len(evaluation)),
                 "inference_latency_ms_per_sample": (
@@ -894,9 +897,6 @@ def _train_neural(
                 ),
                 "process_rss_gib": float(
                     psutil.Process().memory_info().rss / (1024**3)
-                ),
-                "storage_delta_gib": float(
-                    max(0, storage_end - storage_start) / (1024**3)
                 ),
             }
         )
@@ -926,7 +926,6 @@ def _train_neural(
                 calibration_raw_scale * scale_factor,
             ),
         }
-        logger.log_metrics(metrics, step=trainer.global_step)
         logger.experiment.log_dict(run_id, resolved, "resolved-config.json")
         logger.experiment.log_dict(run_id, environment, "environment.json")
         logger.experiment.log_dict(run_id, repository, "repository-identity.json")
@@ -976,6 +975,18 @@ def _train_neural(
         evidence_path = _write_json(
             root, run_id, "run-manifest.json", evidence
         )
+        artifact_bytes = _tracked_artifact_bytes(
+            root,
+            artifacts,
+            checkpoint=checkpoint.best_model_path or None,
+        )
+        metrics["artifact_storage_bytes"] = float(artifact_bytes)
+        metrics["storage_delta_gib"] = float(artifact_bytes / (1024**3))
+        evidence["metrics"] = metrics
+        evidence_path = _write_json(
+            root, run_id, "run-manifest.json", evidence
+        )
+        logger.log_metrics(metrics, step=trainer.global_step)
         logger.experiment.log_artifact(
             run_id, str(evidence_path), artifact_path="evidence"
         )
@@ -1627,18 +1638,43 @@ def run_horizon_experiment(
         for run in runs
         if run["kind"] == "neural"
     )
-    peak_vram = max(
+    peak_total_board_vram = max(
         (
-            float(run.get("metrics", {}).get("peak_vram_gb", 0.0))
+            float(
+                run.get("metrics", {}).get(
+                    "peak_total_board_vram_gib",
+                    run.get("metrics", {}).get("peak_vram_gb", 0.0),
+                )
+            )
             for run in runs
             if run["kind"] == "neural"
         ),
         default=0.0,
     )
-    storage_delta = sum(
-        float(run.get("metrics", {}).get("storage_delta_gib", 0.0))
+    peak_process_vram = max(
+        (
+            max(
+                float(
+                    run.get("metrics", {}).get(
+                        "peak_process_allocated_vram_gib", 0.0
+                    )
+                ),
+                float(
+                    run.get("metrics", {}).get(
+                        "peak_process_reserved_vram_gib", 0.0
+                    )
+                ),
+            )
+            for run in runs
+            if run["kind"] == "neural"
+        ),
+        default=0.0,
+    )
+    artifact_storage_bytes = sum(
+        int(run.get("metrics", {}).get("artifact_storage_bytes", 0.0))
         for run in runs
     )
+    storage_delta = artifact_storage_bytes / (1024**3)
     claim = _assessment_claim(
         root,
         runs,
@@ -1710,7 +1746,10 @@ def run_horizon_experiment(
         "horizon_matrix": matrix,
         "assessment_claim": claim,
         "total_neural_gpu_hours": total_gpu_hours,
-        "peak_vram_gb": peak_vram,
+        "peak_vram_gb": peak_total_board_vram,
+        "peak_total_board_vram_gib": peak_total_board_vram,
+        "peak_process_vram_gib": peak_process_vram,
+        "artifact_storage_bytes": artifact_storage_bytes,
         "storage_delta_gib": storage_delta,
         "cloud_cost_usd": 0.0,
         "oom_recovered": oom_recovered,
@@ -1748,7 +1787,15 @@ def run_horizon_experiment(
             "direct_and_teacher_labels_separated": True,
             "resource_metrics_reported": all(
                 "wall_clock_seconds" in run["metrics"]
-                and "peak_vram_gb" in run["metrics"]
+                and "artifact_storage_bytes" in run["metrics"]
+                and (
+                    run["kind"] != "neural"
+                    or (
+                        "peak_total_board_vram_gib" in run["metrics"]
+                        and "peak_process_allocated_vram_gib" in run["metrics"]
+                        and "peak_process_reserved_vram_gib" in run["metrics"]
+                    )
+                )
                 for run in runs
             ),
             "within_gpu_budget": (
@@ -1756,8 +1803,10 @@ def run_horizon_experiment(
                 and not safety_stop
                 and total_gpu_hours
                 < float(experiment["budget"]["max_total_gpu_hours"])
-                and peak_vram
+                and peak_process_vram
                 <= float(experiment["budget"]["max_peak_process_vram_gb"])
+                and peak_total_board_vram
+                <= float(experiment["budget"]["max_board_vram_gb"])
             ),
             "within_storage_budget": storage_delta
             <= float(experiment["budget"]["max_new_storage_gib"]),

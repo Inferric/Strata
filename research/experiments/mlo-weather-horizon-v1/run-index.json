@@ -4,10 +4,14 @@
   "generated_at": "2026-07-30T06:41:10.394672+00:00",
   "assessment": {
     "released_explicitly": true,
+    "consumed": true,
+    "consumption_id": "mlo-weather-horizon-v1-assessment",
+    "consumption_disposition": "consumed_no_retuning",
     "official_mlo_test_loaded": false,
     "evaluated_run_count": 17,
     "status": "null_or_partial",
     "gate_passed": false,
+    "gate_status": "FAIL",
     "champion_promoted": false,
     "failed_conditions": [
       "primary_bootstrap",
@@ -51,8 +55,12 @@
   },
   "resources": {
     "total_neural_gpu_hours": 0.2960550000000512,
-    "peak_vram_gib": 0.17485475540161133,
-    "storage_delta_gib": 0.0,
+    "peak_total_board_vram_gib": 2.1416015625,
+    "peak_process_allocated_vram_gib": 0.17485475540161133,
+    "peak_process_reserved_vram_gib": 0.197265625,
+    "tracked_artifact_bytes": 266928557,
+    "tracked_artifact_gib": 0.2485965909436345,
+    "accounting_repair": "Reconstructed from 75 preserved telemetry samples and 63 unique tracked output/checkpoint files; the earlier allocated-only VRAM and pre-write zero-byte storage values were invalid.",
     "cloud_cost_usd": 0.0,
     "oom_recovered": false
   },

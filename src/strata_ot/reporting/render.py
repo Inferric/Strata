@@ -12,6 +12,7 @@ from typing import Any, cast
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from strata_ot.config import find_repo_root
+from strata_ot.evaluation.evaluate import gate_status
 
 LATEX_REPLACEMENTS = {
     "\\": r"\textbackslash{}",
@@ -74,6 +75,7 @@ def _environment(template_dir: Path) -> Environment:
     environment.filters["num"] = latex_number
     environment.filters["pct"] = latex_percent
     environment.filters["shortid"] = short_identity
+    environment.filters["gate"] = gate_status
     return environment
 
 
@@ -547,37 +549,48 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
     task_kind = summary.get("task_kind")
     is_forecast = task_kind == "one_step_forecast"
     is_horizon = task_kind == "multi_horizon_forecast"
+    is_fusion_screen = task_kind == "fusion_v2_screen"
     if is_horizon:
         _prepare_horizon_report_context(summary, root, output_dir)
     elif is_forecast:
         _prepare_forecast_report_context(summary, root, output_dir)
-    else:
+    elif not is_fusion_screen:
         _prepare_report_context(summary, root, output_dir)
     template_dir = root / "reports" / "templates"
     template_name = (
-        "horizon_report.tex.j2"
-        if is_horizon
+        "fusion_screen_report.tex.j2"
+        if is_fusion_screen
         else (
-            "forecast_report.tex.j2"
-            if is_forecast
-            else "experiment_report.tex.j2"
+            "horizon_report.tex.j2"
+            if is_horizon
+            else (
+                "forecast_report.tex.j2"
+                if is_forecast
+                else "experiment_report.tex.j2"
+            )
         )
     )
     template = _environment(template_dir).get_template(template_name)
-    summary.setdefault("checks", {})["latex_pdf_compiled"] = True
+    summary.setdefault("checks", {})["latex_pdf_compiled"] = (
+        "PASS" if is_fusion_screen else True
+    )
     tex = template.render(summary=summary)
     tex_name = (
-        "mlo-weather-horizon-report.tex"
-        if is_horizon
+        "fusion-v2-screen-report.tex"
+        if is_fusion_screen
         else ("forecast-report.tex" if is_forecast else "experiment-report.tex")
     )
+    if is_horizon:
+        tex_name = "mlo-weather-horizon-report.tex"
     tex_path = output_dir / tex_name
     tex_path.write_text(tex, encoding="utf-8")
     shutil.copy2(root / "research" / "references.bib", output_dir / "references.bib")
     try:
         pdf = _compile(tex_path, output_dir)
     except Exception:
-        summary["checks"]["latex_pdf_compiled"] = False
+        summary["checks"]["latex_pdf_compiled"] = (
+            "FAIL" if is_fusion_screen else False
+        )
         summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
         raise
     summary["report_pdf"] = pdf.relative_to(root).as_posix()

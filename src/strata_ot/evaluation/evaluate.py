@@ -10,6 +10,20 @@ import yaml
 
 from strata_ot.config import find_repo_root
 
+GATE_STATUSES = frozenset({"PASS", "FAIL", "NOT_EVALUATED"})
+
+
+def gate_status(value: bool | str | None, *, evaluated: bool = True) -> str:
+    """Return the canonical evidence status for one condition."""
+    if isinstance(value, str):
+        normalized = value.upper()
+        if normalized not in GATE_STATUSES:
+            raise ValueError(f"Invalid gate status: {value}")
+        return normalized
+    if not evaluated or value is None:
+        return "NOT_EVALUATED"
+    return "PASS" if value else "FAIL"
+
 
 def evaluate_gates(summary: dict[str, Any], gates: dict[str, Any]) -> dict[str, Any]:
     checks = dict(summary.get("checks", {}))
@@ -129,10 +143,33 @@ def evaluate_gates(summary: dict[str, Any], gates: dict[str, Any]) -> dict[str, 
     )
     if total_gpu_hours > float(promotion["max_local_gpu_hours"]):
         failures.append("local_gpu_hours")
+    evaluated_conditions = set(required)
+    evaluated_conditions.add("minimum_seeds")
+    if promotion.get("require_improvement_over_climatology"):
+        evaluated_conditions.add("improvement_over_climatology")
+    if promotion.get("require_improvement_over_persistence"):
+        evaluated_conditions.add("improvement_over_persistence")
+    if best_model is not None:
+        evaluated_conditions.add("seed_stability")
+        if promotion.get("min_interval_80_coverage") is not None:
+            evaluated_conditions.add("interval_undercoverage")
+        if promotion.get("max_interval_80_coverage") is not None:
+            evaluated_conditions.add("interval_overcoverage")
+        if promotion.get("max_absolute_bias_log10_cn2") is not None:
+            evaluated_conditions.add("absolute_bias")
+    evaluated_conditions.update(("peak_vram", "local_gpu_hours"))
+    unique_failures = sorted(set(failures))
+    condition_statuses = {
+        name: gate_status(name not in unique_failures)
+        for name in sorted(evaluated_conditions)
+    }
+    passed = not unique_failures
     result = {
         "gate_id": gates["id"],
-        "passed": not failures,
-        "failures": sorted(set(failures)),
+        "status": gate_status(passed),
+        "passed": passed,
+        "failures": unique_failures,
+        "condition_statuses": condition_statuses,
         "evaluated_run_count": len(runs),
         "best_eligible_model": best_model,
         "best_mean_rmse_log10_cn2": best_mean_rmse,

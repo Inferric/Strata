@@ -119,7 +119,7 @@ uv run strata-report --summary artifacts/latest/summary.json --output reports/ge
 uv run strata-evaluate --summary artifacts/latest/summary.json
 ```
 
-`strata-evaluate` exits with status 2 when a sealed gate is open. For the
+`strata-evaluate` exits with status 2 when a sealed gate fails. For the
 reference result this is expected and records `interval_overcoverage`; it is not
 a training crash. Inspect `artifacts/latest/gate-result.json` and do not convert
 that exit into a pass.
@@ -145,7 +145,7 @@ docker compose ps
 ```
 
 The reference result is deliberately negative: persistence RMSE is 0.2751, the
-best neural RMSE is 0.4008, and the formal calibration gate remains open. The
+best neural RMSE is 0.4008, and the formal calibration gate failed. The
 next experiment must use validation-only scale calibration and a newly frozen
 confirmatory test; the sealed test already reported here must not be reused for
 tuning.

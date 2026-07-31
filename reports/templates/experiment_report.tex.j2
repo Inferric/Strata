@@ -17,7 +17,8 @@
 \definecolor{stratared}{HTML}{A63232}
 \definecolor{stratagray}{HTML}{59636E}
 \newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
-\newcommand{\open}{\textcolor{stratared}{\textbf{OPEN}}}
+\newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
+\newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
 \newcommand{\cn}{\(C_n^2\)}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.45em}
@@ -49,7 +50,7 @@ Persistence was best overall at RMSE
 \VAR{summary.best_neural_run.metrics.rmse_log10_cn2|num}.
 The Strata-OT hypothesis was not supported. All provenance, leakage,
 reproducibility, stability, and resource checks passed, but the sealed evidence
-gate remains \open{} because the eligible MLP's nominal 80\% interval covered
+gate is \fail{} because the eligible MLP's nominal 80\% interval covered
 100\% of test targets. No model is promoted.
 \end{minipage}}
 \end{center}
@@ -66,7 +67,7 @@ Dataset / split & \VAR{summary.dataset_id|latex} / \VAR{summary.split_id|latex}\
 Manifest / sealed split SHA-256 & \texttt{\VAR{summary.data_identity.dataset_manifest_sha256|shortid}} /
 \texttt{\VAR{summary.data_identity.split_sha256|shortid}}\\
 Evaluation gate & \VAR{summary.evaluation_gate_id|latex}:
-\BLOCK{ if summary.gate_result.passed }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+\BLOCK{ if summary.gate_result.passed }\pass\BLOCK{ elif summary.gate_result.get("status") == "NOT_EVALUATED" }\notevaluated\BLOCK{ else }\fail\BLOCK{ endif }\\
 Hardware & \VAR{summary.environment.device|latex}; \VAR{summary.environment.gpu.total_memory_gb|num} GB visible\\
 Software & Python \VAR{summary.environment.python|latex}; PyTorch \VAR{summary.environment.torch|latex};
 Lightning \VAR{summary.environment.lightning|latex}; CUDA \VAR{summary.environment.cuda_runtime|latex}\\
@@ -348,18 +349,18 @@ Check & Result\\
 \midrule
 \endhead
 \BLOCK{ for name, passed in summary.checks.items() }
-\VAR{name|latex} & \BLOCK{ if passed }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+\VAR{name|latex} & \BLOCK{ if passed }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
 \BLOCK{ endfor }
 Minimum two seeds & \pass\\
 Relative seed standard deviation at most 0.15 & \pass\\
 Absolute mean bias at most 0.25 & \pass\\
 Peak VRAM at most 15.5 GB & \pass\\
 Local GPU time at most 4 hours & \pass\\
-80\% interval coverage between 70\% and 90\% & \open{} (100\%)\\
+80\% interval coverage between 70\% and 90\% & \fail{} (100\%)\\
 \bottomrule
 \end{longtable}
 
-The formal gate result is \open{} with failure
+The formal gate result is \fail{} with failure
 \texttt{\VAR{summary.gate_result.failures[0]|latex}}. The best eligible model family is
 \VAR{summary.gate_result.best_eligible_model|latex}, with mean RMSE
 \VAR{summary.gate_result.best_mean_rmse_log10_cn2|num}. The gate was not weakened,
@@ -436,13 +437,13 @@ Mean RMSE \VAR{summary.model_aggregates[1].mean_rmse_log10_cn2|num} versus
 Rejected\\
 Neural uncertainty is calibrated &
 MLP 100\% coverage; Strata-OT below 45\% for nominal 80\% intervals &
-Rejected; gate remains open\\
+Rejected; gate failed\\
 The run is locally reproducible &
 Content-addressed source, manifest and split identities, resolved config, environment,
 seeds, checkpoints, predictions, plots, and MLflow ledger &
 Supported subject to upstream and container availability\\
 The model is ready for promotion &
-Formal evidence gate is open &
+Formal evidence gate failed &
 Rejected; no champion promotion authorized\\
 \bottomrule
 \end{longtable}

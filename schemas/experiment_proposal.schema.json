@@ -41,16 +41,28 @@
       "required": ["family", "config_path"],
       "properties": {
         "family": {
-          "enum": ["lightgbm", "mlp", "strata_ot_surface", "strata_ot_horizon"]
+          "enum": [
+            "lightgbm",
+            "mlp",
+            "tcn",
+            "strata_ot_surface",
+            "strata_ot_horizon",
+            "strata_ot_fusion"
+          ]
         },
         "config_path": {
           "enum": [
             "configs/model/strata_surface_tiny.yaml",
-            "configs/model/strata_horizon_v1.yaml"
+            "configs/model/strata_horizon_v1.yaml",
+            "configs/model/strata_fusion_v2.yaml"
           ]
         },
         "parent_config_path": {
-          "enum": ["configs/model/strata_surface_tiny.yaml"]
+          "enum": [
+            "configs/model/strata_surface_tiny.yaml",
+            "configs/model/strata_horizon_v1.yaml",
+            "configs/model/strata_fusion_v2.yaml"
+          ]
         }
       }
     },

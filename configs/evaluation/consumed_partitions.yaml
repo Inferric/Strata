@@ -1,0 +1,12 @@
+schema_version: 1
+consumed:
+  - consumption_id: mlo-weather-horizon-v1-assessment
+    dataset_id: otbench-mlo-cn2-15m-weather-horizon-v1
+    split_id: otbench-mlo-weather-horizon-v1
+    role: assessment
+    identities_sha256: 4396d032511f3b7e01a602184483b5aa5f06fd81dbc52da950b3c21fee67bec6
+    consumed_at: "2026-07-30T06:41:10.394672+00:00"
+    assessment_repository_revision: aa6464645433563b373cb343661e3cd53711f586
+    evidence_index: research/experiments/mlo-weather-horizon-v1/run-index.json
+    disposition: consumed_no_retuning
+    official_mlo_test_loaded: false

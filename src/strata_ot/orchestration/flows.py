@@ -6,9 +6,10 @@ from typing import Any
 from prefect import flow, task
 
 from strata_ot.config import find_repo_root
-from strata_ot.evaluation.evaluate import evaluate_gates
+from strata_ot.evaluation.evaluate import evaluate_gates, gate_status
 from strata_ot.reporting.render import render_report
 from strata_ot.training.forecast import run_forecast_experiment
+from strata_ot.training.fusion import run_fusion_candidate
 from strata_ot.training.horizon import run_horizon_experiment
 from strata_ot.training.train import run_experiment
 
@@ -149,16 +150,33 @@ def report_horizon(summary: dict[str, Any], output_directory: str) -> dict[str, 
         "within_storage_budget",
         "latex_pdf_compiled",
     )
-    failures = [name for name in required_checks if checks.get(name) is not True]
-    if refreshed.get("assessment_released") is not True:
-        failures.append("assessment_not_released")
+    assessment_released = refreshed.get("assessment_released") is True
+    condition_statuses = {
+        name: gate_status(checks.get(name), evaluated=name in checks)
+        for name in required_checks
+    }
+    failures = [
+        name for name, status in condition_statuses.items() if status == "FAIL"
+    ]
+    condition_statuses["assessment_released"] = gate_status(
+        assessment_released,
+        evaluated=assessment_released,
+    )
     for name, passed in dict(claim.get("conditions", {})).items():
-        if not passed:
-            failures.append(f"primary_{name}")
+        condition_name = f"primary_{name}"
+        condition_statuses[condition_name] = gate_status(
+            bool(passed),
+            evaluated=assessment_released,
+        )
+        if assessment_released and not passed:
+            failures.append(condition_name)
+    passed = bool(claim.get("passed")) and not failures
     gate_result = {
         "gate_id": "mlo-weather-horizon-v1-preregistered",
-        "passed": bool(claim.get("passed")) and not failures,
+        "status": gate_status(passed, evaluated=assessment_released),
+        "passed": passed,
         "failures": sorted(set(failures)),
+        "condition_statuses": condition_statuses,
         "evaluated_run_count": len(refreshed.get("runs", [])),
         "assessment_status": claim.get("status", "not_released"),
         "champion_promoted": False,
@@ -196,6 +214,74 @@ def horizon_flow(
 ) -> dict[str, Any]:
     summary = train_horizon(config_path, fast_dev_run, release_assessment)
     return report_horizon(summary, "reports/generated/mlo-weather-horizon-v1")
+
+
+@task(log_prints=True)
+def train_fusion(
+    config_path: str,
+    candidate_id: str,
+    fold_id: str,
+    seed: int,
+    screen: bool,
+    release_confirmation: bool,
+) -> dict[str, Any]:
+    return run_fusion_candidate(
+        config_path,
+        candidate_id=candidate_id,
+        fold_id=fold_id,
+        seed=seed,
+        screen=screen,
+        release_confirmation=release_confirmation,
+    )
+
+
+@flow(name="strata-ot-fusion-v2-candidate", log_prints=True)
+def fusion_flow(
+    config_path: str = "configs/experiments/fusion_v2_program.yaml",
+    candidate_id: str = "context-all",
+    fold_id: str = "fold-1",
+    seed: int = 17,
+    screen: bool = True,
+    release_confirmation: bool = False,
+) -> dict[str, Any]:
+    return train_fusion(
+        config_path,
+        candidate_id,
+        fold_id,
+        seed,
+        screen,
+        release_confirmation,
+    )
+
+
+@flow(name="strata-ot-fusion-v2-screen-program", log_prints=True)
+def fusion_screen_program_flow(
+    config_path: str = "configs/experiments/fusion_v2_program.yaml",
+    fold_id: str = "fold-1",
+    seed: int = 17,
+) -> list[dict[str, Any]]:
+    root = find_repo_root()
+    import yaml
+
+    experiment = yaml.safe_load((root / config_path).read_text(encoding="utf-8"))
+    candidate_ids = [
+        str(candidate["id"])
+        for candidate in experiment["candidates"]
+        if bool(candidate.get("screen_program", True))
+    ]
+    results: list[dict[str, Any]] = []
+    for candidate_id in candidate_ids:
+        results.append(
+            train_fusion(
+                config_path,
+                candidate_id,
+                fold_id,
+                seed,
+                True,
+                False,
+            )
+        )
+    return results
 
 
 def main() -> None:
@@ -239,6 +325,61 @@ def horizon_main() -> None:
             args.config,
             args.fast_dev_run,
             args.release_assessment,
+        )
+    )
+
+
+def fusion_main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Run one Fusion v2 candidate through Prefect"
+    )
+    parser.add_argument(
+        "--config", default="configs/experiments/fusion_v2_program.yaml"
+    )
+    parser.add_argument("--candidate", required=True)
+    parser.add_argument("--fold", default="fold-1")
+    parser.add_argument("--seed", type=int, default=17)
+    parser.add_argument("--full", action="store_true")
+    parser.add_argument("--release-confirmation", action="store_true")
+    args = parser.parse_args()
+    print(
+        fusion_flow(
+            args.config,
+            args.candidate,
+            args.fold,
+            args.seed,
+            not args.full,
+            args.release_confirmation,
+        )
+    )
+
+
+def fusion_program_main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Run the complete preregistered Fusion v2 screen matrix"
+    )
+    parser.add_argument(
+        "--config", default="configs/experiments/fusion_v2_program.yaml"
+    )
+    parser.add_argument("--fold", default="fold-1")
+    parser.add_argument("--seed", type=int, default=17)
+    args = parser.parse_args()
+    results = fusion_screen_program_flow(args.config, args.fold, args.seed)
+    print(
+        json.dumps(
+            [
+                {
+                    "run_id": result["run_id"],
+                    "candidate_id": result["candidate_id"],
+                    "family": result["family"],
+                }
+                for result in results
+            ],
+            indent=2,
         )
     )
 

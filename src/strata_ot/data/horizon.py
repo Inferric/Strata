@@ -15,6 +15,7 @@ from torch.utils.data import DataLoader, Dataset
 
 from strata_ot.config import find_repo_root
 from strata_ot.data.registry import verify_manifest
+from strata_ot.evaluation.consumption import require_unconsumed
 
 
 def _canonical_sha256(value: object) -> str:
@@ -167,6 +168,13 @@ class HorizonDataModule(L.LightningDataModule):
 
     def prepare_data(self) -> None:
         root = find_repo_root()
+        if self.allow_assessment:
+            consumption_id = self.data_config.get("assessment_consumption_id")
+            if not isinstance(consumption_id, str) or not consumption_id:
+                raise RuntimeError(
+                    "Assessment release requires a registered consumption identity"
+                )
+            require_unconsumed(consumption_id, root=root)
         required = (
             "train_features.csv",
             "train_target.csv",

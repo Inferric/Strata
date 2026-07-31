@@ -7,7 +7,8 @@
 \definecolor{stratared}{HTML}{A63232}
 \definecolor{stratagray}{HTML}{59636E}
 \newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
-\newcommand{\open}{\textcolor{stratared}{\textbf{OPEN}}}
+\newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
+\newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
 \newcommand{\cn}{\(C_n^2\)}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.45em}
@@ -69,7 +70,7 @@ Source archive & Content-addressed ZIP; SHA-256
 Hardware & \VAR{summary.environment.device|latex};
 \VAR{summary.environment.gpu.total_memory_gb|num} GB visible\\
 Formal evidence gate &
-\BLOCK{ if summary.get("gate_result", {}).get("passed") }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+\BLOCK{ if not summary.get("gate_result") }\notevaluated\BLOCK{ elif summary.gate_result.get("passed") }\pass\BLOCK{ elif summary.gate_result.get("status") == "NOT_EVALUATED" }\notevaluated\BLOCK{ else }\fail\BLOCK{ endif }\\
 \bottomrule
 \end{tabularx}
 
@@ -296,14 +297,14 @@ Check & Result\\
 \midrule
 \endhead
 \BLOCK{ for name, passed in summary.checks.items() }
-\VAR{name|latex} & \BLOCK{ if passed }\pass\BLOCK{ else }\open\BLOCK{ endif }\\
+\VAR{name|latex} & \BLOCK{ if passed }\pass\BLOCK{ else }\fail\BLOCK{ endif }\\
 \BLOCK{ endfor }
 \bottomrule
 \end{longtable}
 
 \BLOCK{ if summary.get("gate_result") }
 The immutable gate result is
-\BLOCK{ if summary.gate_result.passed }\pass\BLOCK{ else }\open\BLOCK{ endif }.
+\BLOCK{ if summary.gate_result.passed }\pass\BLOCK{ elif summary.gate_result.get("status") == "NOT_EVALUATED" }\notevaluated\BLOCK{ else }\fail\BLOCK{ endif }.
 Recorded failures: \VAR{summary.gate_result.failures|latex}. No criterion was changed
 after observing evaluation data.
 \BLOCK{ endif }

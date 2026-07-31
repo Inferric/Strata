@@ -1,0 +1,118 @@
+id: otbench-usna-lg-fusion-v2
+sealed: true
+source_file_sha256: c38a974d71ba58b9029687ad3397d6c1330c16c53e8a51ad1a94a3fcec3dbd4f
+strategy: purged_rolling_origin_with_one_shot_confirmation
+ordering_field: time
+minimum_boundary_purge_minutes: 2880
+maximum_context_minutes: 1440
+maximum_horizon_minutes: 60
+materialized_path: data/sealed/splits/otbench-usna-lg-fusion-v2.json
+official_partitions:
+  training:
+    raw_start_offset: 0
+    raw_end_offset_inclusive: 524339
+  validation:
+    raw_start_offset: 524340
+    raw_end_offset_inclusive: 788208
+    eligibility: audit_contaminated_not_confirmation
+  test:
+    raw_start_offset: 788209
+    raw_end_offset_inclusive: 1291224
+    eligibility: only_preregistered_confirmation_slice_may_be_released
+folds:
+  - id: fold-1
+    train:
+      start: "2020-01-01T00:00:00"
+      end: "2020-03-15T23:59:00"
+      raw_start_offset: 0
+      raw_end_offset_inclusive: 106630
+      rows: 106631
+      identities_sha256: c4eaa519d28f0af9e06eb150bfeb87c1a9c428c6be52d7f66646b32bdd449180
+    calibration:
+      start: "2020-03-18T00:00:00"
+      end: "2020-03-24T23:59:00"
+      raw_start_offset: 109511
+      raw_end_offset_inclusive: 119590
+      rows: 10080
+      identities_sha256: 263f2565da3dc20d4e0efe9c3308aa222c5f2400e6650a1d00f3af10d23ac619
+    selection:
+      start: "2020-04-01T00:00:00"
+      end: "2020-04-30T23:59:00"
+      raw_start_offset: 129670
+      raw_end_offset_inclusive: 172843
+      rows: 43174
+      identities_sha256: db0dfa5bd075469463aca03411473a6971d7a319ae5090ab1a59f64c61dfa6a3
+  - id: fold-2
+    train:
+      start: "2020-01-01T00:00:00"
+      end: "2020-06-15T23:59:00"
+      raw_start_offset: 0
+      raw_end_offset_inclusive: 239081
+      rows: 239082
+      identities_sha256: c608e067827b80fa9b7fde2f4bc567241e991ee16ca21b6b8c78ea5f30296fe8
+    calibration:
+      start: "2020-06-18T00:00:00"
+      end: "2020-06-24T23:59:00"
+      raw_start_offset: 241962
+      raw_end_offset_inclusive: 252041
+      rows: 10080
+      identities_sha256: eb73526fb0f5ead583c5f8ae0b1162c7de7f0746b5b81b2e516987d91c673f35
+    selection:
+      start: "2020-07-01T00:00:00"
+      end: "2020-07-31T23:59:00"
+      raw_start_offset: 260682
+      raw_end_offset_inclusive: 305320
+      rows: 44639
+      identities_sha256: 070c90fa64636edf1a06f0d1c07fdd53900feeea7da991aff2e39752616778ed
+  - id: fold-3
+    train:
+      start: "2020-01-01T00:00:00"
+      end: "2020-09-15T23:59:00"
+      raw_start_offset: 0
+      raw_end_offset_inclusive: 371560
+      rows: 371561
+      identities_sha256: b03a908772dc87b7c53fb5a8662d4d53637f8190a4b4cb99d7d58f7fdc5cfc5e
+    calibration:
+      start: "2020-09-18T00:00:00"
+      end: "2020-09-24T23:59:00"
+      raw_start_offset: 374441
+      raw_end_offset_inclusive: 384520
+      rows: 10080
+      identities_sha256: cd15c50035a0e5cba83390bc041142c68e5117b9cac46283c5d2dc4f28b6e1ed
+    selection:
+      start: "2020-10-01T00:00:00"
+      end: "2020-10-31T23:59:00"
+      raw_start_offset: 393161
+      raw_end_offset_inclusive: 437557
+      rows: 44397
+      identities_sha256: 484c33e77970cb4af7af45fead5a2c73f06330032517ca241c2cac03ee71210c
+final_fit:
+  train:
+    start: "2020-01-01T00:00:00"
+    end: "2020-12-15T23:59:00"
+    raw_start_offset: 0
+    raw_end_offset_inclusive: 502071
+    rows: 502072
+    identities_sha256: e9064e26429b2231821b1fa2611998866556aa761ddd0b58384b2c3d954caeb5
+  calibration:
+    start: "2020-12-18T00:00:00"
+    end: "2020-12-24T23:59:00"
+    raw_start_offset: 504952
+    raw_end_offset_inclusive: 514910
+    rows: 9959
+    identities_sha256: d78ed40534cb600a18aca19999b0d39827dd21d2751a97f839554fcd260ab1ff
+confirmation:
+  official_partition: test
+  release_flag: --release-confirmation
+  consumption_id: usna-lg-2022-march-april-confirmation-v1
+  start: "2022-03-01T00:00:00"
+  end: "2022-04-30T23:59:00"
+  raw_start_offset: 1096892
+  raw_end_offset_inclusive: 1184664
+  rows: 87773
+  identities_sha256: 23c127fb4d7a46f730dfcff497645918f19bb1ba4115cf6d1ef2442d46e111e7
+notes:
+  - Development roles are entirely inside the official upstream training partition.
+  - The upstream validation target was touched during audit and is not untouched confirmation evidence.
+  - Confirmation labels are loadable once only after an implementation and candidate commit.
+  - The official MLO test is unrelated to this split and remains prohibited.

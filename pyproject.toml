@@ -62,12 +62,15 @@ strata-acquire = "strata_ot.data.acquire:main"
 strata-train = "strata_ot.training.train:main"
 strata-forecast = "strata_ot.training.forecast:main"
 strata-horizon = "strata_ot.training.horizon:main"
+strata-fusion = "strata_ot.training.fusion:main"
 strata-evaluate = "strata_ot.evaluation.evaluate:main"
 strata-report = "strata_ot.reporting.render:main"
 strata-loop = "strata_ot.autonomy.loop:main"
 strata-first-flow = "strata_ot.orchestration.flows:main"
 strata-forecast-flow = "strata_ot.orchestration.flows:forecast_main"
 strata-horizon-flow = "strata_ot.orchestration.flows:horizon_main"
+strata-fusion-flow = "strata_ot.orchestration.flows:fusion_main"
+strata-fusion-program = "strata_ot.orchestration.flows:fusion_program_main"
 
 [[tool.uv.index]]
 name = "pytorch-cu128"
@@ -94,7 +97,16 @@ strict = true
 packages = ["strata_ot"]
 
 [[tool.mypy.overrides]]
-module = ["otbench", "otbench.*", "pandas", "pandas.*", "scipy", "scipy.*"]
+module = [
+  "otbench",
+  "otbench.*",
+  "pandas",
+  "pandas.*",
+  "scipy",
+  "scipy.*",
+  "sklearn",
+  "sklearn.*",
+]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
