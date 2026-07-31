@@ -103,21 +103,40 @@ Candidate & RMSE change & 2\% RMSE & Tail & CRPS & Coverage & Advances\\
 \bottomrule
 \end{longtable}
 
-\section{Horizon-resolved results}
+\section{Horizon-resolved error results}
 \small
-\begin{longtable}{llrrrrr}
+\begin{longtable}{llrrrr}
 \toprule
-Candidate & Horizon & RMSE & Bias & Tail MAE & CRPS & Coverage\\
+Candidate & Horizon & RMSE & MAE & Bias & Tail MAE\\
 \midrule
 \endhead
 \BLOCK{ for run in summary.runs }
 \BLOCK{ for horizon, values in run.by_horizon.items() }
 \VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
 \VAR{values.rmse_log10_cn2|num} &
+\VAR{values.mae_log10_cn2|num} &
 \VAR{values.bias_log10_cn2|num} &
-\VAR{values.tail_mae_top_decile|num} &
+\VAR{values.tail_mae_top_decile|num}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection*{Horizon-resolved probabilistic results}
+\small
+\begin{longtable}{llrrrr}
+\toprule
+Candidate & Horizon & CRPS & Student-\(t\) NLL & Coverage & Width\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\BLOCK{ for horizon, values in run.by_horizon.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
 \VAR{values.crps_gaussian|num} &
-\VAR{values.interval_80_coverage|pct}\\
+\VAR{values.student_t_nll|num} &
+\VAR{values.interval_80_coverage|pct} &
+\VAR{values.interval_80_width|num}\\
 \BLOCK{ endfor }
 \BLOCK{ endfor }
 \bottomrule

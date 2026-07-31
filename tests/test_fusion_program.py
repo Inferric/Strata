@@ -17,6 +17,7 @@ from strata_ot.evaluation.fusion_program import (
     ROBUSTNESS_EVIDENCE_REVISION,
     _bootstrap_improvement,
     _collect_robustness_runs,
+    _complete_primary_block_ids,
     _excluded_dirty_robustness_runs,
     _expected_robustness_keys,
 )
@@ -50,6 +51,13 @@ def test_paired_block_bootstrap_rejects_unpaired_shapes() -> None:
             np.ones((3, 3)),
             np.ones((2, 3)),
         )
+
+
+def test_bootstrap_excludes_only_blocks_missing_a_primary_horizon() -> None:
+    day = np.asarray([10, 10, 11, 11, 11, 12], dtype=np.int64)
+    horizon = np.asarray([15, 30, 15, 30, 60, 60], dtype=np.int64)
+    complete = _complete_primary_block_ids(day, horizon)
+    np.testing.assert_array_equal(complete, np.asarray([11]))
 
 
 class _FixedDistribution(nn.Module):

@@ -268,7 +268,9 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
                 "relative_improvement_over_stronger_neural": 0.01,
                 "relative_improvement_over_diagnostic_lightgbm": -0.02,
                 "bootstrap_vs_persistence": {
-                    "relative_improvement_ci95": [-0.01, 0.05]
+                    "relative_improvement_ci95": [-0.01, 0.05],
+                    "blocks": 90,
+                    "excluded_incomplete_blocks": 3,
                 },
                 "bootstrap_vs_stronger_neural": {
                     "relative_improvement_ci95": [-0.02, 0.03]
@@ -354,6 +356,8 @@ def test_fusion_point_loss_template_renders_terminal_evidence() -> None:
         "tail_mae_top_decile": 0.19,
         "crps_gaussian": 0.14,
         "interval_80_coverage": 0.8,
+        "interval_80_width": 0.4,
+        "student_t_nll": -0.2,
     }
     run = {
         "candidate_id": "point-huber-0p00",

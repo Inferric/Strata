@@ -728,16 +728,34 @@ def _assert_paired_predictions(
             raise RuntimeError(f"Paired prediction identity mismatch for {identity}: {key}")
 
 
+def _complete_primary_block_ids(
+    day: np.ndarray,
+    horizon: np.ndarray,
+) -> np.ndarray:
+    return np.asarray(
+        [
+            day_id
+            for day_id in np.unique(day)
+            if all(
+                bool(((day == day_id) & (horizon == horizon_minutes)).any())
+                for horizon_minutes in PRIMARY_HORIZONS
+            )
+        ],
+        dtype=day.dtype,
+    )
+
+
 def _paired_block_statistics(
     root: Path,
     runs: dict[tuple[str, str, int], dict[str, Any]],
     *,
     candidate_id: str,
     benchmark_id: str,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, int]:
     candidate_sums: list[np.ndarray] = []
     benchmark_sums: list[np.ndarray] = []
     counts: list[np.ndarray] = []
+    excluded_incomplete_blocks = 0
     for fold_id in ROBUSTNESS_FOLDS:
         benchmark_seeds = (
             (17,)
@@ -798,16 +816,17 @@ def _paired_block_statistics(
             reference["target_timestamp_minute"].astype(np.int64)
             // BOOTSTRAP_BLOCK_MINUTES
         )
-        for day_id in np.unique(day):
+        all_day_ids = np.unique(day)
+        complete_day_ids = _complete_primary_block_ids(day, horizon)
+        excluded_incomplete_blocks += len(all_day_ids) - len(
+            complete_day_ids
+        )
+        for day_id in complete_day_ids:
             candidate_row: list[float] = []
             benchmark_row: list[float] = []
             count_row: list[float] = []
             for horizon_minutes in PRIMARY_HORIZONS:
                 mask = (day == day_id) & (horizon == horizon_minutes)
-                if not bool(mask.any()):
-                    raise RuntimeError(
-                        f"Incomplete 24-hour block for {fold_id}/{day_id}"
-                    )
                 candidate_row.append(float(candidate_squared_error[mask].sum()))
                 benchmark_row.append(float(benchmark_squared_error[mask].sum()))
                 count_row.append(float(mask.sum()))
@@ -818,6 +837,7 @@ def _paired_block_statistics(
         np.stack(candidate_sums),
         np.stack(benchmark_sums),
         np.stack(counts),
+        excluded_incomplete_blocks,
     )
 
 
@@ -885,15 +905,18 @@ def _paired_bootstrap(
     candidate_id: str,
     benchmark_id: str,
 ) -> dict[str, Any]:
-    candidate, benchmark, counts = _paired_block_statistics(
+    candidate, benchmark, counts, excluded_incomplete_blocks = (
+        _paired_block_statistics(
         root,
         runs,
         candidate_id=candidate_id,
         benchmark_id=benchmark_id,
+        )
     )
     result = _bootstrap_improvement(candidate, benchmark, counts)
     result["candidate_id"] = candidate_id
     result["benchmark_id"] = benchmark_id
+    result["excluded_incomplete_blocks"] = excluded_incomplete_blocks
     return result
 
 
