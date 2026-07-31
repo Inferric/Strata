@@ -12,23 +12,23 @@
 \newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
 \newcommand{\cn}{\(C_n^2\)}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.25em}
+\setlength{\parskip}{0.22em}
 \setlength{\emergencystretch}{3em}
 \setlist{nosep,leftmargin=1.45em}
-\renewcommand{\arraystretch}{1.05}
+\renewcommand{\arraystretch}{1.04}
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
-\rhead{\textcolor{stratagray}{Fusion v2.3 residual scale}}
+\rhead{\textcolor{stratagray}{Fusion v2.4 direct shortcut}}
 \cfoot{\thepage}
 \fancypagestyle{plain}{
 \fancyhf{}
 \lhead{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
-\rhead{\textcolor{stratagray}{Fusion v2.3 residual scale}}
+\rhead{\textcolor{stratagray}{Fusion v2.4 direct shortcut}}
 \cfoot{\thepage}
 }
-\title{\textbf{\textcolor{stratablue}{Strata-OT Fusion v2.3}}\\
-\large Frozen horizon-scaled persistence-residual screen}
+\title{\textbf{\textcolor{stratablue}{Strata-OT Fusion v2.4}}\\
+\large Frozen direct residual-shortcut screen}
 \author{Generated from four paired rolling-development runs}
 \date{\VAR{summary.generated_at|latex}}
 
@@ -49,12 +49,14 @@ The confirmation labels and official MLO test remained sealed.
 \section{Frozen hypothesis and isolated change}
 \textbf{Hypothesis.} \VAR{summary.hypothesis|latex}
 
-Each arm predicts
-\(\widehat y_h=y_{\mathrm{latest}}+(h/5)^\alpha\delta_\theta\).
-The exponent is a fixed training and representation bias, not a fitted
-physical law. It changes no parameter count. Architecture, weather features,
-objective, raw uncertainty head, fold, seed, sample cap, and optimizer are
-identical.
+Every arm retains the complete deep Fusion v2 branch and predicts
+\[
+  \widehat y=y_{\mathrm{latest}}+
+  \delta_{\mathrm{deep}}+\delta_{\mathrm{shortcut}}.
+\]
+The shortcut sees only Fourier horizon features and past context. Its final
+projection starts at zero, so it cannot change the initial deep-branch
+prediction. No target-time weather or evaluation labels enter this path.
 
 \begin{tabularx}{\linewidth}{>{\bfseries}p{0.36\linewidth}X}
 \toprule
@@ -72,27 +74,26 @@ Confirmation & \notevaluated\\
 \end{tabularx}
 
 \section{Complete four-arm screen}
-\begin{longtable}{lrrrrrrrr}
+\begin{longtable}{p{0.26\linewidth}p{0.15\linewidth}rrrrrr}
 \toprule
-Candidate & \(\alpha\) & RMSE & MAE & Bias & Tail & CRPS & Cov.\ 80 & Sec.\\
+Candidate & Shortcut & Parameters & RMSE & Bias & Tail & CRPS & Cov.\ 80\\
 \midrule
 \endhead
 \BLOCK{ for run in summary.runs }
 \VAR{run.candidate_id|latex} &
-\VAR{run.residual_horizon_exponent|num(2)} &
+\VAR{run.residual_shortcut|latex} &
+\VAR{run.parameters|latex} &
 \VAR{run.primary.rmse_log10_cn2|num} &
-\VAR{run.primary.mae_log10_cn2|num} &
 \VAR{run.primary.bias_log10_cn2|num} &
 \VAR{run.primary.tail_mae_top_decile|num} &
 \VAR{run.primary.crps_gaussian|num} &
-\VAR{run.primary.interval_80_coverage|pct} &
-\VAR{run.wall_clock_seconds|num(1)}\\
+\VAR{run.primary.interval_80_coverage|pct}\\
 \BLOCK{ endfor }
 \bottomrule
 \end{longtable}
 
-\section{Intervention decisions}
-\begin{longtable}{lrrrrrr}
+\subsection*{Intervention decisions}
+\begin{longtable}{p{0.31\linewidth}rrrrrr}
 \toprule
 Candidate & RMSE change & 2\% RMSE & Tail & CRPS & Coverage & Advances\\
 \midrule
@@ -131,19 +132,21 @@ Candidate & Horizon & RMSE & MAE & Bias & Tail MAE\\
 
 \subsection*{Residual-component audit}
 \small
-\begin{longtable}{llrrrrr}
+\begin{longtable}{llrrrrrr}
 \toprule
-Candidate & Horizon & Raw mean & Raw SD & Scale & Final mean & Final SD\\
+Candidate & Horizon & Deep mean & Deep SD & Shortcut mean & Shortcut SD &
+Combined & Final\\
 \midrule
 \endhead
 \BLOCK{ for run in summary.runs }
-\BLOCK{ for horizon, values in run.residual_diagnostics.items() }
+\BLOCK{ for horizon, values in run.shortcut_diagnostics.items() }
 \VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
-\VAR{values.raw_residual_mean|num} &
-\VAR{values.raw_residual_std|num} &
-\VAR{values.residual_scale_mean|num(3)} &
-\VAR{values.residual_mean|num} &
-\VAR{values.residual_std|num}\\
+\VAR{values.base_mean|num} &
+\VAR{values.base_std|num} &
+\VAR{values.shortcut_mean|num} &
+\VAR{values.shortcut_std|num} &
+\VAR{values.raw_mean|num} &
+\VAR{values.final_mean|num}\\
 \BLOCK{ endfor }
 \BLOCK{ endfor }
 \bottomrule
@@ -170,7 +173,7 @@ Candidate & Horizon & CRPS & Student-\(t\) NLL & Coverage & Width\\
 \end{longtable}
 \normalsize
 
-\section{OOD, selective risk, and latency}
+\section{OOD, selective risk, resources, and claim boundary}
 \small
 \begin{longtable}{p{0.25\linewidth}rrrrr}
 \toprule
@@ -190,7 +193,6 @@ Latency (ms/sample) & Throughput\\
 \end{longtable}
 \normalsize
 
-\section{Gate, resources, and claim boundary}
 \begin{tabularx}{\linewidth}{>{\bfseries}p{0.38\linewidth}X}
 \toprule
 Neural wall-clock hours & \VAR{summary.resources.neural_wall_clock_hours|num(3)}\\
@@ -219,10 +221,9 @@ Condition & State\\
 \end{tabular}
 \end{center}
 
-This is a single-fold, single-seed representation screen. It cannot establish
-seasonal robustness, transfer, or a champion. A passing exponent would retain
-its exact value for the unchanged three-fold/three-seed protocol. Three failed
-interventions close this fixed power-law family and do not authorize exponent
-retuning or confirmation release.
+This single-fold, single-seed architecture screen cannot establish seasonal
+robustness, transfer, or a champion. A passing shortcut would retain its exact
+input and function for the unchanged rolling protocol. Three failed
+interventions close this direct-shortcut family without confirmation release.
 
 \end{document}

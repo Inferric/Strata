@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "data_scale_complete_residual_scaling_frozen",
+  "status": "residual_scaling_complete_direct_shortcut_frozen",
   "events": [
     {
       "sequence": 0,
@@ -326,6 +326,50 @@
       "parent_run_id": "c8685b9bea5d4ad391e50045809d51d1",
       "evidence": "docs/FUSION_V23_RESIDUAL_SCALING.md",
       "notes": "A paired exponent 0/0.25/0.50/1.00 screen is frozen before metrics. It changes only a fixed, interpretable power-law scale on the persistence residual and keeps model parameters, objective, data, and evidence gates unchanged."
+    },
+    {
+      "sequence": 25,
+      "recorded_at": "2026-07-30T22:58:11-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "horizon_scaled_residual",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "1dddd4208a39473aa6d302671dd774be",
+        "f83ab2be4a05440cbe8ba4a403a27e1f",
+        "156061a36aae481eb3744700423c8508",
+        "0e9cb876f4294303ba269972b59c3192"
+      ],
+      "control_primary_rmse": 0.30082541675299396,
+      "relative_improvements": {
+        "residual-exp-0p25": 0.001326958384414841,
+        "residual-exp-0p50": -0.004264652037626427,
+        "residual-exp-1p00": -0.040087916403335214
+      },
+      "notes": "No fixed horizon exponent reached the frozen 2% paired RMSE improvement. The 0.25 arm also failed tail; 1.00 materially worsened RMSE and CRPS. Three non-improvements close the fixed power-law residual-scaling family."
+    },
+    {
+      "sequence": 26,
+      "recorded_at": "2026-07-30T23:01:35-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "horizon_scaled_residual",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "ab248fd98f0f47e8b5bcaca79fe70f21",
+      "evidence": "research/experiments/fusion-v2-program/residual-scale-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1_kKyDbHxhbi_UTR3fkYD-dUbLYfY_std/view?usp=drivesdk",
+      "notes": "The three-page LaTeX residual-scaling report was compiled, rendered, visually inspected, logged as a finished MLflow evidence run, uploaded to the private program folder, and verified as a 52,360-byte unshared PDF."
+    },
+    {
+      "sequence": 27,
+      "recorded_at": "2026-07-30T23:05:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "direct_residual_shortcut",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "ab248fd98f0f47e8b5bcaca79fe70f21",
+      "evidence": "docs/FUSION_V24_DIRECT_SHORTCUT.md",
+      "notes": "A four-arm no-shortcut/history-linear/all-linear/all-MLP architecture screen is frozen before metrics. Every shortcut consumes only past context, starts with a zero final projection, retains the deep branch, and uses unchanged data, optimization, and evidence gates."
     }
   ]
 }

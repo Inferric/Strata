@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "program_id": "strata-fusion-v2-program",
+  "cycle_id": "fusion-v23-residual-scaling",
+  "frozen_at": "2026-07-30T22:56:08.767110-05:00",
+  "protocol": "docs/FUSION_V23_RESIDUAL_SCALING.md",
+  "repository_revision": "ae632067e1a405214ca2081d7069e82bd3e0fdb7",
+  "fold_id": "fold-1",
+  "seed": 17,
+  "run_ids": {
+    "residual-exp-0p00": "1dddd4208a39473aa6d302671dd774be",
+    "residual-exp-0p25": "f83ab2be4a05440cbe8ba4a403a27e1f",
+    "residual-exp-0p50": "156061a36aae481eb3744700423c8508",
+    "residual-exp-1p00": "0e9cb876f4294303ba269972b59c3192"
+  },
+  "exponents": {
+    "residual-exp-0p00": 0.0,
+    "residual-exp-0p25": 0.25,
+    "residual-exp-0p50": 0.5,
+    "residual-exp-1p00": 1.0
+  },
+  "official_mlo_test_loaded": false,
+  "usna_confirmation_labels_loaded": false
+}

@@ -409,3 +409,59 @@ candidates:
     point_loss_weight: 0.00
     residual_horizon_exponent: 1.00
     screen_program: false
+  - id: shortcut-none
+    category: direct_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: none
+    screen_program: false
+  - id: shortcut-history-linear
+    category: direct_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_program: false
+  - id: shortcut-all-linear
+    category: direct_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: all_linear
+    screen_program: false
+  - id: shortcut-all-mlp
+    category: direct_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: all_mlp
+    screen_program: false

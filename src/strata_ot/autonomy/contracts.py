@@ -28,6 +28,7 @@ ALLOWED_MODEL_PARAMETERS = {
     "point_loss_weight",
     "max_train_examples",
     "residual_horizon_exponent",
+    "residual_shortcut",
 }
 
 REQUIRED_STOP_CONDITIONS = {
@@ -157,6 +158,12 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
             "physics_tokens": {"none", "base", "full"},
             "pretraining": {"none", "reconstruction", "full_multitask"},
             "calibration": {"none", "conformal", "student_t_conformal"},
+            "residual_shortcut": {
+                "none",
+                "history_linear",
+                "all_linear",
+                "all_mlp",
+            },
         }
         if parameter in categorical:
             comparable = (

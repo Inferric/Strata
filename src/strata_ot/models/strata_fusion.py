@@ -144,6 +144,7 @@ class StrataOTFusionV2(nn.Module):
 
     requires_fusion_batch = True
     scales = ("short", "medium", "slow")
+    scale_rows = {"short": 6, "medium": 12, "slow": 24}
 
     def __init__(
         self,
@@ -158,6 +159,7 @@ class StrataOTFusionV2(nn.Module):
         horizon_fourier_bands: int = 8,
         physics_start: int | None = None,
         residual_horizon_exponent: float = 0.0,
+        residual_shortcut: str = "none",
     ) -> None:
         super().__init__()
         if fusion not in {"concat", "film", "film_cross_attention"}:
@@ -172,6 +174,13 @@ class StrataOTFusionV2(nn.Module):
             raise ValueError(
                 "residual_horizon_exponent must be between 0 and 1.5"
             )
+        if residual_shortcut not in {
+            "none",
+            "history_linear",
+            "all_linear",
+            "all_mlp",
+        }:
+            raise ValueError("Unsupported Fusion v2 residual shortcut")
         self.weather_dim = weather_dim
         self.hidden_dim = hidden_dim
         self.fusion = fusion
@@ -180,6 +189,7 @@ class StrataOTFusionV2(nn.Module):
         self.residual_horizon_exponent = float(
             residual_horizon_exponent
         )
+        self.residual_shortcut_mode = residual_shortcut
         self.scale_encoders = nn.ModuleDict(
             {
                 scale: ScaleEncoder(
@@ -219,6 +229,35 @@ class StrataOTFusionV2(nn.Module):
             nn.Dropout(dropout),
             nn.Linear(hidden_dim, 1),
         )
+        history_shortcut_dim = sum(
+            self.scale_rows[scale] * 3 for scale in active_scales
+        )
+        weather_shortcut_dim = sum(
+            self.scale_rows[scale] * weather_dim for scale in active_scales
+        )
+        shortcut_dim = hidden_dim + history_shortcut_dim
+        if residual_shortcut in {"all_linear", "all_mlp"}:
+            shortcut_dim += weather_shortcut_dim
+        self.residual_shortcut: nn.Module | None
+        if residual_shortcut == "none":
+            self.residual_shortcut = None
+        elif residual_shortcut in {"history_linear", "all_linear"}:
+            self.residual_shortcut = nn.Linear(shortcut_dim, 1)
+            nn.init.zeros_(self.residual_shortcut.weight)
+            nn.init.zeros_(self.residual_shortcut.bias)
+        else:
+            self.residual_shortcut = nn.Sequential(
+                nn.LayerNorm(shortcut_dim),
+                nn.Linear(shortcut_dim, hidden_dim),
+                nn.GELU(),
+                nn.Dropout(dropout),
+                nn.Linear(hidden_dim, 1),
+            )
+            final = self.residual_shortcut[-1]
+            if not isinstance(final, nn.Linear):
+                raise TypeError("Residual shortcut must end in a linear layer")
+            nn.init.zeros_(final.weight)
+            nn.init.zeros_(final.bias)
         self.raw_scale = nn.Sequential(
             nn.LayerNorm(hidden_dim), nn.Linear(hidden_dim, 1)
         )
@@ -281,7 +320,27 @@ class StrataOTFusionV2(nn.Module):
             (stacked * weights.unsqueeze(-1)).sum(dim=1) + horizon
         )
         routed, expert_weights = self.regimes(fused)
-        raw_residual = self.residual_head(routed).squeeze(-1)
+        base_residual = self.residual_head(routed).squeeze(-1)
+        if self.residual_shortcut is None:
+            shortcut_residual = base_residual.new_zeros(len(base_residual))
+        else:
+            shortcut_parts = [
+                horizon,
+                *[
+                    batch[f"{scale}_history"].flatten(start_dim=1)
+                    for scale in self.active_scales
+                ],
+            ]
+            if self.residual_shortcut_mode in {"all_linear", "all_mlp"}:
+                shortcut_parts.extend(
+                    batch[f"{scale}_weather"].flatten(start_dim=1)
+                    for scale in self.active_scales
+                )
+            shortcut_input = torch.cat(shortcut_parts, dim=-1)
+            shortcut_residual = self.residual_shortcut(
+                shortcut_input
+            ).squeeze(-1)
+        raw_residual = base_residual + shortcut_residual
         residual_scale = (
             batch["horizon_minutes"].clamp_min(5.0) / 5.0
         ).pow(self.residual_horizon_exponent)
@@ -317,6 +376,8 @@ class StrataOTFusionV2(nn.Module):
             "student_t_df": degrees_of_freedom,
             "quantiles": quantiles,
             "embedding": routed,
+            "base_residual": base_residual,
+            "shortcut_residual": shortcut_residual,
             "raw_residual": raw_residual,
             "residual_scale": residual_scale,
             "residual": residual,

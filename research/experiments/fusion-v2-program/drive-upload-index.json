@@ -72,7 +72,23 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "fusion_v23_residual_scaling",
+      "local_path": "reports/generated/fusion-v23-residual-scaling/fusion-v23-residual-scaling-report.pdf",
+      "local_bytes": 52360,
+      "local_sha256": "06bcfd308ab3ce2f750abfd8d6831f1201b28eadc75aa4bb1326b308d37934e4",
+      "drive_id": "1_kKyDbHxhbi_UTR3fkYD-dUbLYfY_std",
+      "drive_url": "https://drive.google.com/file/d/1_kKyDbHxhbi_UTR3fkYD-dUbLYfY_std/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v23-residual-scaling-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 52360,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-30T22:45:48-05:00"
+  "updated_at": "2026-07-30T23:01:35-05:00"
 }

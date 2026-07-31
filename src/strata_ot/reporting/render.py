@@ -584,6 +584,10 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
             "fusion_residual_scale_report.tex.j2",
             "fusion-v23-residual-scaling-report.tex",
         ),
+        "fusion_v24_direct_shortcut": (
+            "fusion_shortcut_report.tex.j2",
+            "fusion-v24-direct-shortcut-report.tex",
+        ),
         "fusion_v2_program": (
             "fusion_program_report.tex.j2",
             "fusion-v2-program-report.tex",

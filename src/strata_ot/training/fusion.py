@@ -59,6 +59,8 @@ PREDICTION_OUTPUT_KEYS = (
     "student_t_df",
     "quantiles",
     "embedding",
+    "base_residual",
+    "shortcut_residual",
     "raw_residual",
     "residual_scale",
     "residual",
@@ -255,6 +257,12 @@ def _build_model(
                     model_config.get("residual_horizon_exponent", 0.0),
                 )
             ),
+            residual_shortcut=str(
+                candidate.get(
+                    "residual_shortcut",
+                    model_config.get("residual_shortcut", "none"),
+                )
+            ),
         )
     if family == "mlp":
         return FusionMLPControl(
@@ -396,6 +404,8 @@ def _ood_score(embedding: np.ndarray, fit: dict[str, np.ndarray]) -> np.ndarray:
 def _component_summary(payload: dict[str, np.ndarray]) -> dict[str, Any]:
     diagnostic_keys = (
         "residual",
+        "base_residual",
+        "shortcut_residual",
         "raw_residual",
         "residual_scale",
         "scale_weights",
@@ -1141,6 +1151,12 @@ def _neural_run(
                             "residual_horizon_exponent",
                             0.0,
                         ),
+                    )
+                ),
+                "residual_shortcut": str(
+                    candidate.get(
+                        "residual_shortcut",
+                        model_config.get("residual_shortcut", "none"),
                     )
                 ),
             }

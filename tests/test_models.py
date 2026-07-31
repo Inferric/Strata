@@ -96,6 +96,7 @@ def test_fusion_v2_multiscale_outputs_and_parameter_budget() -> None:
         fusion="film_cross_attention",
         physics_start=8,
         residual_horizon_exponent=0.5,
+        residual_shortcut="all_linear",
     )
     batch_size = 3
     batch = {
@@ -126,6 +127,10 @@ def test_fusion_v2_multiscale_outputs_and_parameter_budget() -> None:
     assert torch.allclose(
         output["residual"],
         output["raw_residual"] * output["residual_scale"],
+    )
+    assert torch.allclose(
+        output["raw_residual"],
+        output["base_residual"] + output["shortcut_residual"],
     )
     parameters = sum(parameter.numel() for parameter in model.parameters())
     assert 2_000_000 <= parameters <= 8_000_000
