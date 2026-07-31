@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "v27_residual_cap_complete_next_cycle_pending",
+  "status": "v28_horizon_bilinear_frozen",
   "events": [
     {
       "sequence": 0,
@@ -595,6 +595,17 @@
       "evidence": "research/experiments/fusion-v2-program/v27-residual-cap-report-inspection.json",
       "drive_url": "https://drive.google.com/file/d/1HdCbTIg8d9fABb6bRpsgepOA4far6u8h/view?usp=drivesdk",
       "notes": "The final four-page LaTeX residual-cap report was compiled without overflow warnings, rendered at 2x, visually inspected, logged to MLflow, uploaded to the private program folder, and verified as a 60,867-byte owner-only PDF."
+    },
+    {
+      "sequence": 42,
+      "recorded_at": "2026-07-31T01:27:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "horizon_conditioned_bilinear_shortcut",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "5164a7dec2854bb28439ced00b78227e",
+      "evidence": "docs/FUSION_V28_HORIZON_BILINEAR.md",
+      "notes": "A paired history-linear/rank-4/rank-8/rank-16 horizon-bilinear shortcut screen is frozen before metrics. It adds a zero-initialized low-rank multiplicative interaction between the existing multiscale history vector and Fourier horizon embedding while retaining the deep weather branch, objective, data roles, nine-epoch cap, and full gates."
     }
   ]
 }
