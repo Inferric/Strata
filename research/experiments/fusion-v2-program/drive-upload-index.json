@@ -24,7 +24,23 @@
         "shared": false,
         "source_visibility_status": "not_shared"
       }
+    },
+    {
+      "role": "fusion_v2_rolling_robustness",
+      "local_path": "reports/generated/fusion-v2-robustness/fusion-v2-robustness-report.pdf",
+      "local_bytes": 67833,
+      "local_sha256": "c000ef6efc76ec7df9dfbd3e5c9933a15635497d445c0886d21c7cc742d614f2",
+      "drive_id": "1ThoZGnQelqhE5nK8DsYaQrLdFxm4U2G5",
+      "drive_url": "https://drive.google.com/file/d/1ThoZGnQelqhE5nK8DsYaQrLdFxm4U2G5/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v2-robustness-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 67833,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-30T21:06:20-05:00"
+  "updated_at": "2026-07-30T22:17:18-05:00"
 }

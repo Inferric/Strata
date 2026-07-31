@@ -1,8 +1,23 @@
 # Fusion v2.1 explicit point-loss cycle
 
-Status: draft; must be committed as frozen before any run  
-Parent: `docs/FUSION_V2_ROBUSTNESS.md`  
+Status: **frozen 2026-07-30 22:18 America/Chicago; no point-loss arm has run**
+
+Parent: `docs/FUSION_V2_ROBUSTNESS.md`
+
+Parent evidence run: `5b2f104cb416450eb82b7ef957df10cf`
+
 Evaluation role: rolling development selection only
+
+## Frozen parent evidence
+
+The complete 45-run clean robustness matrix was assessed before this cycle was
+frozen. Fusion v2 achieved 0.255197 primary RMSE and improved 4.07% over
+persistence, with positive seed direction for seeds 17, 41, and 73. It was
+1.26% worse than the stronger MLP control; the paired 24-hour bootstrap
+interval versus MLP was entirely negative, and tail MAE materially regressed.
+The immutable robustness result is therefore `FAIL`. Coverage, CRPS, bias, and
+stability passed. These facts motivate the single objective-level question
+below but do not alter its weights, gates, or denominator.
 
 ## Evidence-motivated question
 
@@ -83,7 +98,8 @@ protocol.
 - Fit preprocessing on fold training only, early-stop on selection only, and
   use fold calibration only for uncertainty records.
 - Never load USNA confirmation labels or the official MLO test.
-- Validate all three proposal contracts before execution.
+- Validate all three intervention proposal contracts before execution; the
+  paired zero-weight arm is an unchanged control, not an autonomous proposal.
 - One local training process, zero workers, four CPU threads, BF16, no cloud,
   and the existing RAM/VRAM/temperature/storage stop rules.
 - Each arm is capped at 0.5 local GPU-hours; the four-run cycle is capped at

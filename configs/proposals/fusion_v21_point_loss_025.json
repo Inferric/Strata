@@ -1,7 +1,7 @@
 {
   "proposal_id": "fusion-v21-point-loss-025",
   "hypothesis": "Adding a 0.25-weight robust point objective to the unchanged Student-t and quantile losses will prevent uncertainty scale from absorbing persistence-residual error and improve selection RMSE without degrading tails or coverage.",
-  "parent_run_id": null,
+  "parent_run_id": "5b2f104cb416450eb82b7ef957df10cf",
   "dataset_manifest_id": "otbench-usna-cn2-lg-v1",
   "split_id": "otbench-usna-lg-fusion-v2",
   "horizon_minutes": [5, 15, 30, 60],

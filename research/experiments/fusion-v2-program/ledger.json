@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "screen_complete_candidate_frozen",
+  "status": "robustness_complete_point_loss_frozen",
   "events": [
     {
       "sequence": 0,
@@ -168,6 +168,78 @@
       "result": "PASS",
       "evidence": "research/experiments/fusion-v2-program/screen-report-inspection.json",
       "notes": "The complete 24-arm screen report compiled from LaTeX to a four-page PDF. All pages were rendered and visually inspected after correcting one long path and one category-label overlap."
+    },
+    {
+      "sequence": 14,
+      "recorded_at": "2026-07-30T21:06:20-05:00",
+      "kind": "substantial_report_uploaded",
+      "hypothesis_family": "fusion-v2-screen",
+      "evidence_role": "report",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/drive-upload-index.json",
+      "drive_url": "https://drive.google.com/file/d/12IC30pe8vO6G7bBKALflicMmQstzgha3/view?usp=drivesdk",
+      "notes": "The inspected screen PDF was uploaded to the existing private Strata Research program folder and verified by Drive metadata; sharing permissions were unchanged."
+    },
+    {
+      "sequence": 15,
+      "recorded_at": "2026-07-30T22:03:40-05:00",
+      "kind": "rolling_robustness_matrix_complete",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "three-fold-three-seed-development",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/robustness-freeze.json",
+      "run_id": "459ed5a12cd2458db368d62c24a7799c",
+      "excluded_run_id": "f77178861de049c5873665c89885d118",
+      "notes": "All 45 required clean identities completed at the frozen revision. One run made dirty by an external goal-file edit was retained as failure evidence, excluded before analysis, and replaced by a clean deterministic retry with identical primary RMSE."
+    },
+    {
+      "sequence": 16,
+      "recorded_at": "2026-07-30T22:04:30-05:00",
+      "kind": "rolling_robustness_assessed",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "three-fold-three-seed-development",
+      "result": "FAIL",
+      "candidate_id": "selected-fusion-v2",
+      "primary_rmse": 0.255197121587286,
+      "relative_improvement_over_persistence": 0.0406950353006213,
+      "relative_improvement_over_stronger_neural": -0.012560858813114,
+      "bootstrap_vs_persistence_95": [
+        0.0285210534918628,
+        0.0485374511676131
+      ],
+      "bootstrap_vs_stronger_neural_95": [
+        -0.0205060018880942,
+        -0.00532271854234872
+      ],
+      "failed_conditions": [
+        "two_percent_over_stronger_neural",
+        "bootstrap_vs_stronger_neural_positive",
+        "tail_mae_no_material_regression"
+      ],
+      "notes": "Fusion v2 improved 4.07% over persistence with the same direction for seeds 17, 41, and 73, but was 1.26% worse than the stronger MLP control and materially regressed tail MAE. Coverage, CRPS, bias, and stability passed. Confirmation remains sealed and the model is not promotion-eligible."
+    },
+    {
+      "sequence": 17,
+      "recorded_at": "2026-07-30T22:17:18-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "fusion-v2-robustness",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "5b2f104cb416450eb82b7ef957df10cf",
+      "evidence": "research/experiments/fusion-v2-program/robustness-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1ThoZGnQelqhE5nK8DsYaQrLdFxm4U2G5/view?usp=drivesdk",
+      "notes": "The six-page LaTeX robustness report was compiled, rendered at 2x, visually inspected, logged as a finished MLflow evidence run, uploaded to the private Strata Research program folder, and verified as a 67,833-byte unshared PDF."
+    },
+    {
+      "sequence": 18,
+      "recorded_at": "2026-07-30T22:18:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "explicit_point_loss",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "5b2f104cb416450eb82b7ef957df10cf",
+      "evidence": "docs/FUSION_V21_POINT_LOSS.md",
+      "notes": "A four-arm paired Smooth L1 objective screen is frozen before its metrics. Architecture, data, probability head, sample caps, thresholds, and the already-reported robustness result remain unchanged."
     }
   ]
 }
