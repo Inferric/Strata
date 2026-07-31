@@ -202,7 +202,11 @@ Candidate & Category & Family & RMSE & Tail MAE & Bias & Cov.\ 80\\
 
 \section{Chronological experiment ledger}
 \small
-\begin{longtable}{rrp{0.18\linewidth}p{0.48\linewidth}}
+\begin{longtable}{
+>{\raggedleft\arraybackslash}p{0.03\linewidth}
+>{\centering\arraybackslash}p{0.08\linewidth}
+>{\raggedright\arraybackslash}p{0.20\linewidth}
+>{\raggedright\arraybackslash}p{0.59\linewidth}}
 \toprule
 Seq. & State & Event & Evidence note\\
 \midrule
@@ -211,10 +215,10 @@ Seq. & State & Event & Evidence note\\
 \VAR{event.sequence|latex} &
 \BLOCK{ if event.result == "PASS" }\pass
 \BLOCK{ elif event.result == "FAIL" }\fail
-\BLOCK{ else }\notevaluated
+\BLOCK{ else }\textcolor{stratagray}{\textbf{N/E}}
 \BLOCK{ endif } &
-\VAR{event.kind|latex} &
-\VAR{event.notes|latex}\\
+\VAR{event.kind|replace("_", " ")|latex} &
+\VAR{event.notes|default("")|latex}\\
 \BLOCK{ endfor }
 \bottomrule
 \end{longtable}
@@ -341,16 +345,16 @@ The relative primary-RMSE change is
 \VAR{summary.relationship_to_lightgbm.claim_boundary|latex}
 
 \section{Claim-to-evidence map}
-\begin{longtable}{p{0.48\linewidth}p{0.18\linewidth}p{0.28\linewidth}}
+\begin{longtable}{p{0.44\linewidth}p{0.09\linewidth}p{0.37\linewidth}}
 \toprule
 Claim or required condition & State & Evidence\\
 \midrule
 \endhead
 \BLOCK{ for name, state in summary.checks.items() }
-\VAR{name|latex} &
+\VAR{name|replace("_", " ")|latex} &
 \BLOCK{ if state == "PASS" }\pass
 \BLOCK{ elif state == "FAIL" }\fail
-\BLOCK{ else }\notevaluated
+\BLOCK{ else }\textcolor{stratagray}{\textbf{N/E}}
 \BLOCK{ endif } &
 Frozen protocol, manifests, ledger, and compiled cycle reports\\
 \BLOCK{ endfor }
