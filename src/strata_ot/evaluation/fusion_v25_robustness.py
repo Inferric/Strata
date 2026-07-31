@@ -48,6 +48,16 @@ def _expected_selected_keys() -> set[tuple[str, str, int]]:
     }
 
 
+def _seed_value(run: dict[str, Any]) -> int:
+    value = run.get("seed")
+    if value is None:
+        return -1
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return -1
+
+
 def _control_keys() -> list[tuple[str, str, int]]:
     keys = [
         (candidate_id, fold_id, 17)
@@ -156,7 +166,7 @@ def _collect_selected_runs(
         key = (
             str(run.get("candidate_id")),
             str(run.get("fold_id")),
-            int(run.get("seed", -1)),
+            _seed_value(run),
         )
         if key not in expected:
             continue
@@ -216,7 +226,7 @@ def _excluded_dirty_selected_runs(root: Path) -> list[dict[str, Any]]:
         key = (
             str(run.get("candidate_id")),
             str(run.get("fold_id")),
-            int(run.get("seed", -1)),
+            _seed_value(run),
         )
         if key not in expected:
             continue

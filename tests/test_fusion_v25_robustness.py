@@ -8,6 +8,7 @@ from strata_ot.evaluation.fusion_v25_robustness import (
     SELECTED_CANDIDATE,
     _control_keys,
     _expected_selected_keys,
+    _seed_value,
 )
 
 
@@ -30,3 +31,8 @@ def test_v25_robustness_reuses_all_required_controls() -> None:
         "control-tcn",
         "control-horizon-v1",
     )
+
+
+def test_v25_robustness_ignores_seedless_unrelated_manifests() -> None:
+    assert _seed_value({"seed": None}) == -1
+    assert _seed_value({"seed": 41}) == 41
