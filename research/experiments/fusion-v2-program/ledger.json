@@ -770,6 +770,16 @@
       "result": "PASS",
       "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
       "notes": "PR head 3b85304 was checked out into a clean detached worktree with no raw data or ignored run artifacts. Ruff, mypy, the repository contract, frontend lint/build, and 85 tests passed; the sole skip correctly reported that the public MLO raw snapshot is intentionally absent from Git. The validation worktree was clean and then removed without touching shared dependencies or unrelated services."
+    },
+    {
+      "sequence": 56,
+      "recorded_at": "2026-07-31T03:24:23-05:00",
+      "kind": "manifest_portability_repair",
+      "hypothesis_family": "public-profile-provenance",
+      "evidence_role": "reproducibility",
+      "result": "PASS",
+      "evidence": "89738d130a0c0b3704f7231f953a25294cef15da",
+      "notes": "A final cross-platform review found that Windows-generated manifest records used backslashes. New records now use portable POSIX-relative paths, verification accepts legacy separators on either platform, and unsafe absolute or parent-traversal paths are rejected. The complete 86-test suite, Ruff, mypy, repository contract, and all three real manifests passed without changing checked-in manifest bytes, raw data, report hashes, or scientific results."
     }
   ]
 }

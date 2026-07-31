@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "recorded_at": "2026-07-31T03:09:41-05:00",
-  "validated_implementation_commit": "fef4e2d8e3d98b01c533b3381a8c676b8832fdb7",
+  "validated_implementation_commit": "89738d130a0c0b3704f7231f953a25294cef15da",
   "program_id": "strata-fusion-v2-program",
   "scientific_status": "FAIL",
   "best_custom_candidate": {
@@ -64,7 +64,10 @@
     "manifests": {
       "otbench_mlo": "PASS",
       "otbench_usna_large": "PASS",
-      "eso_paranal_mass": "PASS"
+      "eso_paranal_mass": "PASS",
+      "portable_relative_paths": "PASS",
+      "legacy_windows_separator_verification": "PASS",
+      "path_escape_rejection": "PASS"
     },
     "sealed_split_verification": "PASS",
     "scientific_recomputation": {
