@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "convergence_complete_v25_robustness_frozen",
+  "status": "v25_robustness_complete_next_cycle_pending",
   "events": [
     {
       "sequence": 0,
@@ -456,6 +456,47 @@
       "parent_run_id": "dd8ab8627c2f4e418c6d23ed078fa7f7",
       "evidence": "docs/FUSION_V25_ROBUSTNESS.md",
       "notes": "Nine fresh full-data runs of the exact selected 9-epoch history-linear shortcut are frozen across three chronological folds and seeds 17/41/73. The 45 unchanged control runs are reused only by their previously frozen exact IDs and paired endpoint identities."
+    },
+    {
+      "sequence": 34,
+      "recorded_at": "2026-07-31T00:18:10-05:00",
+      "kind": "rolling_robustness_assessed",
+      "hypothesis_family": "history_shortcut_rolling_robustness",
+      "evidence_role": "three-fold-three-seed-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "6035f9ddad2940c089ce6a8e8d152ec6",
+        "bd354ab0b4f54961a97ece29e5147ddb",
+        "28468cd3374b45f1bfad6cd1515b30c4",
+        "ccb50200e0344b40b724219a7b46d2f6",
+        "3d0712b018a7464fab3684bb52edf864",
+        "612625cac7ee4259a042309175113e27",
+        "cc156c7864ea4b3d917e2e838b1a1e48",
+        "a2dcc9c080234fddb8db904af8755f60",
+        "4da1fd251d5041988e44d048e441bbc1"
+      ],
+      "selected_primary_rmse": 0.24870485755455096,
+      "persistence_primary_rmse": 0.26602293428894946,
+      "stronger_neural_primary_rmse": 0.2520313908700938,
+      "relative_improvement_over_persistence": 0.0650999391486942,
+      "relative_improvement_over_stronger_neural": 0.013198887279802458,
+      "failed_conditions": [
+        "relative_improvement_over_stronger_neural_at_least_2pct",
+        "tail_mae_no_material_regression"
+      ],
+      "notes": "Fusion v2.5 improved on persistence by 6.51%, MLP by 1.32%, LightGBM by 12.09%, and Fusion v2 by 2.54%; both paired bootstrap intervals were positive and all seeds agreed. It nevertheless failed the immutable 2% margin over MLP and tail-MAE conditions, so confirmation labels remain sealed and this family closes without promotion."
+    },
+    {
+      "sequence": 35,
+      "recorded_at": "2026-07-31T00:27:00-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "history_shortcut_rolling_robustness",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "7af406bdddf94dd5a355bfbd46f7d94c",
+      "evidence": "research/experiments/fusion-v2-program/v25-robustness-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1KzuoDHZK5KwIID3vmC8zY2LjaaJNlyQP/view?usp=drivesdk",
+      "notes": "The final six-page LaTeX robustness report was compiled, rendered at 2x, visually inspected, logged to a finished MLflow evidence run, uploaded to the private program folder, and verified as a 73,274-byte owner-only PDF."
     }
   ]
 }

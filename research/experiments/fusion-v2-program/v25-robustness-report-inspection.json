@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "report_pdf": "reports/generated/fusion-v25-robustness/fusion-v25-robustness-report.pdf",
+  "report_tex": "reports/generated/fusion-v25-robustness/fusion-v25-robustness-report.tex",
+  "inspected_at": "2026-07-31T00:27:00-05:00",
+  "page_count": 6,
+  "render_scale": 2,
+  "pdf_bytes": 73274,
+  "pdf_sha256": "e45850b75ebca900349c0da4f5538bc248b50452219e59248018469c831e8f4b",
+  "rendered_pages": [
+    "tmp/pdfs/fusion-v25-robustness-final-v4/page-01.png",
+    "tmp/pdfs/fusion-v25-robustness-final-v4/page-02.png",
+    "tmp/pdfs/fusion-v25-robustness-final-v4/page-03.png",
+    "tmp/pdfs/fusion-v25-robustness-final-v4/page-04.png",
+    "tmp/pdfs/fusion-v25-robustness-final-v4/page-05.png",
+    "tmp/pdfs/fusion-v25-robustness-final-v4/page-06.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "tables_fit_page": "PASS",
+    "text_legible": "PASS",
+    "headers_and_footers_consistent": "PASS",
+    "no_overlap_or_clipping": "PASS",
+    "final_verdict_visible": "PASS"
+  },
+  "notes": "All six final pages were visually inspected at 2x. Split, horizon, uncertainty, component, OOD, resource, and gate tables are legible; headers and page numbers are consistent through the final page; the FAIL verdict and sealed-confirmation statement are explicit; and the final TeX log contains no overfull-box warning."
+}

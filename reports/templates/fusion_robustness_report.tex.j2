@@ -18,13 +18,13 @@
 \renewcommand{\arraystretch}{1.12}
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{\textcolor{stratagray}{Strata-OT / rolling development evidence}}
-\rhead{\textcolor{stratagray}{\VAR{summary.report_short_title|latex}}}
+\fancyhead[LO,LE]{\textcolor{stratagray}{Strata-OT / rolling development evidence}}
+\fancyhead[RO,RE]{\textcolor{stratagray}{\VAR{summary.report_short_title|latex}}}
 \cfoot{\thepage}
 \fancypagestyle{plain}{
 \fancyhf{}
-\lhead{\textcolor{stratagray}{Strata-OT / rolling development evidence}}
-\rhead{\textcolor{stratagray}{\VAR{summary.report_short_title|latex}}}
+\fancyhead[LO,LE]{\textcolor{stratagray}{Strata-OT / rolling development evidence}}
+\fancyhead[RO,RE]{\textcolor{stratagray}{\VAR{summary.report_short_title|latex}}}
 \cfoot{\thepage}
 }
 \title{\textbf{\textcolor{stratablue}{\VAR{summary.report_model_label|latex}}}\\
@@ -95,7 +95,7 @@ weather seasons. No confirmation labels enter these runs.
 \begin{tabularx}{\linewidth}{>{\bfseries}p{0.34\linewidth}X}
 \toprule
 Protocol & \texttt{\VAR{summary.protocol|latex}}\\
-Exact run freeze & \texttt{\VAR{summary.freeze|latex}}\\
+Exact run freeze & \nolinkurl{\VAR{summary.freeze|latex}}\\
 Source SHA-256 & \texttt{\VAR{summary.data_identity.source_sha256|shortid}}\\
 Materialized split SHA-256 &
 \texttt{\VAR{summary.data_identity.split_sha256|shortid}}\\
@@ -227,11 +227,11 @@ Candidate & Horizon & CRPS & Student-\(t\) NLL & Cov.\ 80 & Width 80\\
 \section{OOD, selective risk, and serving cost}
 OOD and selective-risk scores use the unchanged run implementation. They are
 descriptive development diagnostics and do not create a new success gate.
-\small
-\begin{longtable}{p{0.25\linewidth}rrrrr}
+\scriptsize
+\begin{longtable}{p{0.23\linewidth}rrrrr}
 \toprule
-Candidate & Selective 80 RMSE & OOD top-quintile RMSE & OOD score &
-Latency (ms/sample) & Throughput\\
+Candidate & Selective RMSE & OOD-tail RMSE & OOD score &
+ms/sample & samples/s\\
 \midrule
 \endhead
 \BLOCK{ for candidate_id, candidate in summary.aggregates.items() }
@@ -369,4 +369,5 @@ bootstrap, or seed-direction conditions.
 
 \bibliographystyle{plain}
 \bibliography{references}
+\thispagestyle{fancy}
 \end{document}
