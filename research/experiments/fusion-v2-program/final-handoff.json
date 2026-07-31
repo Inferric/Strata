@@ -21,6 +21,8 @@
     "evidence_runs": 12,
     "all_indexed_mlflow_runs_finished": true,
     "all_evidence_runs_have_artifacts": true,
+    "indexed_neural_checkpoints_present": 99,
+    "indexed_training_artifact_bytes_reverified": 108810726,
     "program_neural_wall_clock_hours": 3.3252047222,
     "prior_cycle0_neural_wall_clock_hours": 0.296055,
     "total_evidence_neural_wall_clock_hours": 3.6212597222,
@@ -65,6 +67,27 @@
       "eso_paranal_mass": "PASS"
     },
     "sealed_split_verification": "PASS",
+    "scientific_recomputation": {
+      "status": "PASS",
+      "prediction_archives_recomputed": 33,
+      "candidate_primary_rmse_reproduced": [
+        "control-persistence",
+        "control-mlp",
+        "diagnostic-lightgbm",
+        "selected-fusion-v2",
+        "selected-fusion-v25"
+      ],
+      "paired_bootstrap_resamples": 2000,
+      "paired_bootstrap_seed": 20260730,
+      "bootstrap_ci95_vs_mlp": [
+        0.0052778473,
+        0.021338263
+      ],
+      "failed_conditions_reproduced": [
+        "two_percent_over_stronger_neural",
+        "tail_mae_no_material_regression"
+      ]
+    },
     "frontend_lint": "PASS",
     "frontend_build": "PASS",
     "latex_reports": {

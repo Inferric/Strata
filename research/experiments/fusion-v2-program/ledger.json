@@ -750,6 +750,16 @@
       "result": "PASS",
       "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
       "notes": "The final audit revalidated 86 tests, 43 proposal contracts, three manifests, two sealed split hashes without label release, 123 indexed FINISHED MLflow runs, 13 visual-inspection records, 59 rendered report pages, production frontend output, service health, and branch scope. All 14 Drive-indexed uploads were rechecked against observed name, byte size, parent, shared=false state, and sole-owner permission. Scientific status remains FAIL, with confirmation and promotion unevaluated."
+    },
+    {
+      "sequence": 54,
+      "recorded_at": "2026-07-31T03:15:17-05:00",
+      "kind": "independent_scientific_recomputation",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "metric-integrity",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
+      "notes": "Primary RMSE was independently recalculated from the stored prediction archives for persistence, MLP, diagnostic LightGBM, Fusion v2, and Fusion v2.5. A fresh deterministic build exactly reproduced the frozen Fusion v2.5 checks and both 2,000-resample paired bootstrap records with seed 20260730. The positive [0.53%, 2.13%] bootstrap interval versus MLP does not rescue the 1.32% point improvement below the immutable 2% rule; tail MAE also remains failed."
     }
   ]
 }
