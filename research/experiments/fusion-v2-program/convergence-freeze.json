@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "program_id": "strata-fusion-v2-program",
+  "cycle_id": "fusion-v25-convergence",
+  "frozen_at": "2026-07-30T23:37:00.280017-05:00",
+  "protocol": "docs/FUSION_V25_CONVERGENCE.md",
+  "repository_revision": "b66afbcd62bfb6ac0a8f53441b51028e5bf0c693",
+  "fold_id": "fold-1",
+  "seed": 17,
+  "baseline_run_id": "46af532e62ed4aaf9f50b9faab1e131d",
+  "run_ids": {
+    "convergence-3": "09d57b570c0a437195afca57cf6a8d3f",
+    "convergence-6": "a7f4c54519d64ea48df2cbd3ac6412d1",
+    "convergence-9": "5f5db4121b80490e982c86f014c398b2",
+    "convergence-12": "44afd42051444be593cc63643e6fe471"
+  },
+  "epoch_caps": {
+    "convergence-3": 3,
+    "convergence-6": 6,
+    "convergence-9": 9,
+    "convergence-12": 12
+  },
+  "official_mlo_test_loaded": false,
+  "usna_confirmation_labels_loaded": false
+}

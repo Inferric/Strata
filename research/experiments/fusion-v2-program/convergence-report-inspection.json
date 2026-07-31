@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_pdf": "reports/generated/fusion-v25-convergence/fusion-v25-convergence-report.pdf",
+  "report_tex": "reports/generated/fusion-v25-convergence/fusion-v25-convergence-report.tex",
+  "inspected_at": "2026-07-30T23:39:00-05:00",
+  "page_count": 4,
+  "render_scale": 2,
+  "pdf_bytes": 50740,
+  "pdf_sha256": "a83fd8bb1a1e602fcdeed14e89e13a569787e922d15a5e38834929c7dd91e577",
+  "rendered_pages": [
+    "tmp/pdfs/fusion-v25-convergence-final/page-01.png",
+    "tmp/pdfs/fusion-v25-convergence-final/page-02.png",
+    "tmp/pdfs/fusion-v25-convergence-final/page-03.png",
+    "tmp/pdfs/fusion-v25-convergence-final/page-04.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "tables_fit_page": "PASS",
+    "text_legible": "PASS",
+    "headers_and_footers_consistent": "PASS",
+    "no_overlap_or_clipping": "PASS",
+    "final_verdict_visible": "PASS"
+  },
+  "notes": "All four final pages were visually inspected at 2x. The screen, horizon, component, calibration, resource, and gate tables are legible; running headers and footers are consistent; and the final TeX log contains no overfull-box warning."
+}

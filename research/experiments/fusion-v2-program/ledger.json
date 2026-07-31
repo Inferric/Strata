@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "direct_shortcut_complete_convergence_frozen",
+  "status": "convergence_complete_robustness_pending",
   "events": [
     {
       "sequence": 0,
@@ -414,6 +414,37 @@
       "parent_run_id": "0e8b0f954fa14af9a714cd67adbecbd7",
       "evidence": "docs/FUSION_V25_CONVERGENCE.md",
       "notes": "A paired 3/6/9/12-epoch convergence screen is frozen before metrics. It changes only the optimization cap for the fixed 3,611,849-parameter history-linear shortcut architecture and retains the same baseline, data, objective, and evidence gates."
+    },
+    {
+      "sequence": 31,
+      "recorded_at": "2026-07-30T23:37:00-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "fixed_architecture_convergence",
+      "evidence_role": "fold-1-selection",
+      "result": "PASS",
+      "run_ids": [
+        "09d57b570c0a437195afca57cf6a8d3f",
+        "a7f4c54519d64ea48df2cbd3ac6412d1",
+        "5f5db4121b80490e982c86f014c398b2",
+        "44afd42051444be593cc63643e6fe471"
+      ],
+      "selected_candidate": "convergence-9",
+      "selected_primary_rmse": 0.28857593436713513,
+      "control_primary_rmse": 0.30082541675299396,
+      "relative_improvement": 0.04071957256163898,
+      "notes": "Nine epochs improved the frozen no-shortcut baseline by 4.07% while passing tail, CRPS, coverage, bias, provenance, artifact, and resource gates. The 12-epoch cap early-stopped at 11 epochs on the same best checkpoint; the frozen efficiency tie rule selects nine epochs for rolling robustness."
+    },
+    {
+      "sequence": 32,
+      "recorded_at": "2026-07-30T23:40:17-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "fixed_architecture_convergence",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "dd8ab8627c2f4e418c6d23ed078fa7f7",
+      "evidence": "research/experiments/fusion-v2-program/convergence-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1CMSucSdZ-hGS2WmLU62RiojRxdoswUNf/view?usp=drivesdk",
+      "notes": "The final four-page LaTeX convergence report was compiled, rendered at 2x, visually inspected, logged to a finished MLflow evidence run, uploaded to the private program folder, and verified as a 50,740-byte owner-only PDF."
     }
   ]
 }

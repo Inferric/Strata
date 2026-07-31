@@ -104,7 +104,23 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "fusion_v25_convergence",
+      "local_path": "reports/generated/fusion-v25-convergence/fusion-v25-convergence-report.pdf",
+      "local_bytes": 50740,
+      "local_sha256": "a83fd8bb1a1e602fcdeed14e89e13a569787e922d15a5e38834929c7dd91e577",
+      "drive_id": "1CMSucSdZ-hGS2WmLU62RiojRxdoswUNf",
+      "drive_url": "https://drive.google.com/file/d/1CMSucSdZ-hGS2WmLU62RiojRxdoswUNf/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v25-convergence-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 50740,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-30T23:20:21-05:00"
+  "updated_at": "2026-07-30T23:40:17-05:00"
 }
