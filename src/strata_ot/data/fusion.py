@@ -485,8 +485,13 @@ class FusionDataModule(L.LightningDataModule):
     def prepare_data(self) -> None:
         root = find_repo_root()
         manifest = root / str(self.data_config["manifest_path"])
-        if manifest.is_file() and not verify_manifest(manifest, root):
-            pass
+        if manifest.is_file():
+            failures = verify_manifest(manifest, root)
+            if failures:
+                raise RuntimeError(
+                    "Fusion dataset manifest verification failed: "
+                    + ", ".join(failures)
+                )
         else:
             write_fusion_manifest(self.data_config)
         materialized = root / str(self.split_config["materialized_path"])

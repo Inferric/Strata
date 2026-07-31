@@ -16,7 +16,14 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { links, loadConsole } from "./api";
-import type { DatasetManifest, Overview, Run, SystemStatus } from "./types";
+import type {
+  DatasetManifest,
+  FusionSummary,
+  GateState,
+  Overview,
+  Run,
+  SystemStatus,
+} from "./types";
 
 const emptySystem: SystemStatus = {
   api: "connecting",
@@ -37,6 +44,26 @@ function metric(run: Run | null, key: string) {
     ?? run.metrics[`pooled/${key}`]
     ?? run.metrics[`test/${key}`];
   return Number.isFinite(value) ? value.toFixed(4) : "—";
+}
+
+function normalizedGateState(value: boolean | GateState): GateState {
+  if (value === true) return "PASS";
+  if (value === false) return "FAIL";
+  return value;
+}
+
+function Gate({ state }: { state: GateState }) {
+  return (
+    <span className={`state-chip gate-${state.toLowerCase().replaceAll("_", "-")}`}>
+      {state.replaceAll("_", " ")}
+    </span>
+  );
+}
+
+function signedPercent(value: number | undefined) {
+  if (!Number.isFinite(value)) return "—";
+  const numeric = value as number;
+  return `${numeric >= 0 ? "+" : ""}${(numeric * 100).toFixed(2)}%`;
 }
 
 function RunTrend({ runs }: { runs: Run[] }) {
@@ -182,11 +209,252 @@ function HorizonMatrix({ summary }: { summary: NonNullable<Overview["latest_summ
   );
 }
 
+function FusionEvidence({ summary }: { summary: FusionSummary }) {
+  const aggregates = summary.aggregates;
+  const selected = aggregates?.["selected-fusion-v2"];
+  if (!aggregates || !selected || !summary.result) return null;
+  const candidateOrder = [
+    "control-persistence",
+    "diagnostic-lightgbm",
+    "control-mlp",
+    "control-tcn",
+    "control-horizon-v1",
+    "selected-fusion-v2",
+  ].filter((candidate) => aggregates[candidate]);
+  const selectedRmse = selected.runs.map((run) => run.primary.rmse_log10_cn2);
+  const low = Math.min(...selectedRmse);
+  const high = Math.max(...selectedRmse);
+  const span = Math.max(high - low, 1e-6);
+  const diagnostics = selected.diagnostics ?? {};
+
+  return (
+    <section id="fusion" className="panel fusion-panel">
+      <div className="panel-heading">
+        <div>
+          <span className="eyebrow">SEASONAL TRACE / THREE SEEDS PER FOLD</span>
+          <h3>Fusion v2 rolling evidence</h3>
+        </div>
+        <span className={`state-chip fusion-state ${summary.status.toLowerCase()}`}>
+          {summary.status.replaceAll("_", " ")}
+        </span>
+      </div>
+
+      <div className="fusion-verdict">
+        <div>
+          <span>Vs persistence</span>
+          <strong>{signedPercent(summary.result.relative_improvement_over_persistence)}</strong>
+        </div>
+        <div>
+          <span>Vs {summary.stronger_neural_control?.replace("control-", "")}</span>
+          <strong>{signedPercent(summary.result.relative_improvement_over_stronger_neural)}</strong>
+        </div>
+        <div>
+          <span>Vs diagnostic LightGBM</span>
+          <strong>
+            {signedPercent(
+              summary.result.relative_improvement_over_diagnostic_lightgbm,
+            )}
+          </strong>
+        </div>
+        <p>{summary.plain_language_conclusion}</p>
+      </div>
+
+      <div className="seasonal-matrix" role="table" aria-label="Fusion RMSE by fold and seed">
+        <div className="seasonal-corner" role="columnheader">Weather period</div>
+        {[17, 41, 73].map((seed) => (
+          <div className="seasonal-head" role="columnheader" key={seed}>
+            seed {seed}
+          </div>
+        ))}
+        {["fold-1", "fold-2", "fold-3"].map((fold, foldIndex) => [
+          <div className="seasonal-label" role="rowheader" key={`${fold}-label`}>
+            <i />
+            <span><strong>{fold.replace("-", " ")}</strong><small>period {foldIndex + 1}</small></span>
+          </div>,
+          ...[17, 41, 73].map((seed) => {
+            const run = selected.runs.find(
+              (item) => item.fold_id === fold && item.seed === seed,
+            );
+            const value = run?.primary.rmse_log10_cn2;
+            const trace = value === undefined ? 0 : 1 - (value - low) / span;
+            return (
+              <div
+                className="seasonal-cell"
+                role="cell"
+                key={`${fold}-${seed}`}
+                style={{ "--skill": trace } as CSSProperties}
+              >
+                <b />
+                <strong>{value?.toFixed(4) ?? "—"}</strong>
+                <span>{run ? `${run.wall_clock_seconds.toFixed(0)} s` : "pending"}</span>
+              </div>
+            );
+          }),
+        ])}
+      </div>
+
+      <div className="fusion-lower">
+        <div className="candidate-rank">
+          <span className="eyebrow">PRIMARY RMSE / 15·30·60 MINUTES</span>
+          {candidateOrder.map((candidate) => {
+            const evidence = aggregates[candidate];
+            const rmse = evidence.primary.rmse_log10_cn2;
+            const persistence = summary.result?.persistence_primary_rmse ?? rmse;
+            const width = Math.min(100, (rmse / Math.max(persistence, 1e-6)) * 72);
+            return (
+              <div key={candidate}>
+                <span>{candidate.replace("control-", "").replaceAll("-", " ")}</span>
+                <i><b style={{ width: `${width}%` }} /></i>
+                <strong>{rmse.toFixed(4)}</strong>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="scale-trace">
+          <span className="eyebrow">LEARNED TIMESCALE MIX / DIAGNOSTIC ONLY</span>
+          {Object.entries(diagnostics).map(([horizon, diagnostic]) => (
+            <div key={horizon}>
+              <span>+{horizon}m</span>
+              <i aria-label={`Scale weights at ${horizon} minutes`}>
+                {diagnostic.scale_weights_mean.map((weight, index) => (
+                  <b
+                    className={`scale-${index}`}
+                    key={index}
+                    style={{ width: `${weight * 100}%` }}
+                  />
+                ))}
+              </i>
+              <strong>{diagnostic.residual_mean.toFixed(3)}</strong>
+            </div>
+          ))}
+          <div className="scale-key">
+            <span><i className="short" />short</span>
+            <span><i className="medium" />medium</span>
+            <span><i className="slow" />slow</span>
+            <span>right value = mean residual</span>
+          </div>
+        </div>
+      </div>
+
+      {summary.screen_evidence ? (
+        <div className="ablation-record">
+          <div className="panel-heading compact">
+            <div>
+              <span className="eyebrow">FROZEN SELECTION MATRIX</span>
+              <h4>{summary.screen_evidence.run_count} architecture arms</h4>
+            </div>
+            <span className="state-chip">
+              {Object.keys(
+                summary.screen_evidence.closed_hypothesis_families,
+              ).length} families closed
+            </span>
+          </div>
+          <div
+            className="ablation-grid"
+            role="table"
+            aria-label="Fusion v2 ablation matrix"
+          >
+            <div role="columnheader">Candidate</div>
+            <div role="columnheader">Family</div>
+            <div role="columnheader">RMSE</div>
+            <div role="columnheader">Tail</div>
+            <div role="columnheader">Coverage</div>
+            {summary.screen_evidence.runs.map((run) => [
+              <div
+                role="rowheader"
+                key={`${run.run_id ?? run.candidate_id}-name`}
+              >
+                <strong>{run.candidate_id.replaceAll("-", " ")}</strong>
+                {run.candidate_id
+                  === summary.screen_evidence
+                    ?.selected_for_robustness_characterization.candidate_id
+                  ? <small>advanced</small> : null}
+              </div>,
+              <div
+                role="cell"
+                key={`${run.run_id ?? run.candidate_id}-family`}
+              >
+                {run.category.replaceAll("_", " ")}
+              </div>,
+              <div
+                role="cell"
+                key={`${run.run_id ?? run.candidate_id}-rmse`}
+              >
+                {run.primary_rmse.toFixed(4)}
+              </div>,
+              <div
+                role="cell"
+                key={`${run.run_id ?? run.candidate_id}-tail`}
+              >
+                {run.primary_tail_mae.toFixed(4)}
+              </div>,
+              <div
+                role="cell"
+                key={`${run.run_id ?? run.candidate_id}-coverage`}
+              >
+                {(run.primary_coverage_80 * 100).toFixed(1)}%
+              </div>,
+            ])}
+          </div>
+        </div>
+      ) : null}
+
+      {summary.cycles?.length ? (
+        <div className="program-record">
+          <div>
+            <span className="eyebrow">CHRONOLOGICAL PROGRAM RECORD</span>
+            <h4>Evidence changed one bounded cycle at a time</h4>
+          </div>
+          <ol className="cycle-rail">
+            {summary.cycles.map((cycle) => (
+              <li key={cycle.cycle_id}>
+                <i className={cycle.status.toLowerCase()} />
+                <div>
+                  <span>{cycle.role.replaceAll("-", " ")}</span>
+                  <strong>{cycle.cycle_id.replaceAll("-", " ")}</strong>
+                  <p>{cycle.conclusion}</p>
+                </div>
+                <Gate state={cycle.status} />
+              </li>
+            ))}
+          </ol>
+          <div className="program-gates">
+            {Object.entries(summary.checks).map(([name, state]) => (
+              <div key={name}>
+                <span>{name.replaceAll("_", " ")}</span>
+                <Gate state={state} />
+              </div>
+            ))}
+          </div>
+          {summary.ledger_events?.length ? (
+            <div className="ledger-stream">
+              <span className="eyebrow">FULL EXPERIMENT LEDGER</span>
+              {summary.ledger_events.map((event) => (
+                <article key={event.sequence}>
+                  <b>{String(event.sequence).padStart(2, "0")}</b>
+                  <div>
+                    <span>{event.recorded_at} / {event.evidence_role}</span>
+                    <strong>{event.kind.replaceAll("_", " ")}</strong>
+                    <p>{event.notes}</p>
+                  </div>
+                  <Gate state={event.result} />
+                </article>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 export default function App() {
   const [overview, setOverview] = useState<Overview | null>(null);
   const [runs, setRuns] = useState<Run[]>([]);
   const [datasets, setDatasets] = useState<DatasetManifest[]>([]);
   const [system, setSystem] = useState<SystemStatus>(emptySystem);
+  const [fusion, setFusion] = useState<FusionSummary | null>(null);
   const [error, setError] = useState("");
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
 
@@ -197,6 +465,7 @@ export default function App() {
       setRuns(payload.runs);
       setDatasets(payload.datasets);
       setSystem(payload.system);
+      setFusion(payload.fusion);
       setError("");
       setUpdatedAt(new Date());
     } catch (caught) {
@@ -214,7 +483,9 @@ export default function App() {
   const gates = overview?.latest_summary?.checks ?? {};
   const gateResult = overview?.latest_summary?.gate_result;
   const gatePasses = useMemo(
-    () => Object.values(gates).filter(Boolean).length,
+    () => Object.values(gates).filter(
+      (value) => normalizedGateState(value) === "PASS",
+    ).length,
     [gates],
   );
   const forecastClaim = overview?.latest_summary?.forecast_claim;
@@ -231,6 +502,7 @@ export default function App() {
         <nav>
           <a className="active" href="#overview"><CircleGauge size={17} />Overview</a>
           <a href="#horizons"><Activity size={17} />Horizon matrix</a>
+          <a href="#fusion"><GitBranch size={17} />Fusion evidence</a>
           <a href="#runs"><Beaker size={17} />Experiments</a>
           <a href="#datasets"><Database size={17} />Datasets</a>
           <a href="#evidence"><ShieldCheck size={17} />Evidence gates</a>
@@ -342,6 +614,8 @@ export default function App() {
           <HorizonMatrix summary={overview.latest_summary} />
         ) : null}
 
+        {fusion ? <FusionEvidence summary={fusion} /> : null}
+
         <section className="service-row">
           {[
             ["MLflow", system.mlflow, links.mlflow],
@@ -410,9 +684,16 @@ export default function App() {
               <ShieldCheck size={18} />
             </div>
             <div className="gate-list">
-              {Object.keys(gates).length ? Object.entries(gates).map(([name, passed]) => (
-                <div key={name}><i className={passed ? "pass" : "fail"} /><span>{name.replaceAll("_", " ")}</span><strong>{passed ? "pass" : "open"}</strong></div>
-              )) : <p className="soft">Gates appear after the first report is compiled.</p>}
+              {Object.keys(gates).length ? Object.entries(gates).map(([name, value]) => {
+                const state = normalizedGateState(value);
+                return (
+                  <div key={name}>
+                    <i className={state === "PASS" ? "pass" : state === "FAIL" ? "fail" : "not-evaluated"} />
+                    <span>{name.replaceAll("_", " ")}</span>
+                    <strong>{state.replaceAll("_", " ").toLowerCase()}</strong>
+                  </div>
+                );
+              }) : <p className="soft">Gates appear after the first report is compiled.</p>}
               {gateResult?.failures.map((failure) => (
                 <div key={failure}>
                   <i className="fail" />

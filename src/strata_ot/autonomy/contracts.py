@@ -25,6 +25,7 @@ ALLOWED_MODEL_PARAMETERS = {
     "physics_tokens",
     "pretraining",
     "calibration",
+    "point_loss_weight",
 }
 
 REQUIRED_STOP_CONDITIONS = {
@@ -52,6 +53,7 @@ NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
     "context": (6, 128),
     "learning_rate": (1e-5, 3e-3),
     "weight_decay": (0.0, 0.2),
+    "point_loss_weight": (0.0, 2.0),
 }
 
 INTEGER_PARAMETERS = {"hidden_dim", "depth", "num_heads", "num_experts", "context"}
@@ -109,6 +111,7 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
         defaults: dict[str, Any] = {
             "scale_parameterization": "clamp",
             "mlp_flatten_context": False,
+            "point_loss_weight": 0.0,
         }
         old_value = source.get(parameter, defaults.get(parameter))
         if old_value is None or change["old"] != old_value:

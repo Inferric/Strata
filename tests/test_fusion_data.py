@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from strata_ot.config import load_yaml
+from strata_ot.data import fusion as fusion_data
 from strata_ot.data.fusion import (
     FusionDataModule,
     _point_features,
@@ -123,3 +124,38 @@ def test_flattened_feature_names_match_control_matrix_width() -> None:
     assert len(names) == expected
     assert names[15] == "short/lag_0000m/cn2_level"
     assert names[-1] == "forecast/horizon_minutes_scaled"
+
+
+def test_fusion_prepare_data_fails_closed_on_manifest_drift(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest = tmp_path / "data" / "manifests" / "fusion.json"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text("{}", encoding="utf-8")
+    module = FusionDataModule(
+        {"manifest_path": "data/manifests/fusion.json"},
+        {"materialized_path": "data/sealed/split.json"},
+        fold_id="fold-1",
+        physics_tokens="none",
+        batch_size=4,
+        num_workers=0,
+    )
+    rewrites: list[dict[str, object]] = []
+    monkeypatch.setattr(fusion_data, "find_repo_root", lambda: tmp_path)
+    monkeypatch.setattr(
+        fusion_data,
+        "verify_manifest",
+        lambda _manifest, _root: ["checksum:data/raw/fusion.nc"],
+    )
+    monkeypatch.setattr(
+        fusion_data,
+        "write_fusion_manifest",
+        lambda config: rewrites.append(config),
+    )
+    with pytest.raises(
+        RuntimeError,
+        match="manifest verification failed.*checksum",
+    ):
+        module.prepare_data()
+    assert rewrites == []

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import httpx
 from fastapi import FastAPI, HTTPException
@@ -186,11 +186,58 @@ async def horizon() -> dict[str, Any]:
     }
 
 
+@app.get("/api/fusion")
+async def fusion() -> dict[str, Any]:
+    root = _root_or_app()
+    program_root = (
+        root
+        / "artifacts"
+        / "experiments"
+        / "strata-fusion-v2-program"
+    )
+    candidates = (
+        program_root / "program-summary.json",
+        program_root / "robustness-summary.json",
+        program_root / "screen-summary.json",
+    )
+    summary_path = next((path for path in candidates if path.is_file()), None)
+    if summary_path is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No completed Fusion v2 program evidence",
+        )
+    summary = cast(
+        dict[str, Any],
+        json.loads(summary_path.read_text(encoding="utf-8")),
+    )
+    if summary.get("task_kind") not in {
+        "fusion_v2_screen",
+        "fusion_v2_robustness",
+        "fusion_v2_program",
+    }:
+        raise HTTPException(
+            status_code=404,
+            detail="Latest Fusion artifact has an unsupported task kind",
+        )
+    return summary
+
+
 @app.get("/api/reports/latest", response_class=FileResponse)
 async def latest_report() -> FileResponse:
     root = _root_or_app()
-    summary_path = root / "artifacts" / "latest" / "summary.json"
-    if not summary_path.exists():
+    summary_candidates = (
+        root
+        / "artifacts"
+        / "experiments"
+        / "strata-fusion-v2-program"
+        / "program-summary.json",
+        root / "artifacts" / "latest" / "summary.json",
+    )
+    summary_path = next(
+        (path for path in summary_candidates if path.is_file()),
+        None,
+    )
+    if summary_path is None:
         raise HTTPException(status_code=404, detail="No completed report")
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     report_path = summary.get("report_pdf")

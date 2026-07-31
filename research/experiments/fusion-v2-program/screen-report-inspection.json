@@ -2,16 +2,16 @@
   "schema_version": 1,
   "report": "reports/generated/fusion-v2-screen/fusion-v2-screen-report.pdf",
   "latex_source": "reports/generated/fusion-v2-screen/fusion-v2-screen-report.tex",
-  "inspected_at": "2026-07-30T19:20:00-05:00",
+  "inspected_at": "2026-07-30T20:54:30-05:00",
   "pages": 4,
-  "bytes": 52730,
-  "sha256": "4cda3a8564df4366b294f70146dfbc0c88ab78ac4c9884dfe2831ad5741bae52",
-  "render_scale": 1.5,
+  "bytes": 58724,
+  "sha256": "f38e1e2abd2c989fe66db4be7fe20837a3acaf6d3ddda10a1bf45dd4746e48b2",
+  "render_scale": 1.6,
   "rendered_pages": [
-    "tmp/pdfs/fusion-v2-screen/page-01.png",
-    "tmp/pdfs/fusion-v2-screen/page-02.png",
-    "tmp/pdfs/fusion-v2-screen/page-03.png",
-    "tmp/pdfs/fusion-v2-screen/page-04.png"
+    "tmp/pdfs/fusion-v2-screen-final/page-1.png",
+    "tmp/pdfs/fusion-v2-screen-final/page-2.png",
+    "tmp/pdfs/fusion-v2-screen-final/page-3.png",
+    "tmp/pdfs/fusion-v2-screen-final/page-4.png"
   ],
   "checks": {
     "all_pages_rendered": "PASS",
@@ -23,7 +23,8 @@
   },
   "corrections_before_pass": [
     "Allowed the long public source path to wrap at path separators.",
-    "Shortened the capacity_regularization table label to prevent overlap."
+    "Shortened the capacity_regularization table label to prevent overlap.",
+    "Added primary OTBench, optical-turbulence, TFT, and TimeXer citations plus a readable bibliography."
   ],
   "status": "PASS"
 }

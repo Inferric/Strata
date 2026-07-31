@@ -1,0 +1,382 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.66in]{geometry}
+\usepackage{booktabs,longtable,tabularx,microtype,xcolor,enumitem,fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\definecolor{stratalight}{HTML}{EEF3F8}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
+\newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
+\newcommand{\cn}{\(C_n^2\)}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.45em}
+\renewcommand{\arraystretch}{1.12}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / complete development record}}
+\rhead{\textcolor{stratagray}{Fusion v2 program synthesis}}
+\cfoot{\thepage}
+\title{\textbf{\textcolor{stratablue}{Strata-OT Fusion v2}}\\
+\large Program-level synthesis of bounded neural-architecture research}
+\author{Generated from frozen protocols, run manifests, and terminal gates}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratablue}{stratalight}{
+\begin{minipage}{0.92\linewidth}
+\textbf{Beginner-readable result.}
+\VAR{summary.plain_language_question|latex}
+\VAR{summary.plain_language_conclusion|latex}
+\end{minipage}}
+\end{center}
+
+\section{Scope, provenance, and leakage boundary}
+This program follows the frozen protocol at
+\texttt{\VAR{summary.protocol|latex}}. It asks whether a custom neural family
+can use multiscale \cn{} history and operational weather more reliably than
+simple and generic controls. Cycle 0 established useful tree-model weather
+signal while Horizon v1 failed to exploit it reliably. Fusion v2 therefore
+tests interaction throughout its representation rather than a suppressible
+final weather gate.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.36\linewidth}X}
+\toprule
+Source SHA-256 & \texttt{\VAR{summary.provenance.source_sha256|shortid}}\\
+Split SHA-256 & \texttt{\VAR{summary.provenance.split_sha256|shortid}}\\
+Robustness revision & \texttt{\VAR{summary.provenance.repository_revision|shortid}}\\
+Official MLO test & sealed; never loaded\\
+USNA confirmation labels & sealed; never loaded\\
+Raw public data & immutable\\
+Cloud cost & \$\VAR{summary.resources.cloud_cost_usd|num(2)}\\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Purged rolling-origin roles}
+The minimum boundary purge is
+\VAR{summary.rolling_split.minimum_boundary_purge_minutes|latex} minutes.
+\small
+\begin{longtable}{llllll}
+\toprule
+Fold & Train start & Train end & Calibration start & Selection start & Selection end\\
+\midrule
+\endhead
+\BLOCK{ for fold in summary.rolling_split.folds }
+\VAR{fold.id|latex} &
+\VAR{fold.train.start|shortid(10)|latex} &
+\VAR{fold.train.end|shortid(10)|latex} &
+\VAR{fold.calibration.start|shortid(10)|latex} &
+\VAR{fold.selection.start|shortid(10)|latex} &
+\VAR{fold.selection.end|shortid(10)|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection*{Exact frozen configuration}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.34\linewidth}X}
+\toprule
+Seeds & \VAR{summary.frozen_configuration.seeds|join(", ")|latex}\\
+Rolling folds &
+\VAR{summary.frozen_configuration.rolling_folds|join(", ")|latex}\\
+Forecast horizons &
+\VAR{summary.frozen_configuration.anchor_horizon_minutes|latex} minute anchor;
+\VAR{summary.frozen_configuration.primary_horizons_minutes|join(", ")|latex}
+minute primary endpoint\\
+Bootstrap &
+\VAR{summary.frozen_configuration.bootstrap.block_minutes|latex}-minute paired blocks;
+\VAR{summary.frozen_configuration.bootstrap.resamples|latex} resamples;
+seed \VAR{summary.frozen_configuration.bootstrap.seed|latex}\\
+Raw covariates &
+\VAR{summary.frozen_configuration.data.raw_features|join(", ")|latex}\\
+Contexts &
+short \VAR{summary.frozen_configuration.data.contexts.short.rows|latex}
+\(\times\)\VAR{summary.frozen_configuration.data.contexts.short.spacing_minutes|latex} min;
+medium \VAR{summary.frozen_configuration.data.contexts.medium.rows|latex}
+\(\times\)\VAR{summary.frozen_configuration.data.contexts.medium.spacing_minutes|latex} min;
+slow \VAR{summary.frozen_configuration.data.contexts.slow.rows|latex}
+\(\times\)\VAR{summary.frozen_configuration.data.contexts.slow.spacing_minutes|latex} min\\
+Architecture &
+\VAR{summary.frozen_configuration.model.hidden_dim|latex}-wide,
+\VAR{summary.frozen_configuration.model.num_heads|latex} heads,
+\VAR{summary.frozen_configuration.model.num_experts|latex} experts,
+dropout \VAR{summary.frozen_configuration.model.dropout|num(2)},
+\VAR{summary.frozen_configuration.model.horizon_fourier_bands|latex}
+horizon Fourier bands\\
+Probability head &
+\VAR{summary.frozen_configuration.model.distribution_head|latex};
+\VAR{summary.frozen_configuration.model.prediction_anchor|latex}\\
+Training &
+\VAR{summary.frozen_configuration.trainer.precision|latex};
+up to \VAR{summary.frozen_configuration.trainer.full_max_epochs|latex} epochs;
+batch \VAR{summary.frozen_configuration.trainer.batch_size|latex}
+\(\times\) accumulation
+\VAR{summary.frozen_configuration.trainer.gradient_accumulation|latex};
+LR \VAR{summary.frozen_configuration.trainer.learning_rate|latex};
+weight decay \VAR{summary.frozen_configuration.trainer.weight_decay|latex};
+patience \VAR{summary.frozen_configuration.trainer.early_stopping_patience|latex}\\
+Bounded full run &
+\VAR{summary.frozen_configuration.trainer.full_max_train_examples|latex}
+training examples;
+\VAR{summary.frozen_configuration.trainer.full_max_evaluation_examples|latex}
+evaluation examples;
+\VAR{summary.frozen_configuration.trainer.full_max_seconds|latex} seconds maximum\\
+Deadline &
+\VAR{summary.frozen_configuration.deadline.no_new_work_after|latex}
+(\VAR{summary.frozen_configuration.deadline.timezone|latex})\\
+\bottomrule
+\end{tabularx}
+
+\section{Architecture and prior-art boundary}
+Fusion v2 is a persistence-anchored, horizon-conditioned custom adaptation:
+separate short, medium, and slow \cn{} streams; weather conditioning inside
+the temporal representation; derived stability/refractivity tokens; a
+four-expert diagnostic router; quantiles and a heavy-tailed Student-\(t\)
+head; and masked-weather/future-weather/cadence-aware pretraining. Temporal
+Fusion Transformers motivate interpretable temporal selection
+\cite{lim2020tft}; PatchTST motivates patchwise multivariate representation
+\cite{nie2023patchtst}; TimeXer is close prior art for endogenous/exogenous
+interaction \cite{wang2024timexer}; OTBench supplies the public benchmark
+context \cite{otbench}. This exact implementation is described as a
+custom adaptation, not a universal novelty claim.
+
+\section{Chronological cycle record}
+\begin{longtable}{p{0.21\linewidth}p{0.12\linewidth}p{0.12\linewidth}p{0.45\linewidth}}
+\toprule
+Cycle & Role & State & Conclusion\\
+\midrule
+\endhead
+\BLOCK{ for cycle in summary.cycles }
+\VAR{cycle.cycle_id|latex} &
+\VAR{cycle.role|latex} &
+\BLOCK{ if cycle.status == "PASS" }\pass
+\BLOCK{ elif cycle.status == "FAIL" }\fail
+\BLOCK{ else }\notevaluated
+\BLOCK{ endif } &
+\VAR{cycle.conclusion|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{Complete selection ablation record}
+The screen evaluated \VAR{summary.screen_evidence.run_count|latex} frozen arms.
+The selected arm advanced only to robustness characterization; screen
+advancement was not confirmation eligibility.
+\small
+\begin{longtable}{p{0.24\linewidth}p{0.15\linewidth}p{0.16\linewidth}rrrr}
+\toprule
+Candidate & Category & Family & RMSE & Tail MAE & Bias & Cov.\ 80\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.screen_evidence.runs }
+\VAR{run.candidate_id|latex} &
+\VAR{run.category|latex} &
+\VAR{run.family|latex} &
+\VAR{run.primary_rmse|num} &
+\VAR{run.primary_tail_mae|num} &
+\VAR{run.primary_bias|num} &
+\VAR{run.primary_coverage_80|pct}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\textbf{Closed families.}
+\BLOCK{ for family, reason in summary.screen_evidence.closed_hypothesis_families.items() }
+\textit{\VAR{family|latex}:} \VAR{reason|latex}
+\BLOCK{ endfor }
+
+\section{Chronological experiment ledger}
+\small
+\begin{longtable}{rrp{0.18\linewidth}p{0.48\linewidth}}
+\toprule
+Seq. & State & Event & Evidence note\\
+\midrule
+\endhead
+\BLOCK{ for event in summary.ledger_events }
+\VAR{event.sequence|latex} &
+\BLOCK{ if event.result == "PASS" }\pass
+\BLOCK{ elif event.result == "FAIL" }\fail
+\BLOCK{ else }\notevaluated
+\BLOCK{ endif } &
+\VAR{event.kind|latex} &
+\VAR{event.notes|latex}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Complete rolling candidate comparison}
+\begin{longtable}{lrrrrrr}
+\toprule
+Candidate & Runs & RMSE & Bias & Tail MAE & CRPS & Cov.\ 80\\
+\midrule
+\endhead
+\BLOCK{ for candidate_id, aggregate in summary.aggregates.items() }
+\VAR{candidate_id|latex} &
+\VAR{aggregate.runs|length} &
+\VAR{aggregate.primary.rmse_log10_cn2|num} &
+\VAR{aggregate.primary.bias_log10_cn2|num} &
+\VAR{aggregate.primary.tail_mae_top_decile|num} &
+\VAR{aggregate.primary.crps_gaussian|num} &
+\VAR{aggregate.primary.interval_80_coverage|pct}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\subsection*{Per-horizon evidence}
+\small
+\begin{longtable}{llrrrrrr}
+\toprule
+Candidate & Horizon & RMSE & MAE & Bias & Tail MAE & CRPS & Cov.\ 80\\
+\midrule
+\endhead
+\BLOCK{ for candidate_id, aggregate in summary.aggregates.items() }
+\BLOCK{ for horizon, metrics in aggregate.by_horizon.items() }
+\VAR{candidate_id|latex} &
+\VAR{horizon|latex} min &
+\VAR{metrics.rmse_log10_cn2|num} &
+\VAR{metrics.mae_log10_cn2|num} &
+\VAR{metrics.bias_log10_cn2|num} &
+\VAR{metrics.tail_mae_top_decile|num} &
+\VAR{metrics.crps_gaussian|num} &
+\VAR{metrics.interval_80_coverage|pct}\\
+\BLOCK{ endfor }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection*{Custom-model component diagnostics}
+These learned quantities describe model behavior and are not causal
+attributions. Scale weights are ordered short, medium, slow; expert weights
+are ordered 1--4.
+\small
+\begin{longtable}{lrrrrrrrr}
+\toprule
+Horizon & Residual mean & Residual SD & Short & Medium & Slow &
+Weather attn. & Physics norm & Modulation\\
+\midrule
+\endhead
+\BLOCK{ for horizon, diagnostic in summary.aggregates["selected-fusion-v2"].diagnostics.items() }
+\VAR{horizon|latex} min &
+\VAR{diagnostic.residual_mean|num} &
+\VAR{diagnostic.residual_std|num} &
+\VAR{diagnostic.scale_weights_mean.0|num} &
+\VAR{diagnostic.scale_weights_mean.1|num} &
+\VAR{diagnostic.scale_weights_mean.2|num} &
+\VAR{diagnostic.weather_attention_mean|num} &
+\VAR{diagnostic.physics_token_norm_mean|num} &
+\VAR{diagnostic.modulation_norm_mean|num}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\BLOCK{ for horizon, diagnostic in summary.aggregates["selected-fusion-v2"].diagnostics.items() }
+\textbf{\VAR{horizon|latex}-minute expert weights:}
+[\VAR{diagnostic.expert_weights_mean.0|num},
+\VAR{diagnostic.expert_weights_mean.1|num},
+\VAR{diagnostic.expert_weights_mean.2|num},
+\VAR{diagnostic.expert_weights_mean.3|num}].
+\BLOCK{ endfor }
+\normalsize
+
+\section{OOD, selective risk, and operational cost}
+\small
+\begin{longtable}{p{0.25\linewidth}rrrrr}
+\toprule
+Candidate & Selective 80 RMSE & OOD top-quintile RMSE & OOD score &
+Latency (ms/sample) & Throughput\\
+\midrule
+\endhead
+\BLOCK{ for candidate_id, candidate in summary.aggregates.items() }
+\VAR{candidate_id|latex} &
+\VAR{candidate.operational.get("selective_80_rmse_log10_cn2")|num} &
+\VAR{candidate.operational.get("ood_top_quintile_rmse_log10_cn2")|num} &
+\VAR{candidate.operational.get("ood_score_mean")|num} &
+\VAR{candidate.operational.get("inference_latency_ms_per_sample")|num(3)} &
+\VAR{candidate.operational.get("throughput_samples_per_second")|num(1)}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Primary result and uncertainty}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.46\linewidth}X}
+\toprule
+Fusion primary RMSE & \VAR{summary.result.selected_primary_rmse|num}\\
+Persistence primary RMSE & \VAR{summary.result.persistence_primary_rmse|num}\\
+Stronger generic neural RMSE &
+\VAR{summary.result.stronger_neural_primary_rmse|num}\\
+Relative change vs persistence &
+\VAR{summary.result.relative_improvement_over_persistence|pct}\\
+Relative change vs stronger neural &
+\VAR{summary.result.relative_improvement_over_stronger_neural|pct}\\
+24-hour bootstrap CI vs persistence &
+[\VAR{summary.result.bootstrap_vs_persistence.relative_improvement_ci95.0|pct},
+\VAR{summary.result.bootstrap_vs_persistence.relative_improvement_ci95.1|pct}]\\
+24-hour bootstrap CI vs stronger neural &
+[\VAR{summary.result.bootstrap_vs_stronger_neural.relative_improvement_ci95.0|pct},
+\VAR{summary.result.bootstrap_vs_stronger_neural.relative_improvement_ci95.1|pct}]\\
+\bottomrule
+\end{tabularx}
+
+\section{Relationship to diagnostic LightGBM}
+\VAR{summary.relationship_to_lightgbm.interpretation|latex}
+The relative primary-RMSE change is
+\VAR{summary.relationship_to_lightgbm.relative_improvement_over_lightgbm|pct}.
+\VAR{summary.relationship_to_lightgbm.claim_boundary|latex}
+
+\section{Claim-to-evidence map}
+\begin{longtable}{p{0.48\linewidth}p{0.18\linewidth}p{0.28\linewidth}}
+\toprule
+Claim or required condition & State & Evidence\\
+\midrule
+\endhead
+\BLOCK{ for name, state in summary.checks.items() }
+\VAR{name|latex} &
+\BLOCK{ if state == "PASS" }\pass
+\BLOCK{ elif state == "FAIL" }\fail
+\BLOCK{ else }\notevaluated
+\BLOCK{ endif } &
+Frozen protocol, manifests, ledger, and compiled cycle reports\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{Resource accounting}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.42\linewidth}X}
+\toprule
+Measured neural wall-clock & \VAR{summary.resources.neural_wall_clock_hours|num(3)} h\\
+Prior Cycle 0 neural wall-clock &
+\VAR{summary.resources.prior_cycle0_neural_wall_clock_hours|num(3)} h\\
+All included evidence neural wall-clock &
+\VAR{summary.resources.total_evidence_neural_wall_clock_hours|num(3)} h\\
+Peak total board VRAM & \VAR{summary.resources.peak_total_board_vram_gib|num(3)} GiB\\
+Tracked artifact bytes & \VAR{summary.resources.artifact_storage_bytes|latex}\\
+Cloud spending & \$\VAR{summary.resources.cloud_cost_usd|num(2)}\\
+\bottomrule
+\end{tabularx}
+
+\section{Failures, limitations, and next phase}
+\begin{itemize}
+\BLOCK{ for limitation in summary.limitations }
+\item \VAR{limitation|latex}
+\BLOCK{ endfor }
+\end{itemize}
+
+\textbf{Next phase.} \VAR{summary.next_phase|latex}
+No completed development result in this report authorizes test access,
+confirmation release, model promotion, or a causal interpretation of learned
+diagnostics.
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}

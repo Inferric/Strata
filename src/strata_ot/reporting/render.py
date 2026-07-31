@@ -80,10 +80,21 @@ def _environment(template_dir: Path) -> Environment:
 
 
 def _compile(tex_path: Path, output_dir: Path) -> Path:
-    environment_tectonic = Path(sys.executable).with_name("tectonic")
     tectonic = shutil.which("tectonic")
-    if tectonic is None and environment_tectonic.is_file():
-        tectonic = str(environment_tectonic)
+    if tectonic is None:
+        environment_tectonic = next(
+            (
+                candidate
+                for candidate in (
+                    Path(sys.executable).with_name("tectonic"),
+                    Path(sys.executable).with_name("tectonic.exe"),
+                )
+                if candidate.is_file()
+            ),
+            None,
+        )
+        if environment_tectonic is not None:
+            tectonic = str(environment_tectonic)
     latexmk = shutil.which("latexmk")
     if tectonic:
         command = [tectonic, "-X", "compile", tex_path.name, "--outdir", str(output_dir)]
@@ -543,43 +554,79 @@ def _prepare_horizon_report_context(
 
 
 def render_report(summary_path: Path, output_dir: Path) -> Path:
-    root = find_repo_root(summary_path.parent)
+    try:
+        root = find_repo_root()
+    except FileNotFoundError:
+        root = find_repo_root(summary_path.parent)
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     output_dir.mkdir(parents=True, exist_ok=True)
     task_kind = summary.get("task_kind")
     is_forecast = task_kind == "one_step_forecast"
     is_horizon = task_kind == "multi_horizon_forecast"
     is_fusion_screen = task_kind == "fusion_v2_screen"
+    is_fusion_robustness = task_kind == "fusion_v2_robustness"
+    is_fusion_point_loss = task_kind == "fusion_v21_point_loss"
+    is_fusion_program = task_kind == "fusion_v2_program"
     if is_horizon:
         _prepare_horizon_report_context(summary, root, output_dir)
     elif is_forecast:
         _prepare_forecast_report_context(summary, root, output_dir)
-    elif not is_fusion_screen:
+    elif (
+        not is_fusion_screen
+        and not is_fusion_robustness
+        and not is_fusion_point_loss
+        and not is_fusion_program
+    ):
         _prepare_report_context(summary, root, output_dir)
     template_dir = root / "reports" / "templates"
     template_name = (
-        "fusion_screen_report.tex.j2"
-        if is_fusion_screen
+        "fusion_program_report.tex.j2"
+        if is_fusion_program
         else (
-            "horizon_report.tex.j2"
-            if is_horizon
+            "fusion_point_loss_report.tex.j2"
+            if is_fusion_point_loss
             else (
-                "forecast_report.tex.j2"
-                if is_forecast
-                else "experiment_report.tex.j2"
+                "fusion_robustness_report.tex.j2"
+                if is_fusion_robustness
+                else (
+                    "fusion_screen_report.tex.j2"
+                    if is_fusion_screen
+                    else (
+                        "horizon_report.tex.j2"
+                        if is_horizon
+                        else (
+                            "forecast_report.tex.j2"
+                            if is_forecast
+                            else "experiment_report.tex.j2"
+                        )
+                    )
+                )
             )
         )
     )
     template = _environment(template_dir).get_template(template_name)
     summary.setdefault("checks", {})["latex_pdf_compiled"] = (
-        "PASS" if is_fusion_screen else True
+        "PASS"
+        if (
+            is_fusion_screen
+            or is_fusion_robustness
+            or is_fusion_point_loss
+            or is_fusion_program
+        )
+        else True
     )
     tex = template.render(summary=summary)
     tex_name = (
-        "fusion-v2-screen-report.tex"
-        if is_fusion_screen
+        "fusion-v21-point-loss-report.tex"
+        if is_fusion_point_loss
         else ("forecast-report.tex" if is_forecast else "experiment-report.tex")
     )
+    if is_fusion_robustness:
+        tex_name = "fusion-v2-robustness-report.tex"
+    if is_fusion_program:
+        tex_name = "fusion-v2-program-report.tex"
+    if is_fusion_screen:
+        tex_name = "fusion-v2-screen-report.tex"
     if is_horizon:
         tex_name = "mlo-weather-horizon-report.tex"
     tex_path = output_dir / tex_name
@@ -589,7 +636,14 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
         pdf = _compile(tex_path, output_dir)
     except Exception:
         summary["checks"]["latex_pdf_compiled"] = (
-            "FAIL" if is_fusion_screen else False
+            "FAIL"
+            if (
+                is_fusion_screen
+                or is_fusion_robustness
+                or is_fusion_point_loss
+                or is_fusion_program
+            )
+            else False
         )
         summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
         raise

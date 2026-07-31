@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "folder": {
+    "name": "2026-07-30 Strata-OT Fusion v2 Program",
+    "id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+    "url": "https://drive.google.com/drive/folders/1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+    "parent_name": "Strata Research",
+    "parent_id": "11c_CDkSDBBRZVmXsgUBMgLUvDSi0hXnP"
+  },
+  "sharing_permissions_changed": false,
+  "uploads": [
+    {
+      "role": "fusion_v2_selection_screen",
+      "local_path": "reports/generated/fusion-v2-screen/fusion-v2-screen-report.pdf",
+      "local_bytes": 58724,
+      "local_sha256": "f38e1e2abd2c989fe66db4be7fe20837a3acaf6d3ddda10a1bf45dd4746e48b2",
+      "drive_id": "12IC30pe8vO6G7bBKALflicMmQstzgha3",
+      "drive_url": "https://drive.google.com/file/d/12IC30pe8vO6G7bBKALflicMmQstzgha3/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v2-screen-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 58724,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "not_shared"
+      }
+    }
+  ],
+  "updated_at": "2026-07-30T21:06:20-05:00"
+}

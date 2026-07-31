@@ -19,6 +19,7 @@ from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint, Timer
 from lightning.pytorch.loggers import MLFlowLogger
 from scipy.special import gammaln
 from torch import Tensor, nn
+from torch.nn import functional as F
 
 from strata_ot.config import load_yaml, resolve_experiment
 from strata_ot.data.fusion import FusionDataModule, FusionSequenceDataset
@@ -81,6 +82,8 @@ class FusionLightningModule(L.LightningModule):
         reconstruction_weight: float = 1.0,
         future_weather_weight: float = 0.5,
         cadence_cn2_weight: float = 0.5,
+        point_loss_weight: float = 0.0,
+        point_loss_beta: float = 0.1,
     ) -> None:
         super().__init__()
         self.save_hyperparameters(ignore=["model"])
@@ -93,6 +96,8 @@ class FusionLightningModule(L.LightningModule):
         self.reconstruction_weight = reconstruction_weight
         self.future_weather_weight = future_weather_weight
         self.cadence_cn2_weight = cadence_cn2_weight
+        self.point_loss_weight = point_loss_weight
+        self.point_loss_beta = point_loss_beta
         self.phase = "forecast"
 
     def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:
@@ -152,13 +157,19 @@ class FusionLightningModule(L.LightningModule):
             target,
         )
         quantile = pinball_loss(output["quantiles"], target)
-        loss = nll + 0.20 * quantile
+        point = F.smooth_l1_loss(
+            output["location"],
+            target,
+            beta=self.point_loss_beta,
+        )
+        loss = nll + 0.20 * quantile + self.point_loss_weight * point
         error = output["location"] - target
         self.log_dict(
             {
                 f"{stage}/loss": loss,
                 f"{stage}/student_t_nll": nll,
                 f"{stage}/pinball": quantile,
+                f"{stage}/point_huber": point,
                 f"{stage}/rmse_log10_cn2": error.square().mean().sqrt(),
                 f"{stage}/mae_log10_cn2": error.abs().mean(),
                 f"{stage}/bias_log10_cn2": error.mean(),
@@ -783,6 +794,8 @@ def _neural_run(
         reconstruction_weight=float(policy["reconstruction_weight"]),
         future_weather_weight=float(policy["future_weather_weight"]),
         cadence_cn2_weight=float(policy["cadence_cn2_weight"]),
+        point_loss_weight=float(candidate.get("point_loss_weight", 0.0)),
+        point_loss_beta=float(candidate.get("point_loss_beta", 0.1)),
     )
     checkpoint_dir = (
         root
@@ -834,6 +847,7 @@ def _neural_run(
         "active_scales": ",".join(str(value) for value in candidate["active_scales"]),
         "pretraining": pretraining,
         "calibration": str(candidate["calibration"]),
+        "point_loss_weight": str(candidate.get("point_loss_weight", 0.0)),
         "evaluation_partition": (
             "confirmation" if fold_id == "final" else "selection"
         ),
@@ -1081,6 +1095,9 @@ def _neural_run(
                 "fusion": candidate["fusion"],
                 "pretraining": pretraining,
                 "calibration": calibration_method,
+                "point_loss_weight": float(
+                    candidate.get("point_loss_weight", 0.0)
+                ),
             }
         )
         logger.log_metrics(metrics, step=trainer.global_step)
@@ -1134,6 +1151,40 @@ def _neural_run(
         raise
 
 
+def _ensure_program_gpu_budget(
+    root: Path,
+    *,
+    candidate_ids: set[str],
+    run_limit_seconds: float,
+    budget_hours: float,
+) -> float:
+    consumed_seconds = 0.0
+    for path in (root / "artifacts" / "runs").glob(
+        "*/run-manifest.json"
+    ):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if (
+            payload.get("kind") != "neural"
+            or payload.get("candidate_id") not in candidate_ids
+        ):
+            continue
+        consumed_seconds += float(
+            payload.get("metrics", {}).get(
+                "wall_clock_seconds",
+                0.0,
+            )
+        )
+    budget_seconds = budget_hours * 3600.0
+    if consumed_seconds + run_limit_seconds > budget_seconds:
+        raise RuntimeError(
+            "Fusion program GPU-hour budget cannot admit another bounded "
+            f"run: {consumed_seconds / 3600.0:.3f} h consumed, "
+            f"{run_limit_seconds / 3600.0:.3f} h reserved, "
+            f"{budget_hours:.3f} h ceiling"
+        )
+    return consumed_seconds
+
+
 def run_fusion_candidate(
     config_path: str = "configs/experiments/fusion_v2_program.yaml",
     *,
@@ -1176,15 +1227,42 @@ def run_fusion_candidate(
         raise RuntimeError("Fusion program no-new-run deadline has passed")
     trainer_config = experiment["trainer_config"]
     max_train_examples = int(
-        trainer_config["screen_max_train_examples"]
-        if screen
-        else trainer_config["full_max_train_examples"]
+        candidate.get(
+            "max_train_examples",
+            (
+                trainer_config["screen_max_train_examples"]
+                if screen
+                else trainer_config["full_max_train_examples"]
+            ),
+        )
     )
     max_evaluation_examples = int(
         trainer_config["screen_max_evaluation_examples"]
         if screen
         else trainer_config["full_max_evaluation_examples"]
     )
+    if candidate["family"] not in {
+        "persistence",
+        "climatology",
+        "lightgbm",
+    }:
+        _ensure_program_gpu_budget(
+            root,
+            candidate_ids={
+                str(item["id"]) for item in experiment["candidates"]
+            },
+            run_limit_seconds=float(
+                trainer_config[
+                    "screen_max_seconds"
+                    if screen
+                    else "full_max_seconds"
+                ]
+            ),
+            budget_hours=float(
+                experiment["budget"]["max_total_gpu_hours"]
+            ),
+        )
+    preflight_hardware(root, experiment["safety"])
     workers = int(os.getenv("STRATA_NUM_WORKERS", "0"))
     datamodule = FusionDataModule(
         experiment["data_config"],
@@ -1206,7 +1284,6 @@ def run_fusion_candidate(
     if not release_confirmation and evaluation is None:
         raise RuntimeError("Requested Fusion evaluation role is unavailable")
     environment = _environment_fingerprint()
-    preflight_hardware(root, experiment["safety"])
     if candidate["family"] in {"persistence", "climatology", "lightgbm"}:
         assert evaluation is not None
         return _baseline_run(

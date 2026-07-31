@@ -1,4 +1,10 @@
-import type { DatasetManifest, Overview, Run, SystemStatus } from "./types";
+import type {
+  DatasetManifest,
+  FusionSummary,
+  Overview,
+  Run,
+  SystemStatus,
+} from "./types";
 
 const apiBase = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
@@ -9,13 +15,14 @@ async function get<T>(path: string): Promise<T> {
 }
 
 export async function loadConsole() {
-  const [overview, runs, datasets, system] = await Promise.all([
+  const [overview, runs, datasets, system, fusion] = await Promise.all([
     get<Overview>("/api/overview"),
     get<{ items: Run[] }>("/api/runs"),
     get<{ items: DatasetManifest[] }>("/api/datasets"),
     get<SystemStatus>("/api/system"),
+    get<FusionSummary>("/api/fusion").catch(() => null),
   ]);
-  return { overview, runs: runs.items, datasets: datasets.items, system };
+  return { overview, runs: runs.items, datasets: datasets.items, system, fusion };
 }
 
 export const links = {

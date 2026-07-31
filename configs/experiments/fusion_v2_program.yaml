@@ -253,3 +253,55 @@ candidates:
     pretraining: none
     calibration: none
     screen_program: false
+  - id: point-huber-0p25
+    category: point_loss
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.25
+    point_loss_beta: 0.10
+    screen_program: false
+  - id: point-huber-0p00
+    category: point_loss
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    point_loss_beta: 0.10
+    screen_program: false
+  - id: point-huber-0p50
+    category: point_loss
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.50
+    point_loss_beta: 0.10
+    screen_program: false
+  - id: point-huber-1p00
+    category: point_loss
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 1.00
+    point_loss_beta: 0.10
+    screen_program: false
