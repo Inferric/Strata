@@ -1048,6 +1048,21 @@ def _neural_run(
             "seed": seed,
             "screen": screen,
             "parameters": parameters,
+            "training_example_cap": int(
+                candidate.get(
+                    "max_train_examples",
+                    (
+                        trainer_config["screen_max_train_examples"]
+                        if screen
+                        else trainer_config["full_max_train_examples"]
+                    ),
+                )
+            ),
+            "training_examples_actual": len(datamodule.train_set),
+            "calibration_examples_actual": len(datamodule.calibration_set),
+            "evaluation_examples_actual": (
+                len(evaluation) if evaluation is not None else 0
+            ),
             "feature_names": datamodule.feature_names,
             "normalization": {
                 "fit_fold": datamodule.normalization.fit_fold,
@@ -1098,6 +1113,17 @@ def _neural_run(
                 "point_loss_weight": float(
                     candidate.get("point_loss_weight", 0.0)
                 ),
+                "training_example_cap": int(
+                    candidate.get(
+                        "max_train_examples",
+                        (
+                            trainer_config["screen_max_train_examples"]
+                            if screen
+                            else trainer_config["full_max_train_examples"]
+                        ),
+                    )
+                ),
+                "training_examples_actual": len(datamodule.train_set),
             }
         )
         logger.log_metrics(metrics, step=trainer.global_step)

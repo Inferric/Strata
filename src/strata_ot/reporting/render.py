@@ -566,6 +566,7 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
     is_fusion_screen = task_kind == "fusion_v2_screen"
     is_fusion_robustness = task_kind == "fusion_v2_robustness"
     is_fusion_point_loss = task_kind == "fusion_v21_point_loss"
+    is_fusion_data_scale = task_kind == "fusion_v22_data_scale"
     is_fusion_program = task_kind == "fusion_v2_program"
     if is_horizon:
         _prepare_horizon_report_context(summary, root, output_dir)
@@ -575,6 +576,7 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
         not is_fusion_screen
         and not is_fusion_robustness
         and not is_fusion_point_loss
+        and not is_fusion_data_scale
         and not is_fusion_program
     ):
         _prepare_report_context(summary, root, output_dir)
@@ -583,21 +585,25 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
         "fusion_program_report.tex.j2"
         if is_fusion_program
         else (
-            "fusion_point_loss_report.tex.j2"
-            if is_fusion_point_loss
+            "fusion_data_scale_report.tex.j2"
+            if is_fusion_data_scale
             else (
-                "fusion_robustness_report.tex.j2"
-                if is_fusion_robustness
+                "fusion_point_loss_report.tex.j2"
+                if is_fusion_point_loss
                 else (
-                    "fusion_screen_report.tex.j2"
-                    if is_fusion_screen
+                    "fusion_robustness_report.tex.j2"
+                    if is_fusion_robustness
                     else (
-                        "horizon_report.tex.j2"
-                        if is_horizon
+                        "fusion_screen_report.tex.j2"
+                        if is_fusion_screen
                         else (
-                            "forecast_report.tex.j2"
-                            if is_forecast
-                            else "experiment_report.tex.j2"
+                            "horizon_report.tex.j2"
+                            if is_horizon
+                            else (
+                                "forecast_report.tex.j2"
+                                if is_forecast
+                                else "experiment_report.tex.j2"
+                            )
                         )
                     )
                 )
@@ -611,16 +617,19 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
             is_fusion_screen
             or is_fusion_robustness
             or is_fusion_point_loss
+            or is_fusion_data_scale
             or is_fusion_program
         )
         else True
     )
     tex = template.render(summary=summary)
     tex_name = (
-        "fusion-v21-point-loss-report.tex"
-        if is_fusion_point_loss
+        "fusion-v22-data-scale-report.tex"
+        if is_fusion_data_scale
         else ("forecast-report.tex" if is_forecast else "experiment-report.tex")
     )
+    if is_fusion_point_loss:
+        tex_name = "fusion-v21-point-loss-report.tex"
     if is_fusion_robustness:
         tex_name = "fusion-v2-robustness-report.tex"
     if is_fusion_program:
@@ -641,6 +650,7 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
                 is_fusion_screen
                 or is_fusion_robustness
                 or is_fusion_point_loss
+                or is_fusion_data_scale
                 or is_fusion_program
             )
             else False

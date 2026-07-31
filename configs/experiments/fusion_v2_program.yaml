@@ -305,3 +305,55 @@ candidates:
     point_loss_weight: 1.00
     point_loss_beta: 0.10
     screen_program: false
+  - id: data-scale-12k
+    category: data_scale
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    max_train_examples: 12000
+    screen_program: false
+  - id: data-scale-30k
+    category: data_scale
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    max_train_examples: 30000
+    screen_program: false
+  - id: data-scale-50k
+    category: data_scale
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    max_train_examples: 50000
+    screen_program: false
+  - id: data-scale-full
+    category: data_scale
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    max_train_examples: 62263
+    screen_program: false

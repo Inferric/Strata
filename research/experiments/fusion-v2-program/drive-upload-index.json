@@ -40,7 +40,23 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "fusion_v21_point_loss",
+      "local_path": "reports/generated/fusion-v21-point-loss/fusion-v21-point-loss-report.pdf",
+      "local_bytes": 50554,
+      "local_sha256": "fe3d0b21cb8387bf75b10eba6f10d47cce2f44bb6a39244e961d28efc14c1099",
+      "drive_id": "1UkVQ6QbIHe-bWqww_H07beqhEHG_6uVt",
+      "drive_url": "https://drive.google.com/file/d/1UkVQ6QbIHe-bWqww_H07beqhEHG_6uVt/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v21-point-loss-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 50554,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-30T22:17:18-05:00"
+  "updated_at": "2026-07-30T22:28:04-05:00"
 }

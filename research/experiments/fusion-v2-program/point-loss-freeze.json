@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "program_id": "strata-fusion-v2-program",
+  "cycle_id": "fusion-v21-point-loss",
+  "frozen_at": "2026-07-30T22:26:14.751590-05:00",
+  "protocol": "docs/FUSION_V21_POINT_LOSS.md",
+  "repository_revision": "a4a4265374b982a5feea3668da385b14b7c657b3",
+  "fold_id": "fold-1",
+  "seed": 17,
+  "run_ids": {
+    "point-huber-0p00": "e67a2cb0319b4f28a836016e38819064",
+    "point-huber-0p25": "e2ddbe35ccd74826b977d76cd8b58176",
+    "point-huber-0p50": "2f4244938626499ba1717cf54579e51a",
+    "point-huber-1p00": "ae6439ae7f2846ea80251e9112bcb5e8"
+  },
+  "official_mlo_test_loaded": false,
+  "usna_confirmation_labels_loaded": false
+}

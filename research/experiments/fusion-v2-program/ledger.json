@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "robustness_complete_point_loss_frozen",
+  "status": "point_loss_complete_data_scale_frozen",
   "events": [
     {
       "sequence": 0,
@@ -240,6 +240,48 @@
       "parent_run_id": "5b2f104cb416450eb82b7ef957df10cf",
       "evidence": "docs/FUSION_V21_POINT_LOSS.md",
       "notes": "A four-arm paired Smooth L1 objective screen is frozen before its metrics. Architecture, data, probability head, sample caps, thresholds, and the already-reported robustness result remain unchanged."
+    },
+    {
+      "sequence": 19,
+      "recorded_at": "2026-07-30T22:26:14-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "explicit_point_loss",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "e67a2cb0319b4f28a836016e38819064",
+        "e2ddbe35ccd74826b977d76cd8b58176",
+        "2f4244938626499ba1717cf54579e51a",
+        "ae6439ae7f2846ea80251e9112bcb5e8"
+      ],
+      "control_primary_rmse": 0.30082541675299396,
+      "best_candidate": "point-huber-0p50",
+      "best_primary_rmse": 0.2987955912452492,
+      "best_relative_improvement": 0.006747519972394666,
+      "notes": "No intervention reached the frozen 2% paired RMSE improvement. The 0.50 and 1.00 weights also failed the tail-regression condition. Three non-improvements close the explicit point-loss family without a rolling advance."
+    },
+    {
+      "sequence": 20,
+      "recorded_at": "2026-07-30T22:28:04-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "explicit_point_loss",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "359831309fba4724be654f38ba81f7cc",
+      "evidence": "research/experiments/fusion-v2-program/point-loss-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1UkVQ6QbIHe-bWqww_H07beqhEHG_6uVt/view?usp=drivesdk",
+      "notes": "The three-page LaTeX point-loss report was compiled, rendered at 2x, visually inspected, logged as a finished MLflow evidence run, uploaded to the private Strata Research program folder, and verified as a 50,554-byte unshared PDF."
+    },
+    {
+      "sequence": 21,
+      "recorded_at": "2026-07-30T22:32:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "training_sequence_density",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "359831309fba4724be654f38ba81f7cc",
+      "evidence": "docs/FUSION_V22_DATA_SCALE.md",
+      "notes": "A four-arm 12k/30k/50k/all-62,263 training-sequence screen is frozen before metrics. It changes only deterministic within-fold sample density and explicitly does not claim broader temporal coverage."
     }
   ]
 }

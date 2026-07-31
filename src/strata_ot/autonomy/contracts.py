@@ -26,6 +26,7 @@ ALLOWED_MODEL_PARAMETERS = {
     "pretraining",
     "calibration",
     "point_loss_weight",
+    "max_train_examples",
 }
 
 REQUIRED_STOP_CONDITIONS = {
@@ -54,9 +55,17 @@ NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
     "learning_rate": (1e-5, 3e-3),
     "weight_decay": (0.0, 0.2),
     "point_loss_weight": (0.0, 2.0),
+    "max_train_examples": (1000, 500000),
 }
 
-INTEGER_PARAMETERS = {"hidden_dim", "depth", "num_heads", "num_experts", "context"}
+INTEGER_PARAMETERS = {
+    "hidden_dim",
+    "depth",
+    "num_heads",
+    "num_experts",
+    "context",
+    "max_train_examples",
+}
 
 
 def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> None:
@@ -94,6 +103,10 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
         else model_config
     )
     trainer_config = load_yaml("configs/trainer/local_16gb.yaml", root=repository)
+    fusion_trainer_config = load_yaml(
+        "configs/trainer/fusion_local_16gb.yaml",
+        root=repository,
+    )
 
     changed: set[str] = set()
     for change in proposal["changes"]:
@@ -103,11 +116,18 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
         if parameter in changed:
             raise ValueError(f"Autonomous proposal changes {parameter} more than once")
         changed.add(parameter)
-        source = (
-            trainer_config
-            if parameter in {"learning_rate", "weight_decay"}
-            else parent_config
-        )
+        if parameter == "max_train_examples":
+            source = {
+                "max_train_examples": fusion_trainer_config[
+                    "screen_max_train_examples"
+                ]
+            }
+        else:
+            source = (
+                trainer_config
+                if parameter in {"learning_rate", "weight_decay"}
+                else parent_config
+            )
         defaults: dict[str, Any] = {
             "scale_parameterization": "clamp",
             "mlp_flatten_context": False,

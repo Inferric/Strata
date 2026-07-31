@@ -76,6 +76,30 @@ def test_proposal_requires_hard_stops() -> None:
         validate_proposal(proposal)
 
 
+def test_fusion_proposal_allows_bounded_training_sequence_scale() -> None:
+    proposal = valid_proposal()
+    proposal.update(
+        {
+            "proposal_id": "fusion-v22-data-scale-030k",
+            "dataset_manifest_id": "otbench-usna-cn2-lg-v1",
+            "split_id": "otbench-usna-lg-fusion-v2",
+            "model": {
+                "family": "strata_ot_fusion",
+                "config_path": "configs/model/strata_fusion_v2.yaml",
+            },
+            "changes": [
+                {
+                    "parameter": "max_train_examples",
+                    "old": 12000,
+                    "new": 30000,
+                    "reason": "Increase only training density in the frozen fold",
+                }
+            ],
+        }
+    )
+    validate_proposal(proposal)
+
+
 def test_repository_contract() -> None:
     root = Path(__file__).resolve().parents[1]
     assert validate_repository(root) == []
