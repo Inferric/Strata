@@ -216,7 +216,26 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "eso_paranal_mass_dataset_qc",
+      "local_path": "reports/generated/eso-paranal-mass-qc/eso-paranal-mass-qc-report.pdf",
+      "local_bytes": 45799,
+      "local_sha256": "d476a3e1bf6c05b9724f9ca6a29a2ab6e53724820909b29d0d0e5f69cd06b3d2",
+      "drive_id": "1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8",
+      "drive_url": "https://drive.google.com/file/d/1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "eso-paranal-mass-qc-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 45799,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "owned_by_current_user": true,
+        "permission_count": 1,
+        "owner_permission_only": true,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-31T02:04:56-05:00"
+  "updated_at": "2026-07-31T02:30:59-05:00"
 }

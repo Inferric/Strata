@@ -682,6 +682,42 @@
       "confirmation_evaluation": "NOT_EVALUATED",
       "champion_promotion": "NOT_EVALUATED",
       "notes": "The bounded Fusion v2 research program is closed without confirmation release, official MLO test access, or champion promotion. The next recommendation is provenance-checked expansion of clearly open training coverage followed by a separately preregistered architecture family; closed shortcut, loss, scale, cap, and bilinear searches are not reopened."
+    },
+    {
+      "sequence": 48,
+      "recorded_at": "2026-07-31T02:18:00-05:00",
+      "kind": "data_cycle_preregistered",
+      "hypothesis_family": "public-profile-provenance",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "evidence": "docs/ESO_PARANAL_MASS_DATASET.md",
+      "notes": "A one-month, anonymous, 25 MB-capped ESO Paranal MASS profile request and exact provenance, schema, time, geometry, unit, checksum, and boundary checks were frozen before materialization. The protocol explicitly does not authorize Column training or promotion."
+    },
+    {
+      "sequence": 49,
+      "recorded_at": "2026-07-31T02:24:00-05:00",
+      "kind": "public_profile_acquisition_assessed",
+      "hypothesis_family": "public-profile-provenance",
+      "evidence_role": "dataset-qc",
+      "result": "PASS",
+      "evidence": "data/manifests/eso-paranal-mass-profile-2020-01-v1.json",
+      "rows": 7857,
+      "csv_bytes": 1655957,
+      "csv_sha256": "737430b9fd764f5732664c02a16ae2601261c10dc9fb1b58edcb3dab631e7afc",
+      "column_training_authorized": false,
+      "notes": "The exact frozen request returned 7,857 unique observations with the seven expected profile heights. Provenance, byte cap, requested schema, timestamps, finite nonnegative profile values, geometry, and immediate manifest verification passed. The direct observational label remains a scintillation-inverted integrated layer strength rather than pointwise Cn2."
+    },
+    {
+      "sequence": 50,
+      "recorded_at": "2026-07-31T02:30:59-05:00",
+      "kind": "dataset_qc_report",
+      "hypothesis_family": "public-profile-provenance",
+      "evidence_role": "report-mlflow-drive",
+      "result": "PASS",
+      "run_id": "0c8f91571aae45b4a7057ed0aefc25f0",
+      "evidence": "research/experiments/fusion-v2-program/eso-mass-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8/view?usp=drivesdk",
+      "notes": "The final three-page LaTeX dataset-QC report was compiled, rendered at 2x, visually inspected, logged to MLflow without raw data, uploaded to the existing private program folder, and verified as a 45,799-byte owner-only PDF. Column training, confirmation evaluation, and promotion remain unevaluated."
     }
   ]
 }
