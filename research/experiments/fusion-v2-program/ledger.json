@@ -780,6 +780,16 @@
       "result": "PASS",
       "evidence": "89738d130a0c0b3704f7231f953a25294cef15da",
       "notes": "A final cross-platform review found that Windows-generated manifest records used backslashes. New records now use portable POSIX-relative paths, verification accepts legacy separators on either platform, and unsafe absolute or parent-traversal paths are rejected. The complete 86-test suite, Ruff, mypy, repository contract, and all three real manifests passed without changing checked-in manifest bytes, raw data, report hashes, or scientific results."
+    },
+    {
+      "sequence": 57,
+      "recorded_at": "2026-07-31T03:31:00-05:00",
+      "kind": "cycle_report_interface_repair",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "api-console-mlflow",
+      "result": "PASS",
+      "evidence": "db2ec69004f6c5f97983dc23c4bc00eb6936620d",
+      "notes": "A final MLflow-to-console audit found four completed cycle PDFs whose source summaries predated the report_pdf field. Synthesis now resolves every Fusion cycle's report path and observed Drive URL from the verified upload index. The exact hash-verified Cycle 0 report was restored to the local evidence tree, all twelve cycle PDFs are API-addressable, and no report content or scientific metric changed."
     }
   ]
 }

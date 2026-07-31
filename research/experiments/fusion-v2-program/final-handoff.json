@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "recorded_at": "2026-07-31T03:09:41-05:00",
-  "validated_implementation_commit": "89738d130a0c0b3704f7231f953a25294cef15da",
+  "validated_implementation_commit": "db2ec69004f6c5f97983dc23c4bc00eb6936620d",
   "program_id": "strata-fusion-v2-program",
   "scientific_status": "FAIL",
   "best_custom_candidate": {
@@ -53,7 +53,7 @@
     "mypy_source_files": 52,
     "pytest": {
       "status": "PASS",
-      "passed": 86,
+      "passed": 87,
       "warnings": 5
     },
     "repository_contract": "PASS",
@@ -107,6 +107,13 @@
       "api": "PASS",
       "research_console": "PASS",
       "browser_console_warnings_or_errors": 0
+    },
+    "artifact_interfaces": {
+      "program_cycles": 12,
+      "cycle_pdfs_locally_addressable": 12,
+      "fusion_cycle_drive_urls_observed": 11,
+      "cycle_pdfs_in_final_mlflow_run": 12,
+      "refreshed_program_summary_in_final_mlflow_run": true
     },
     "branch_scope": {
       "raw_data_changed": false,
