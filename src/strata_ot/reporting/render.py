@@ -612,6 +612,10 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
             "fusion_program_report.tex.j2",
             "fusion-v2-program-report.tex",
         ),
+        "dataset_qc": (
+            "dataset_qc_report.tex.j2",
+            "eso-paranal-mass-qc-report.tex",
+        ),
     }
     fusion_report = fusion_reports.get(str(task_kind))
     is_fusion = fusion_report is not None
