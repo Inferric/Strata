@@ -21,7 +21,10 @@ from strata_ot.evaluation.fusion_program import (
     _excluded_dirty_robustness_runs,
     _expected_robustness_keys,
 )
-from strata_ot.evaluation.fusion_synthesis import build_program_summary
+from strata_ot.evaluation.fusion_synthesis import (
+    build_program_summary,
+    write_program_run_index,
+)
 from strata_ot.training.fusion import (
     FusionLightningModule,
     _ensure_program_gpu_budget,
@@ -464,6 +467,42 @@ def test_program_synthesis_prefers_completed_v25_robustness(
     assert summary["best_custom_candidate_label"] == "Fusion v2.5"
     assert summary["result"]["selected_primary_rmse"] == 0.23
     assert summary["checks"]["three_seed_multifold_evidence"] == "PASS"
+
+
+def test_program_run_index_excludes_bulky_and_sensitive_fields(
+    tmp_path: Path,
+) -> None:
+    _synthesis_fixture(tmp_path)
+    summary = build_program_summary(tmp_path)
+    summary["evidence_run_id"] = "program-evidence"
+    summary_path = (
+        tmp_path
+        / "artifacts"
+        / "experiments"
+        / "strata-fusion-v2-program"
+        / "program-summary.json"
+    )
+    _write_json(summary_path, summary)
+    screen_path = summary_path.parent / "screen-summary.json"
+    screen = json.loads(screen_path.read_text(encoding="utf-8"))
+    screen["runs"] = [
+        {
+            "run_id": "screen-run",
+            "candidate_id": "control-mlp",
+            "checkpoint": "sealed/local/checkpoint.ckpt",
+            "predictions": [1.0, 2.0],
+        }
+    ]
+    _write_json(screen_path, screen)
+
+    destination = write_program_run_index(summary_path, tmp_path)
+    index = json.loads(destination.read_text(encoding="utf-8"))
+    serialized = destination.read_text(encoding="utf-8")
+    assert index["training_run_count"] == 1
+    assert index["evidence_run_count"] == 1
+    assert index["training_runs"][0]["run_id"] == "screen-run"
+    assert "checkpoint" not in serialized
+    assert "predictions" not in serialized
 
 
 def test_program_synthesis_refuses_released_confirmation(tmp_path: Path) -> None:

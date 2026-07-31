@@ -448,6 +448,111 @@ def write_program_summary(root: Path | None = None) -> Path:
     return destination
 
 
+def write_program_run_index(
+    summary_path: Path,
+    root: Path | None = None,
+) -> Path:
+    root = root or find_repo_root(summary_path.parent)
+    summary = _load_object(summary_path)
+    records: dict[str, dict[str, Any]] = {}
+
+    def collect(
+        value: Any,
+        *,
+        source: str,
+        candidate_hint: str | None = None,
+    ) -> None:
+        if isinstance(value, dict):
+            run_id = value.get("run_id")
+            if isinstance(run_id, str) and run_id:
+                record: dict[str, Any] = {
+                    "run_id": run_id,
+                    "source_summary": source,
+                }
+                candidate_id = value.get("candidate_id", candidate_hint)
+                for key, item in (
+                    ("candidate_id", candidate_id),
+                    ("fold_id", value.get("fold_id")),
+                    ("seed", value.get("seed")),
+                    ("kind", value.get("kind")),
+                ):
+                    if isinstance(item, (str, int)):
+                        record[key] = item
+                records.setdefault(run_id, record)
+            for key, item in value.items():
+                next_hint = candidate_hint
+                if isinstance(key, str) and key.startswith(
+                    ("control-", "diagnostic-", "selected-")
+                ):
+                    next_hint = key
+                collect(item, source=source, candidate_hint=next_hint)
+        elif isinstance(value, list):
+            for item in value:
+                collect(item, source=source, candidate_hint=candidate_hint)
+
+    for path in sorted((root / PROGRAM_ROOT).glob("*-summary.json")):
+        if path.name == "program-summary.json":
+            continue
+        collect(
+            _load_object(path),
+            source=path.relative_to(root).as_posix(),
+        )
+
+    evidence_runs = [
+        {
+            "cycle_id": cycle["cycle_id"],
+            "run_id": cycle["evidence_run_id"],
+        }
+        for cycle in summary["cycles"]
+        if isinstance(cycle.get("evidence_run_id"), str)
+    ]
+    program_evidence = summary.get("evidence_run_id")
+    if isinstance(program_evidence, str):
+        evidence_runs.append(
+            {
+                "cycle_id": "program-synthesis",
+                "run_id": program_evidence,
+            }
+        )
+    run_index = {
+        "schema_version": 1,
+        "program_id": summary["program_id"],
+        "generated_at": datetime.now(ZoneInfo("America/Chicago")).isoformat(),
+        "scientific_status": summary["status"],
+        "best_custom_candidate_id": summary["best_custom_candidate_id"],
+        "source_sha256": summary["provenance"]["source_sha256"],
+        "split_sha256": summary["provenance"]["split_sha256"],
+        "official_mlo_test_loaded": False,
+        "usna_confirmation_labels_loaded": False,
+        "training_run_count": len(records),
+        "evidence_run_count": len(evidence_runs),
+        "training_runs": sorted(
+            records.values(),
+            key=lambda item: (
+                str(item.get("source_summary", "")),
+                str(item.get("candidate_id", "")),
+                str(item.get("fold_id", "")),
+                int(item.get("seed", -1)),
+                str(item["run_id"]),
+            ),
+        ),
+        "evidence_runs": evidence_runs,
+    }
+    destination = (
+        root
+        / "reports"
+        / "generated"
+        / "fusion-v2-program"
+        / "fusion-v2-run-index.json"
+    )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        json.dumps(run_index, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return destination
+
+
 def log_program_evidence(summary_path: Path, report_path: Path) -> str:
     try:
         root = find_repo_root()
@@ -478,6 +583,7 @@ def log_program_evidence(summary_path: Path, report_path: Path) -> str:
             json.dumps(summary, indent=2) + "\n",
             encoding="utf-8",
         )
+        run_index_path = write_program_run_index(summary_path, root)
         mlflow.log_metrics(
             {
                 "program/neural_wall_clock_hours": float(
@@ -501,6 +607,7 @@ def log_program_evidence(summary_path: Path, report_path: Path) -> str:
             (summary_path, "evidence"),
             (report_path, "reports"),
             (report_path.with_suffix(".tex"), "reports"),
+            (run_index_path, "evidence"),
             (root / RESEARCH_ROOT / "ledger.json", "evidence"),
             (root / "docs" / "FUSION_V2_PROGRAM.md", "protocol"),
         ):
@@ -539,6 +646,7 @@ def main() -> None:
     if args.log_mlflow:
         print(log_program_evidence(summary_path, root / args.report))
     else:
+        write_program_run_index(summary_path, root)
         print(summary_path)
 
 
