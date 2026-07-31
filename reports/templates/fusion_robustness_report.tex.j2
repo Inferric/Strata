@@ -19,15 +19,15 @@
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\textcolor{stratagray}{Strata-OT / rolling development evidence}}
-\rhead{\textcolor{stratagray}{Fusion v2 robustness}}
+\rhead{\textcolor{stratagray}{\VAR{summary.report_short_title|latex}}}
 \cfoot{\thepage}
 \fancypagestyle{plain}{
 \fancyhf{}
 \lhead{\textcolor{stratagray}{Strata-OT / rolling development evidence}}
-\rhead{\textcolor{stratagray}{Fusion v2 robustness}}
+\rhead{\textcolor{stratagray}{\VAR{summary.report_short_title|latex}}}
 \cfoot{\thepage}
 }
-\title{\textbf{\textcolor{stratablue}{Strata-OT Fusion v2}}\\
+\title{\textbf{\textcolor{stratablue}{\VAR{summary.report_model_label|latex}}}\\
 \large Three-fold, three-seed rolling robustness experiment}
 \author{Generated from frozen run manifests and paired chronological predictions}
 \date{\VAR{summary.generated_at|latex}}
@@ -59,7 +59,9 @@ material bias, tail, CRPS, or stability regression.
 
 \begin{tabularx}{\linewidth}{>{\bfseries}p{0.39\linewidth}X}
 \toprule
-Frozen candidate & selected-fusion-v2; 3.61M parameters\\
+Frozen candidate &
+\VAR{summary.frozen_configuration.candidate.id|latex};
+\VAR{summary.frozen_configuration.parameters|latex} parameters\\
 Folds / neural seeds & 3 / 3 (17, 41, 73)\\
 Completed matrix runs & \VAR{summary.resources.matrix_run_count|latex}\\
 Primary RMSE, Fusion v2 & \VAR{summary.result.selected_primary_rmse|num}\\
@@ -251,7 +253,7 @@ Latency (ms/sample) & Throughput\\
 Fold & Seed & RMSE & Bias & Tail MAE & CRPS & Cov.\ 80 & Seconds\\
 \midrule
 \endhead
-\BLOCK{ for run in summary.aggregates["selected-fusion-v2"].runs }
+\BLOCK{ for run in summary.selected_aggregate.runs }
 \VAR{run.fold_id|latex} &
 \VAR{run.seed|latex} &
 \VAR{run.primary.rmse_log10_cn2|num} &
@@ -301,7 +303,7 @@ scale's temporal projection.
 Horizon & Residual mean & Residual SD & Short & Medium & Slow & Physics norm\\
 \midrule
 \endhead
-\BLOCK{ for horizon, diagnostic in summary.aggregates["selected-fusion-v2"].diagnostics.items() }
+\BLOCK{ for horizon, diagnostic in summary.selected_aggregate.diagnostics.items() }
 \VAR{horizon|latex} &
 \VAR{diagnostic.residual_mean|num} &
 \VAR{diagnostic.residual_std|num} &
@@ -353,12 +355,7 @@ Dirty provenance runs excluded & \VAR{summary.excluded_dirty_runs|length|latex}\
 \bottomrule
 \end{tabularx}
 
-Any dirty-provenance retry listed above is retained as failure evidence but
-excluded from the exact 45-run matrix; only the clean rerun is analyzed. The
-earlier non-trainable 256-wide screen arm was corrected to the
-head-compatible preregistered high-capacity width before metrics. No OOM,
-numerical retry, unsafe thermal state, or evidence substitution is included in
-this matrix.
+\VAR{summary.resource_narrative|latex}
 
 \section{Limitations, verdict, and next cycle}
 These results are from one site, capped training examples, three seasonal
@@ -368,10 +365,7 @@ regimes. A point-estimate gain cannot override failed uncertainty, tail,
 bootstrap, or seed-direction conditions.
 
 \VAR{summary.plain_language_conclusion|latex}
-If the rolling gate fails, the next preregistered development cycle changes
-one factor: add a robust explicit persistence-residual point objective while
-retaining the same probabilistic heads, split, controls, and thresholds. The
-confirmation block stays sealed.
+\VAR{summary.next_cycle_narrative|latex}
 
 \bibliographystyle{plain}
 \bibliography{references}

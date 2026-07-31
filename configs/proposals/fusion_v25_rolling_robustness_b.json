@@ -1,0 +1,39 @@
+{
+  "proposal_id": "fusion-v25-rolling-robustness-b",
+  "hypothesis": "The fixed nine-epoch history-linear shortcut candidate will retain its selection gain across three purged chronological weather periods and three seeds without tail, calibration, bias, or stability regression.",
+  "parent_run_id": "dd8ab8627c2f4e418c6d23ed078fa7f7",
+  "dataset_manifest_id": "otbench-usna-cn2-lg-v1",
+  "split_id": "otbench-usna-lg-fusion-v2",
+  "horizon_minutes": [5, 15, 30, 60],
+  "model": {
+    "family": "strata_ot_fusion",
+    "config_path": "configs/model/strata_fusion_v2.yaml"
+  },
+  "changes": [
+    {
+      "parameter": "residual_shortcut",
+      "old": "none",
+      "new": "history_linear",
+      "reason": "Retain the only direct shortcut that passed the completed convergence screen."
+    },
+    {
+      "parameter": "full_max_epochs",
+      "old": 12,
+      "new": 9,
+      "reason": "Retain the frozen efficient convergence cap selected before rolling metrics."
+    }
+  ],
+  "evaluation_gate_id": "public-evidence-gates-v1",
+  "budget": {
+    "max_runs": 2,
+    "max_local_gpu_hours": 1.0,
+    "max_cloud_cost_usd": 0
+  },
+  "stop_conditions": [
+    "budget_exhausted",
+    "nan_or_divergence",
+    "oom_after_one_recovery",
+    "data_or_split_gate_failure",
+    "no_validation_improvement"
+  ]
+}

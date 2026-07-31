@@ -302,7 +302,12 @@ def _resolve_max_epochs(
                 trainer_config["screen_max_epochs"],
             )
         )
-    return int(trainer_config["full_max_epochs"])
+    return int(
+        candidate.get(
+            "full_max_epochs",
+            trainer_config["full_max_epochs"],
+        )
+    )
 
 
 def _device_batch(batch: dict[str, Tensor], device: torch.device) -> dict[str, Tensor]:

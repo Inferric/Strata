@@ -525,3 +525,18 @@ candidates:
     residual_shortcut: history_linear
     screen_max_epochs: 12
     screen_program: false
+  - id: selected-fusion-v25
+    category: robustness
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    full_max_epochs: 9
+    screen_program: false

@@ -46,7 +46,7 @@ def test_paired_block_bootstrap_resamples_time_not_seed_replicates() -> None:
 
 
 def test_candidate_screen_epoch_cap_does_not_change_full_or_final_fit() -> None:
-    candidate = {"screen_max_epochs": 9}
+    candidate = {"screen_max_epochs": 9, "full_max_epochs": 10}
     trainer = {
         "screen_max_epochs": 3,
         "full_max_epochs": 12,
@@ -63,7 +63,7 @@ def test_candidate_screen_epoch_cap_does_not_change_full_or_final_fit() -> None:
         trainer,
         screen=False,
         final_fit=False,
-    ) == 12
+    ) == 10
     assert _resolve_max_epochs(
         candidate,
         trainer,

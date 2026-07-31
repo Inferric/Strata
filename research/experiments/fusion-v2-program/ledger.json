@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "convergence_complete_robustness_pending",
+  "status": "convergence_complete_v25_robustness_frozen",
   "events": [
     {
       "sequence": 0,
@@ -445,6 +445,17 @@
       "evidence": "research/experiments/fusion-v2-program/convergence-report-inspection.json",
       "drive_url": "https://drive.google.com/file/d/1CMSucSdZ-hGS2WmLU62RiojRxdoswUNf/view?usp=drivesdk",
       "notes": "The final four-page LaTeX convergence report was compiled, rendered at 2x, visually inspected, logged to a finished MLflow evidence run, uploaded to the private program folder, and verified as a 50,740-byte owner-only PDF."
+    },
+    {
+      "sequence": 33,
+      "recorded_at": "2026-07-30T23:43:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "history_shortcut_rolling_robustness",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "dd8ab8627c2f4e418c6d23ed078fa7f7",
+      "evidence": "docs/FUSION_V25_ROBUSTNESS.md",
+      "notes": "Nine fresh full-data runs of the exact selected 9-epoch history-linear shortcut are frozen across three chronological folds and seeds 17/41/73. The 45 unchanged control runs are reused only by their previously frozen exact IDs and paired endpoint identities."
     }
   ]
 }

@@ -240,8 +240,10 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
         },
     }
     rendered = template.render(
-        summary={
-            "generated_at": "2026-07-30T20:00:00-05:00",
+            summary={
+                "generated_at": "2026-07-30T20:00:00-05:00",
+                "report_short_title": "Fusion v2 robustness",
+                "report_model_label": "Strata-OT Fusion v2",
             "plain_language_question": "Does the model remain stable?",
             "plain_language_conclusion": "No; one frozen condition failed.",
             "hypothesis": "The candidate will improve every rolling period.",
@@ -302,8 +304,10 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
                     }
                 ],
             },
-            "frozen_configuration": {
-                "feature_names": ["T_3m", "P_3m"],
+                "frozen_configuration": {
+                    "candidate": {"id": "selected-fusion-v2"},
+                    "parameters": 3_611_530,
+                    "feature_names": ["T_3m", "P_3m"],
                 "trainer": {
                     "precision": "bf16-mixed",
                     "full_max_epochs": 12,
@@ -317,7 +321,7 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
                     "full_max_seconds": 1800,
                 },
             },
-            "aggregates": {
+                "aggregates": {
                 candidate: (
                     {**aggregate, "operational": {}}
                     if candidate == "control-persistence"
@@ -330,15 +334,18 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
                     "control-tcn",
                     "control-horizon-v1",
                     "selected-fusion-v2",
-                )
-            },
+                    )
+                },
+                "selected_aggregate": aggregate,
             "checks": {
                 "matrix_complete": "PASS",
                 "confirmation_evaluation": "NOT_EVALUATED",
             },
-            "excluded_dirty_runs": [],
-        }
-    )
+                "excluded_dirty_runs": [],
+                "resource_narrative": "No unsafe resource event occurred.",
+                "next_cycle_narrative": "Confirmation remains sealed.",
+            }
+        )
     assert "NOT\\_EVALUATED" in rendered
     assert "No; one frozen condition failed." in rendered
     assert "TimeXer" in rendered

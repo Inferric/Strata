@@ -30,6 +30,7 @@ ALLOWED_MODEL_PARAMETERS = {
     "residual_horizon_exponent",
     "residual_shortcut",
     "screen_max_epochs",
+    "full_max_epochs",
 }
 
 REQUIRED_STOP_CONDITIONS = {
@@ -61,6 +62,7 @@ NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
     "max_train_examples": (1000, 500000),
     "residual_horizon_exponent": (0.0, 1.5),
     "screen_max_epochs": (1, 20),
+    "full_max_epochs": (1, 20),
 }
 
 INTEGER_PARAMETERS = {
@@ -71,6 +73,7 @@ INTEGER_PARAMETERS = {
     "context",
     "max_train_examples",
     "screen_max_epochs",
+    "full_max_epochs",
 }
 
 
@@ -128,11 +131,9 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
                     "screen_max_train_examples"
                 ]
             }
-        elif parameter == "screen_max_epochs":
+        elif parameter in {"screen_max_epochs", "full_max_epochs"}:
             source = {
-                "screen_max_epochs": fusion_trainer_config[
-                    "screen_max_epochs"
-                ]
+                parameter: fusion_trainer_config[parameter]
             }
         else:
             source = (

@@ -592,6 +592,10 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
             "fusion_convergence_report.tex.j2",
             "fusion-v25-convergence-report.tex",
         ),
+        "fusion_v25_robustness": (
+            "fusion_robustness_report.tex.j2",
+            "fusion-v25-robustness-report.tex",
+        ),
         "fusion_v2_program": (
             "fusion_program_report.tex.j2",
             "fusion-v2-program-report.tex",

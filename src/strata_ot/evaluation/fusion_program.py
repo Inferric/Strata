@@ -599,7 +599,7 @@ def _aggregate_candidate(
         for seed in sorted({int(row["seed"]) for row in rows})
     }
     diagnostics: dict[str, Any] = {}
-    if candidate_id == "selected-fusion-v2" and all(
+    if candidate_id.startswith("selected-fusion-v2") and all(
         run.get("component_summary") for run in candidate_runs
     ):
         for horizon in (5, *PRIMARY_HORIZONS):
@@ -1151,6 +1151,8 @@ def build_robustness_summary(root: Path | None = None) -> dict[str, Any]:
         "experiment_id": "strata-fusion-v2-rolling-robustness",
         "program_id": "strata-fusion-v2-program",
         "task_kind": "fusion_v2_robustness",
+        "report_short_title": "Fusion v2 robustness",
+        "report_model_label": "Strata-OT Fusion v2",
         "generated_at": datetime.now(
             ZoneInfo("America/Chicago")
         ).isoformat(),
@@ -1213,6 +1215,7 @@ def build_robustness_summary(root: Path | None = None) -> dict[str, Any]:
         "anchor_horizon_minutes": 5,
         "stronger_neural_control": stronger_neural_id,
         "aggregates": aggregates,
+        "selected_aggregate": selected,
         "result": {
             "selected_primary_rmse": selected_rmse,
             "persistence_primary_rmse": persistence_rmse,
@@ -1231,6 +1234,17 @@ def build_robustness_summary(root: Path | None = None) -> dict[str, Any]:
         },
         "checks": checks,
         "excluded_dirty_runs": excluded_dirty_runs,
+        "resource_narrative": (
+            "One dirty-provenance retry is retained as failure evidence but "
+            "excluded from the exact 45-run matrix; only the clean rerun is "
+            "analyzed. No OOM, numerical retry, unsafe thermal state, or "
+            "evidence substitution is included in this matrix."
+        ),
+        "next_cycle_narrative": (
+            "Because the rolling gate failed, the next preregistered "
+            "development cycle changes one factor: a robust explicit "
+            "persistence-residual point objective. Confirmation stays sealed."
+        ),
         "resources": {
             "matrix_run_count": len(all_runs),
             "neural_run_count": len(neural_runs),
