@@ -67,9 +67,7 @@ def test_horizon_v1_parameter_budget_and_diagnostics() -> None:
     assert output["regime_weights"].shape == (4, 4)
     assert output["history_attention"].shape == (4, 6, 6)
     assert output["weather_attention"].shape == (4, 6, 6)
-    assert torch.all(
-        (output["weather_gate"] >= 0) & (output["weather_gate"] <= 1)
-    )
+    assert torch.all((output["weather_gate"] >= 0) & (output["weather_gate"] <= 1))
     assert torch.isfinite(output["location"]).all()
 
 
@@ -135,6 +133,38 @@ def test_fusion_v2_multiscale_outputs_and_parameter_budget() -> None:
     )
     parameters = sum(parameter.numel() for parameter in model.parameters())
     assert 2_000_000 <= parameters <= 8_000_000
+
+
+def test_fusion_v2_horizon_bilinear_shortcut_outputs() -> None:
+    weather_dim = 26
+    model = StrataOTFusionV2(
+        weather_dim=weather_dim,
+        hidden_dim=192,
+        num_heads=6,
+        num_experts=4,
+        fusion="concat",
+        residual_shortcut="history_bilinear",
+        shortcut_rank=8,
+    )
+    batch_size = 3
+    batch = {
+        "short_history": torch.randn(batch_size, 6, 3),
+        "short_weather": torch.randn(batch_size, 6, weather_dim),
+        "medium_history": torch.randn(batch_size, 12, 3),
+        "medium_weather": torch.randn(batch_size, 12, weather_dim),
+        "slow_history": torch.randn(batch_size, 24, 3),
+        "slow_weather": torch.randn(batch_size, 24, weather_dim),
+        "persistence": torch.full((batch_size,), -14.5),
+        "horizon_minutes": torch.tensor([5.0, 30.0, 60.0]),
+    }
+    output = model(batch)
+    assert torch.allclose(
+        output["shortcut_residual"],
+        output["shortcut_additive_residual"] + output["shortcut_interaction_residual"],
+    )
+    assert torch.count_nonzero(output["shortcut_additive_residual"]) == 0
+    assert torch.count_nonzero(output["shortcut_interaction_residual"]) == 0
+    assert sum(parameter.numel() for parameter in model.parameters()) == 3_614_401
 
 
 def test_causal_block_does_not_read_future_tokens() -> None:

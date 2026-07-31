@@ -61,6 +61,8 @@ PREDICTION_OUTPUT_KEYS = (
     "embedding",
     "base_residual",
     "shortcut_residual",
+    "shortcut_additive_residual",
+    "shortcut_interaction_residual",
     "raw_residual",
     "residual_scale",
     "residual",
@@ -145,26 +147,16 @@ class FusionLightningModule(L.LightningModule):
             mask[..., 0] = observed[..., 0]
         masked = source.masked_fill(mask, 0.0)
         output = self.model(batch, masked_short_weather=masked)
-        reconstruction_error = (
-            output["weather_reconstruction"] - source
-        ).square()
+        reconstruction_error = (output["weather_reconstruction"] - source).square()
         reconstruction = reconstruction_error[mask].mean()
         loss = self.reconstruction_weight * reconstruction
         logs = {"pretrain/reconstruction": reconstruction}
         if self.pretraining == "full_multitask":
             future_present = batch["future_weather_present"].bool()
-            future_error = (
-                output["future_weather_prediction"] - batch["future_weather"]
-            ).square()
+            future_error = (output["future_weather_prediction"] - batch["future_weather"]).square()
             future = future_error[future_present].mean()
-            cadence = (
-                output["cadence_cn2_prediction"] - batch["target"]
-            ).square().mean()
-            loss = (
-                loss
-                + self.future_weather_weight * future
-                + self.cadence_cn2_weight * cadence
-            )
+            cadence = (output["cadence_cn2_prediction"] - batch["target"]).square().mean()
+            loss = loss + self.future_weather_weight * future + self.cadence_cn2_weight * cadence
             logs.update(
                 {
                     "pretrain/future_weather": future,
@@ -252,9 +244,7 @@ class FusionLightningModule(L.LightningModule):
 
 def _candidate(experiment: dict[str, Any], candidate_id: str) -> dict[str, Any]:
     matches = [
-        dict(candidate)
-        for candidate in experiment["candidates"]
-        if candidate["id"] == candidate_id
+        dict(candidate) for candidate in experiment["candidates"] if candidate["id"] == candidate_id
     ]
     if len(matches) != 1:
         raise ValueError(f"Unknown or duplicate Fusion candidate: {candidate_id}")
@@ -312,6 +302,12 @@ def _build_model(
                 candidate.get(
                     "residual_cap",
                     model_config.get("residual_cap", 0.0),
+                )
+            ),
+            shortcut_rank=int(
+                candidate.get(
+                    "shortcut_rank",
+                    model_config.get("shortcut_rank", 0),
                 )
             ),
         )
@@ -398,9 +394,7 @@ def _predict(
             ):
                 collected.setdefault(key, []).append(batch[key].numpy())
     elapsed = time.perf_counter() - started
-    return {
-        key: np.concatenate(values, axis=0) for key, values in collected.items()
-    }, elapsed
+    return {key: np.concatenate(values, axis=0) for key, values in collected.items()}, elapsed
 
 
 def _student_t_nll_numpy(
@@ -415,8 +409,7 @@ def _student_t_nll_numpy(
         - gammaln(degrees_of_freedom / 2.0)
         - 0.5 * np.log(degrees_of_freedom * np.pi)
         - np.log(scale)
-        - ((degrees_of_freedom + 1.0) / 2.0)
-        * np.log1p(z**2 / degrees_of_freedom)
+        - ((degrees_of_freedom + 1.0) / 2.0) * np.log1p(z**2 / degrees_of_freedom)
     )
     return float(-np.mean(log_probability))
 
@@ -433,9 +426,7 @@ def _metrics(
     by_horizon: dict[str, dict[str, float]] = {}
     for horizon in sorted(np.unique(horizons)):
         mask = horizons == horizon
-        values = regression_metrics(
-            target[mask], prediction[mask], calibrated_std[mask]
-        )
+        values = regression_metrics(target[mask], prediction[mask], calibrated_std[mask])
         values["student_t_nll"] = _student_t_nll_numpy(
             target[mask],
             prediction[mask],
@@ -481,6 +472,8 @@ def _component_summary(payload: dict[str, np.ndarray]) -> dict[str, Any]:
         "residual",
         "base_residual",
         "shortcut_residual",
+        "shortcut_additive_residual",
+        "shortcut_interaction_residual",
         "raw_residual",
         "residual_scale",
         "scale_weights",
@@ -614,9 +607,7 @@ def _baseline_run(
     family = str(candidate["family"])
     started = time.monotonic()
     hardware_samples = [hardware_snapshot(root)]
-    evaluation_x, target, horizons = _dataset_matrix(
-        evaluation, batch_size=datamodule.batch_size
-    )
+    evaluation_x, target, horizons = _dataset_matrix(evaluation, batch_size=datamodule.batch_size)
     train_x, train_target, _ = _dataset_matrix(
         datamodule.train_set, batch_size=datamodule.batch_size
     )
@@ -671,8 +662,7 @@ def _baseline_run(
         extra["permutation_fit_role"] = "train"
         extra["permutation_samples"] = len(permutation_rows)
         extra["top_gain_features"] = [
-            {"name": names[index], "importance": float(importance[index])}
-            for index in order
+            {"name": names[index], "importance": float(importance[index])} for index in order
         ]
         perm_order = np.argsort(permutation.importances_mean)[::-1][:25]
         extra["top_permutation_features"] = [
@@ -708,9 +698,7 @@ def _baseline_run(
             0.8,
         )
     )
-    calibrated_std = np.full(
-        len(target), max(residual_quantile / 1.2815515655446004, 1e-3)
-    )
+    calibrated_std = np.full(len(target), max(residual_quantile / 1.2815515655446004, 1e-3))
     payload = {
         "location": prediction,
         "target": target,
@@ -741,9 +729,7 @@ def _baseline_run(
     metrics["wall_clock_seconds"] = time.monotonic() - started
     hardware_samples.append(hardware_snapshot(root))
     metrics.update(resource_peaks(hardware_samples))
-    mlflow.set_tracking_uri(
-        os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
-    )
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000"))
     mlflow.set_experiment(str(experiment["tracking"]["experiment_name"]))
     tags = {
         "program_id": str(experiment["id"]),
@@ -752,9 +738,7 @@ def _baseline_run(
         "model_family": family,
         "fold_id": fold_id,
         "seed": str(seed),
-        "evaluation_partition": (
-            "confirmation" if fold_id == "final" else "selection"
-        ),
+        "evaluation_partition": ("confirmation" if fold_id == "final" else "selection"),
         "task_kind": "rolling_multi_horizon_forecast",
     }
     with mlflow.start_run(run_name=f"{candidate['id']}-{fold_id}-{seed}", tags=tags) as run:
@@ -767,13 +751,7 @@ def _baseline_run(
             component_summary=component_summary,
             extra=extra,
         )
-        telemetry_path = (
-            root
-            / "artifacts"
-            / "runs"
-            / run.info.run_id
-            / "hardware-telemetry.json"
-        )
+        telemetry_path = root / "artifacts" / "runs" / run.info.run_id / "hardware-telemetry.json"
         telemetry_path.write_text(
             json.dumps({"samples": hardware_samples}, indent=2) + "\n",
             encoding="utf-8",
@@ -810,9 +788,7 @@ def _baseline_run(
                 "fold_id": fold_id,
                 "seed": seed,
                 "feature_names": datamodule.feature_names,
-                "flattened_feature_names": (
-                    names if family == "lightgbm" else None
-                ),
+                "flattened_feature_names": (names if family == "lightgbm" else None),
                 "normalization": {
                     "fit_fold": datamodule.normalization.fit_fold,
                     "fit_role": datamodule.normalization.fit_role,
@@ -827,9 +803,7 @@ def _baseline_run(
             "environment": environment,
         }
         evidence_path = root / "artifacts" / "runs" / run.info.run_id / "run-manifest.json"
-        evidence_path.write_text(
-            json.dumps(result, indent=2) + "\n", encoding="utf-8"
-        )
+        evidence_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
         mlflow.log_artifact(str(evidence_path), artifact_path="evidence")
     return result
 
@@ -897,12 +871,7 @@ def _neural_run(
         tail_huber_beta=float(candidate.get("tail_huber_beta", 0.1)),
     )
     checkpoint_dir = (
-        root
-        / "checkpoints"
-        / str(experiment["id"])
-        / str(candidate["id"])
-        / fold_id
-        / str(seed)
+        root / "checkpoints" / str(experiment["id"]) / str(candidate["id"]) / fold_id / str(seed)
     )
     checkpoint = ModelCheckpoint(
         dirpath=checkpoint_dir,
@@ -922,9 +891,7 @@ def _neural_run(
             )
         )
     max_seconds = float(
-        trainer_config["screen_max_seconds"]
-        if screen
-        else trainer_config["full_max_seconds"]
+        trainer_config["screen_max_seconds"] if screen else trainer_config["full_max_seconds"]
     )
     timer = Timer(duration={"seconds": int(max_seconds)}, interval="step")
     safety_callback = HardwareSafetyCallback(
@@ -950,9 +917,14 @@ def _neural_run(
         "tail_huber_weight": str(candidate.get("tail_huber_weight", 0.0)),
         "tail_huber_threshold": str(training_tail_threshold),
         "residual_cap": str(candidate.get("residual_cap", 0.0)),
-        "evaluation_partition": (
-            "confirmation" if fold_id == "final" else "selection"
+        "residual_shortcut": str(
+            candidate.get(
+                "residual_shortcut",
+                model_config.get("residual_shortcut", "none"),
+            )
         ),
+        "shortcut_rank": str(candidate.get("shortcut_rank", 0)),
+        "evaluation_partition": ("confirmation" if fold_id == "final" else "selection"),
         "task_kind": "rolling_multi_horizon_forecast",
         "source_digest_sha256": str(repository["source_digest_sha256"]),
     }
@@ -973,9 +945,7 @@ def _neural_run(
     pretraining_checkpoint: str | None = None
     if pretraining != "none":
         module.phase = "pretrain"
-        pretrain_epochs = int(
-            policy["screen_epochs"] if screen else policy["full_epochs"]
-        )
+        pretrain_epochs = int(policy["screen_epochs"] if screen else policy["full_epochs"])
         pretrain_trainer = L.Trainer(
             accelerator=accelerator,
             devices=int(trainer_config["devices"]),
@@ -1057,10 +1027,7 @@ def _neural_run(
         )
         conformal_q80 = float(
             np.quantile(
-                np.abs(
-                    calibration_payload["target"]
-                    - calibration_payload["location"]
-                ),
+                np.abs(calibration_payload["target"] - calibration_payload["location"]),
                 0.8,
             )
         )
@@ -1076,9 +1043,7 @@ def _neural_run(
                 max(conformal_q80 / 1.2815515655446004, 1e-3),
             )
         else:
-            calibrated_std = (
-                evaluation_payload["student_t_scale"] * scale_factor
-            )
+            calibrated_std = evaluation_payload["student_t_scale"] * scale_factor
         train_payload, _ = _predict(
             model,
             datamodule.train_set,
@@ -1100,15 +1065,9 @@ def _neural_run(
                 "wall_clock_seconds": elapsed,
                 **peaks,
                 "peak_vram_gb": peaks["peak_total_board_vram_gib"],
-                "inference_latency_ms_per_sample": (
-                    inference_seconds * 1000 / len(evaluation)
-                ),
-                "throughput_samples_per_second": (
-                    len(evaluation) / max(inference_seconds, 1e-12)
-                ),
-                "process_rss_gib": (
-                    psutil.Process().memory_info().rss / (1024**3)
-                ),
+                "inference_latency_ms_per_sample": (inference_seconds * 1000 / len(evaluation)),
+                "throughput_samples_per_second": (len(evaluation) / max(inference_seconds, 1e-12)),
+                "process_rss_gib": (psutil.Process().memory_info().rss / (1024**3)),
                 "scale_calibration_factor": scale_factor,
                 "conformal_q80": conformal_q80,
             }
@@ -1174,9 +1133,7 @@ def _neural_run(
             "epochs_completed": int(trainer.current_epoch),
             "optimizer_steps": int(trainer.global_step),
             "calibration_examples_actual": len(datamodule.calibration_set),
-            "evaluation_examples_actual": (
-                len(evaluation) if evaluation is not None else 0
-            ),
+            "evaluation_examples_actual": (len(evaluation) if evaluation is not None else 0),
             "feature_names": datamodule.feature_names,
             "normalization": {
                 "fit_fold": datamodule.normalization.fit_fold,
@@ -1211,9 +1168,7 @@ def _neural_run(
             "stopped_for_budget": timer.time_remaining() == 0,
         }
         evidence_path = root / "artifacts" / "runs" / run_id / "run-manifest.json"
-        evidence_path.write_text(
-            json.dumps(result, indent=2) + "\n", encoding="utf-8"
-        )
+        evidence_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
         logger.log_hyperparams(
             {
                 "candidate_id": candidate["id"],
@@ -1224,12 +1179,8 @@ def _neural_run(
                 "fusion": candidate["fusion"],
                 "pretraining": pretraining,
                 "calibration": calibration_method,
-                "point_loss_weight": float(
-                    candidate.get("point_loss_weight", 0.0)
-                ),
-                "tail_huber_weight": float(
-                    candidate.get("tail_huber_weight", 0.0)
-                ),
+                "point_loss_weight": float(candidate.get("point_loss_weight", 0.0)),
+                "tail_huber_weight": float(candidate.get("tail_huber_weight", 0.0)),
                 "tail_huber_threshold": training_tail_threshold,
                 "training_tail_fraction": training_tail_fraction,
                 "training_example_cap": int(
@@ -1259,6 +1210,7 @@ def _neural_run(
                     )
                 ),
                 "residual_cap": float(candidate.get("residual_cap", 0.0)),
+                "shortcut_rank": int(candidate.get("shortcut_rank", 0)),
                 "max_epochs_requested": max_epochs,
                 "epochs_completed": int(trainer.current_epoch),
                 "optimizer_steps": int(trainer.global_step),
@@ -1277,16 +1229,12 @@ def _neural_run(
                 run_id, str(root / relative), artifact_path="diagnostics"
             )
         if checkpoint_path:
-            logger.experiment.log_artifact(
-                run_id, checkpoint_path, artifact_path="checkpoints"
-            )
+            logger.experiment.log_artifact(run_id, checkpoint_path, artifact_path="checkpoints")
         if pretraining_checkpoint:
             logger.experiment.log_artifact(
                 run_id, pretraining_checkpoint, artifact_path="pretraining"
             )
-        logger.experiment.log_artifact(
-            run_id, str(evidence_path), artifact_path="evidence"
-        )
+        logger.experiment.log_artifact(run_id, str(evidence_path), artifact_path="evidence")
         logger.finalize("success")
         return result
     except Exception as error:
@@ -1305,12 +1253,8 @@ def _neural_run(
         }
         failure_path = root / "artifacts" / "runs" / run_id / "failure-manifest.json"
         failure_path.parent.mkdir(parents=True, exist_ok=True)
-        failure_path.write_text(
-            json.dumps(failure, indent=2) + "\n", encoding="utf-8"
-        )
-        logger.experiment.log_artifact(
-            run_id, str(failure_path), artifact_path="failures"
-        )
+        failure_path.write_text(json.dumps(failure, indent=2) + "\n", encoding="utf-8")
+        logger.experiment.log_artifact(run_id, str(failure_path), artifact_path="failures")
         logger.finalize("failed")
         raise
 
@@ -1323,14 +1267,9 @@ def _ensure_program_gpu_budget(
     budget_hours: float,
 ) -> float:
     consumed_seconds = 0.0
-    for path in (root / "artifacts" / "runs").glob(
-        "*/run-manifest.json"
-    ):
+    for path in (root / "artifacts" / "runs").glob("*/run-manifest.json"):
         payload = json.loads(path.read_text(encoding="utf-8"))
-        if (
-            payload.get("kind") != "neural"
-            or payload.get("candidate_id") not in candidate_ids
-        ):
+        if payload.get("kind") != "neural" or payload.get("candidate_id") not in candidate_ids:
             continue
         consumed_seconds += float(
             payload.get("metrics", {}).get(
@@ -1373,9 +1312,7 @@ def run_fusion_candidate(
         if screen:
             raise ValueError("Confirmation release requires the frozen full-fit policy")
         if candidate["family"] in {"persistence", "climatology", "lightgbm"}:
-            raise ValueError(
-                "One-shot confirmation release requires a frozen neural candidate"
-            )
+            raise ValueError("One-shot confirmation release requires a frozen neural candidate")
         repository = _repository_identity(root)
         if repository["git_dirty"]:
             raise RuntimeError(
@@ -1412,19 +1349,11 @@ def run_fusion_candidate(
     }:
         _ensure_program_gpu_budget(
             root,
-            candidate_ids={
-                str(item["id"]) for item in experiment["candidates"]
-            },
+            candidate_ids={str(item["id"]) for item in experiment["candidates"]},
             run_limit_seconds=float(
-                trainer_config[
-                    "screen_max_seconds"
-                    if screen
-                    else "full_max_seconds"
-                ]
+                trainer_config["screen_max_seconds" if screen else "full_max_seconds"]
             ),
-            budget_hours=float(
-                experiment["budget"]["max_total_gpu_hours"]
-            ),
+            budget_hours=float(experiment["budget"]["max_total_gpu_hours"]),
         )
     preflight_hardware(root, experiment["safety"])
     workers = int(os.getenv("STRATA_NUM_WORKERS", "0"))
@@ -1461,9 +1390,7 @@ def run_fusion_candidate(
             repository=repository,
             environment=environment,
         )
-    with TrainingProcessLock(
-        root / "artifacts" / "locks" / "fusion-training.lock"
-    ):
+    with TrainingProcessLock(root / "artifacts" / "locks" / "fusion-training.lock"):
         try:
             return _neural_run(
                 root,
@@ -1503,9 +1430,7 @@ def run_fusion_candidate(
             result["oom_recovery"] = {
                 "attempts": 1,
                 "batch_size": recovered_batch_size,
-                "gradient_accumulation": experiment["trainer_config"][
-                    "gradient_accumulation"
-                ],
+                "gradient_accumulation": experiment["trainer_config"]["gradient_accumulation"],
             }
             return result
 
@@ -1514,9 +1439,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Run one preregistered Strata-OT Fusion v2 candidate"
     )
-    parser.add_argument(
-        "--config", default="configs/experiments/fusion_v2_program.yaml"
-    )
+    parser.add_argument("--config", default="configs/experiments/fusion_v2_program.yaml")
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--fold", default="fold-1")
     parser.add_argument("--seed", type=int, default=17)

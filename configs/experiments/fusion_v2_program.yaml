@@ -672,3 +672,75 @@ candidates:
     residual_cap: 0.60
     screen_max_epochs: 9
     screen_program: false
+  - id: horizon-bilinear-control
+    category: horizon_bilinear_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.00
+    shortcut_rank: 0
+    screen_max_epochs: 9
+    screen_program: false
+  - id: horizon-bilinear-r4
+    category: horizon_bilinear_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_bilinear
+    residual_cap: 0.00
+    shortcut_rank: 4
+    screen_max_epochs: 9
+    screen_program: false
+  - id: horizon-bilinear-r8
+    category: horizon_bilinear_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_bilinear
+    residual_cap: 0.00
+    shortcut_rank: 8
+    screen_max_epochs: 9
+    screen_program: false
+  - id: horizon-bilinear-r16
+    category: horizon_bilinear_shortcut
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_bilinear
+    residual_cap: 0.00
+    shortcut_rank: 16
+    screen_max_epochs: 9
+    screen_program: false
