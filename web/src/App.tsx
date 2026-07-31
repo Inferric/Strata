@@ -211,7 +211,8 @@ function HorizonMatrix({ summary }: { summary: NonNullable<Overview["latest_summ
 
 function FusionEvidence({ summary }: { summary: FusionSummary }) {
   const aggregates = summary.aggregates;
-  const selected = aggregates?.["selected-fusion-v2"];
+  const selectedId = summary.best_custom_candidate_id ?? "selected-fusion-v2";
+  const selected = aggregates?.[selectedId];
   if (!aggregates || !selected || !summary.result) return null;
   const candidateOrder = [
     "control-persistence",
@@ -220,7 +221,11 @@ function FusionEvidence({ summary }: { summary: FusionSummary }) {
     "control-tcn",
     "control-horizon-v1",
     "selected-fusion-v2",
-  ].filter((candidate) => aggregates[candidate]);
+    selectedId,
+  ].filter(
+    (candidate, index, candidates) =>
+      aggregates[candidate] && candidates.indexOf(candidate) === index,
+  );
   const selectedRmse = selected.runs.map((run) => run.primary.rmse_log10_cn2);
   const low = Math.min(...selectedRmse);
   const high = Math.max(...selectedRmse);
@@ -232,7 +237,7 @@ function FusionEvidence({ summary }: { summary: FusionSummary }) {
       <div className="panel-heading">
         <div>
           <span className="eyebrow">SEASONAL TRACE / THREE SEEDS PER FOLD</span>
-          <h3>Fusion v2 rolling evidence</h3>
+          <h3>{summary.best_custom_candidate_label ?? "Fusion v2"} rolling evidence</h3>
         </div>
         <span className={`state-chip fusion-state ${summary.status.toLowerCase()}`}>
           {summary.status.replaceAll("_", " ")}
@@ -414,6 +419,16 @@ function FusionEvidence({ summary }: { summary: FusionSummary }) {
                   <span>{cycle.role.replaceAll("-", " ")}</span>
                   <strong>{cycle.cycle_id.replaceAll("-", " ")}</strong>
                   <p>{cycle.conclusion}</p>
+                  {cycle.report_pdf ? (
+                    <a
+                      className="artifact-link"
+                      href={`/api/reports/cycle/${encodeURIComponent(cycle.cycle_id)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Open report
+                    </a>
+                  ) : null}
                 </div>
                 <Gate state={cycle.status} />
               </li>

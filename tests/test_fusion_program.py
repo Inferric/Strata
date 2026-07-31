@@ -53,24 +53,33 @@ def test_candidate_screen_epoch_cap_does_not_change_full_or_final_fit() -> None:
         "full_max_epochs": 12,
         "confirmation_max_epochs": 16,
     }
-    assert _resolve_max_epochs(
-        candidate,
-        trainer,
-        screen=True,
-        final_fit=False,
-    ) == 9
-    assert _resolve_max_epochs(
-        candidate,
-        trainer,
-        screen=False,
-        final_fit=False,
-    ) == 10
-    assert _resolve_max_epochs(
-        candidate,
-        trainer,
-        screen=False,
-        final_fit=True,
-    ) == 16
+    assert (
+        _resolve_max_epochs(
+            candidate,
+            trainer,
+            screen=True,
+            final_fit=False,
+        )
+        == 9
+    )
+    assert (
+        _resolve_max_epochs(
+            candidate,
+            trainer,
+            screen=False,
+            final_fit=False,
+        )
+        == 10
+    )
+    assert (
+        _resolve_max_epochs(
+            candidate,
+            trainer,
+            screen=False,
+            final_fit=True,
+        )
+        == 16
+    )
 
 
 def test_paired_block_bootstrap_rejects_unpaired_shapes() -> None:
@@ -205,9 +214,7 @@ def test_point_collection_keeps_screen_and_ignores_later_full_run(
         "interval_80_coverage": 0.8,
     }
     for index, (candidate_id, weight) in enumerate(POINT_WEIGHTS.items()):
-        artifact = (
-            tmp_path / "artifacts" / "runs" / candidate_id / "predictions.npz"
-        )
+        artifact = tmp_path / "artifacts" / "runs" / candidate_id / "predictions.npz"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text("evidence", encoding="utf-8")
         checkpoint = tmp_path / "checkpoints" / f"{candidate_id}.ckpt"
@@ -221,13 +228,8 @@ def test_point_collection_keeps_screen_and_ignores_later_full_run(
                 "fold_id": "fold-1",
                 "seed": 17,
                 "stopped_for_budget": False,
-                "by_horizon": {
-                    str(horizon): metrics
-                    for horizon in (5, 15, 30, 60)
-                },
-                "artifacts": {
-                    "predictions": artifact.relative_to(tmp_path).as_posix()
-                },
+                "by_horizon": {str(horizon): metrics for horizon in (5, 15, 30, 60)},
+                "artifacts": {"predictions": artifact.relative_to(tmp_path).as_posix()},
                 "checkpoint": str(checkpoint),
                 "resolved_configuration": {
                     "screen": True,
@@ -240,11 +242,7 @@ def test_point_collection_keeps_screen_and_ignores_later_full_run(
             },
         )
     _write_json(
-        tmp_path
-        / "artifacts"
-        / "runs"
-        / "later-full"
-        / "run-manifest.json",
+        tmp_path / "artifacts" / "runs" / "later-full" / "run-manifest.json",
         {
             "run_id": "later-full",
             "candidate_id": "point-huber-0p25",
@@ -335,11 +333,7 @@ def _synthesis_fixture(tmp_path: Path) -> None:
         },
     )
     _write_json(
-        tmp_path
-        / "configs"
-        / "splits"
-        / "frozen"
-        / "otbench_usna_lg_fusion_v2.yaml",
+        tmp_path / "configs" / "splits" / "frozen" / "otbench_usna_lg_fusion_v2.yaml",
         {
             "id": "split",
             "strategy": "purged_rolling_origin",
@@ -353,11 +347,7 @@ def _synthesis_fixture(tmp_path: Path) -> None:
         },
     )
     _write_json(
-        tmp_path
-        / "artifacts"
-        / "experiments"
-        / "mlo-weather-horizon-v1"
-        / "summary.json",
+        tmp_path / "artifacts" / "experiments" / "mlo-weather-horizon-v1" / "summary.json",
         {
             "task_kind": "multi_horizon_forecast",
             "assessment_claim": {"status": "null_or_partial"},
@@ -366,12 +356,7 @@ def _synthesis_fixture(tmp_path: Path) -> None:
             "peak_vram_gb": 1.0,
         },
     )
-    program = (
-        tmp_path
-        / "artifacts"
-        / "experiments"
-        / "strata-fusion-v2-program"
-    )
+    program = tmp_path / "artifacts" / "experiments" / "strata-fusion-v2-program"
     _write_json(
         program / "screen-summary.json",
         {
@@ -432,11 +417,7 @@ def _synthesis_fixture(tmp_path: Path) -> None:
         },
     )
     _write_json(
-        tmp_path
-        / "research"
-        / "experiments"
-        / "strata-fusion-v2-program"
-        / "ledger.json",
+        tmp_path / "research" / "experiments" / "strata-fusion-v2-program" / "ledger.json",
         {"events": [{"sequence": 0, "result": "PASS"}]},
     )
 
@@ -449,15 +430,40 @@ def test_program_synthesis_preserves_null_and_sealed_boundaries(
     assert summary["status"] == "FAIL"
     assert summary["checks"]["confirmation_evaluation"] == "NOT_EVALUATED"
     assert summary["provenance"]["official_mlo_test_loaded"] is False
-    assert summary["relationship_to_lightgbm"][
-        "relative_improvement_over_lightgbm"
-    ] < 0
+    assert summary["relationship_to_lightgbm"]["relative_improvement_over_lightgbm"] < 0
     assert summary["resources"]["neural_wall_clock_hours"] == pytest.approx(1.2)
-    assert summary["resources"][
-        "total_evidence_neural_wall_clock_hours"
-    ] == pytest.approx(1.45)
+    assert summary["resources"]["total_evidence_neural_wall_clock_hours"] == pytest.approx(1.45)
     assert summary["frozen_configuration"]["model"]["hidden_dim"] == 192
     assert summary["frozen_configuration"]["bootstrap"]["resamples"] == 2000
+
+
+def test_program_synthesis_prefers_completed_v25_robustness(
+    tmp_path: Path,
+) -> None:
+    _synthesis_fixture(tmp_path)
+    program = tmp_path / "artifacts" / "experiments" / "strata-fusion-v2-program"
+    predecessor = json.loads((program / "robustness-summary.json").read_text(encoding="utf-8"))
+    selected = {
+        **predecessor["aggregates"]["selected-fusion-v2"],
+        "primary": {
+            **predecessor["aggregates"]["selected-fusion-v2"]["primary"],
+            "rmse_log10_cn2": 0.23,
+        },
+    }
+    predecessor["task_kind"] = "fusion_v25_robustness"
+    predecessor["experiment_id"] = "v25"
+    predecessor["aggregates"]["selected-fusion-v25"] = selected
+    predecessor["result"] = {
+        **predecessor["result"],
+        "selected_primary_rmse": 0.23,
+    }
+    predecessor["checks"]["nine_fresh_candidate_runs_complete"] = "PASS"
+    _write_json(program / "v25-robustness-summary.json", predecessor)
+    summary = build_program_summary(tmp_path)
+    assert summary["best_custom_candidate_id"] == "selected-fusion-v25"
+    assert summary["best_custom_candidate_label"] == "Fusion v2.5"
+    assert summary["result"]["selected_primary_rmse"] == 0.23
+    assert summary["checks"]["three_seed_multifold_evidence"] == "PASS"
 
 
 def test_program_synthesis_refuses_released_confirmation(tmp_path: Path) -> None:
@@ -480,9 +486,7 @@ def test_robustness_collection_excludes_dirty_retry_but_keeps_clean_matrix(
     tmp_path: Path,
 ) -> None:
     runs_root = tmp_path / "artifacts" / "runs"
-    for index, (candidate_id, fold_id, seed) in enumerate(
-        _expected_robustness_keys()
-    ):
+    for index, (candidate_id, fold_id, seed) in enumerate(_expected_robustness_keys()):
         _write_json(
             runs_root / f"clean-{index:02d}" / "run-manifest.json",
             {

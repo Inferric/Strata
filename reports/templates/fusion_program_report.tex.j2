@@ -272,7 +272,7 @@ Horizon & Residual mean & Residual SD & Short & Medium & Slow &
 Weather attn. & Physics norm & Modulation\\
 \midrule
 \endhead
-\BLOCK{ for horizon, diagnostic in summary.aggregates["selected-fusion-v2"].diagnostics.items() }
+\BLOCK{ for horizon, diagnostic in summary.aggregates[summary.best_custom_candidate_id].diagnostics.items() }
 \VAR{horizon|latex} min &
 \VAR{diagnostic.residual_mean|num} &
 \VAR{diagnostic.residual_std|num} &
@@ -285,7 +285,7 @@ Weather attn. & Physics norm & Modulation\\
 \BLOCK{ endfor }
 \bottomrule
 \end{longtable}
-\BLOCK{ for horizon, diagnostic in summary.aggregates["selected-fusion-v2"].diagnostics.items() }
+\BLOCK{ for horizon, diagnostic in summary.aggregates[summary.best_custom_candidate_id].diagnostics.items() }
 \textbf{\VAR{horizon|latex}-minute expert weights:}
 [\VAR{diagnostic.expert_weights_mean.0|num},
 \VAR{diagnostic.expert_weights_mean.1|num},

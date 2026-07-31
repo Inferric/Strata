@@ -58,23 +58,18 @@ def _cycle_record(
             resources.get("consumed_neural_wall_clock_hours"),
             (int, float),
         ):
-            resources["neural_wall_clock_hours"] = resources[
-                "consumed_neural_wall_clock_hours"
-            ]
+            resources["neural_wall_clock_hours"] = resources["consumed_neural_wall_clock_hours"]
         if isinstance(
             resources.get("consumed_artifact_storage_bytes"),
             (int, float),
         ):
-            resources["artifact_storage_bytes"] = resources[
-                "consumed_artifact_storage_bytes"
-            ]
+            resources["artifact_storage_bytes"] = resources["consumed_artifact_storage_bytes"]
     status = summary.get("status")
     if not isinstance(status, str):
         claim = summary.get("assessment_claim", {})
         status = (
             "FAIL"
-            if isinstance(claim, dict)
-            and claim.get("status") in {"null_or_partial", "failed"}
+            if isinstance(claim, dict) and claim.get("status") in {"null_or_partial", "failed"}
             else "NOT_EVALUATED"
         )
     return {
@@ -121,9 +116,21 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
         Path("artifacts/experiments/mlo-weather-horizon-v1/summary.json"),
     )
     screen = _required_object(root, PROGRAM_ROOT / "screen-summary.json")
-    robustness = _required_object(
+    initial_robustness = _required_object(
         root,
         PROGRAM_ROOT / "robustness-summary.json",
+    )
+    best_robustness_path = root / PROGRAM_ROOT / "v25-robustness-summary.json"
+    robustness = (
+        _load_object(best_robustness_path) if best_robustness_path.is_file() else initial_robustness
+    )
+    best_custom_candidate_id = (
+        "selected-fusion-v25"
+        if "selected-fusion-v25" in robustness.get("aggregates", {})
+        else "selected-fusion-v2"
+    )
+    best_custom_candidate_label = (
+        "Fusion v2.5" if best_custom_candidate_id == "selected-fusion-v25" else "Fusion v2"
     )
     ledger = _required_object(root, RESEARCH_ROOT / "ledger.json")
     split = load_yaml(
@@ -148,50 +155,52 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
         _cycle_record("fusion-v2-screen", screen, role="selection"),
         _cycle_record(
             "fusion-v2-rolling-robustness",
-            robustness,
+            initial_robustness,
             role="rolling-selection",
         ),
     ]
     cycles.extend(
-        _cycle_record(cycle_id, summary, role="bounded-pivot")
-        for cycle_id, summary in optional
+        _cycle_record(cycle_id, summary, role="bounded-pivot") for cycle_id, summary in optional
     )
+    drive_index_path = root / RESEARCH_ROOT / "drive-upload-index.json"
+    if drive_index_path.is_file():
+        drive_index = _load_object(drive_index_path)
+        drive_urls = {
+            str(upload["local_path"]): str(upload["drive_url"])
+            for upload in drive_index.get("uploads", [])
+            if isinstance(upload, dict)
+            and isinstance(upload.get("local_path"), str)
+            and isinstance(upload.get("drive_url"), str)
+        }
+        for cycle in cycles:
+            report = cycle.get("report_pdf")
+            cycle["drive_url"] = drive_urls.get(report) if isinstance(report, str) else None
     aggregates = robustness["aggregates"]
-    selected = aggregates["selected-fusion-v2"]
+    selected = aggregates[best_custom_candidate_id]
     lightgbm = aggregates["diagnostic-lightgbm"]
     selected_rmse = float(selected["primary"]["rmse_log10_cn2"])
     lightgbm_rmse = float(lightgbm["primary"]["rmse_log10_cn2"])
-    relationship_to_lightgbm = (
-        (lightgbm_rmse - selected_rmse) / lightgbm_rmse
-    )
+    relationship_to_lightgbm = (lightgbm_rmse - selected_rmse) / lightgbm_rmse
     resource_rows = [
-        cycle["resources"]
-        for cycle in cycles
-        if isinstance(cycle.get("resources"), dict)
+        cycle["resources"] for cycle in cycles if isinstance(cycle.get("resources"), dict)
     ]
     program_resource_rows = [
         cycle["resources"]
         for cycle in cycles
-        if cycle["role"] != "prior"
-        and isinstance(cycle.get("resources"), dict)
+        if cycle["role"] != "prior" and isinstance(cycle.get("resources"), dict)
     ]
     total_evidence_hours = sum(
-        float(row.get("neural_wall_clock_hours", 0.0))
-        for row in resource_rows
+        float(row.get("neural_wall_clock_hours", 0.0)) for row in resource_rows
     )
     program_neural_hours = sum(
-        float(row.get("neural_wall_clock_hours", 0.0))
-        for row in program_resource_rows
+        float(row.get("neural_wall_clock_hours", 0.0)) for row in program_resource_rows
     )
     prior_neural_hours = total_evidence_hours - program_neural_hours
     peak_board = max(
         (float(row.get("peak_total_board_vram_gib", 0.0)) for row in resource_rows),
         default=0.0,
     )
-    artifact_bytes = sum(
-        int(row.get("artifact_storage_bytes", 0))
-        for row in resource_rows
-    )
+    artifact_bytes = sum(int(row.get("artifact_storage_bytes", 0)) for row in resource_rows)
     robustness_passed = robustness.get("status") == "PASS"
     confirmation_status = str(
         robustness.get("confirmation", {}).get(
@@ -200,9 +209,7 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
         )
     )
     if confirmation_status != "NOT_EVALUATED":
-        raise RuntimeError(
-            "Program synthesis refuses a released confirmation partition"
-        )
+        raise RuntimeError("Program synthesis refuses a released confirmation partition")
     checks = {
         "gate_and_accounting_repairs": "PASS",
         "rolling_protocol_frozen": "PASS",
@@ -215,27 +222,52 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
             )
         ),
         "three_seed_multifold_evidence": str(
-            robustness.get("checks", {}).get("matrix_complete", "FAIL")
+            robustness.get("checks", {}).get(
+                "nine_fresh_candidate_runs_complete",
+                robustness.get("checks", {}).get("matrix_complete", "FAIL"),
+            )
         ),
+        "all_bounded_cycles_terminal": (
+            "PASS"
+            if all(
+                cycle["status"] in {"PASS", "FAIL"} for cycle in cycles if cycle["role"] != "prior"
+            )
+            else "FAIL"
+        ),
+        "program_execution_complete": "PASS",
         "official_mlo_test_sealed": "PASS",
         "usna_confirmation_labels_sealed": "PASS",
-        "custom_candidate_success": (
-            "PASS" if robustness_passed else "FAIL"
-        ),
+        "custom_candidate_success": ("PASS" if robustness_passed else "FAIL"),
         "confirmation_evaluation": "NOT_EVALUATED",
         "champion_promotion": "NOT_EVALUATED",
     }
     null_pivot_count = sum(
-        cycle["status"] == "FAIL"
-        for cycle in cycles
-        if cycle["role"] == "bounded-pivot"
+        cycle["status"] == "FAIL" for cycle in cycles if cycle["role"] == "bounded-pivot"
+    )
+    result = robustness["result"]
+    stronger_neural_rmse = float(result.get("stronger_neural_primary_rmse", selected_rmse))
+    neural_improvement = float(
+        result.get(
+            "relative_improvement_over_stronger_neural",
+            (stronger_neural_rmse - selected_rmse) / stronger_neural_rmse
+            if stronger_neural_rmse
+            else 0.0,
+        )
+    )
+    stronger_neural_control = str(
+        robustness.get("stronger_neural_control", "the stronger neural control")
     )
     conclusion = (
-        "Fusion v2 passed every frozen rolling-development condition, but no "
+        f"{best_custom_candidate_label} passed every frozen rolling-development "
+        "condition, but no "
         "confirmation labels were released and no champion was promoted."
         if robustness_passed
         else (
-            "Fusion v2 did not pass the frozen rolling-development gate. "
+            f"{best_custom_candidate_label} was the strongest custom model but "
+            "did not pass the frozen rolling-development gate: its primary "
+            f"RMSE improvement was {neural_improvement * 100:.2f}% over "
+            f"{stronger_neural_control}, below the required 2%, and did not "
+            "pass the tail-MAE condition. "
             f"{null_pivot_count} completed bounded pivot cycle(s) also ended "
             "without promotion. LightGBM remains a diagnostic comparator; "
             "confirmation and the official MLO test remain sealed."
@@ -246,9 +278,7 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
         "experiment_id": "strata-fusion-v2-program-synthesis",
         "program_id": PROGRAM_ID,
         "task_kind": "fusion_v2_program",
-        "generated_at": datetime.now(
-            ZoneInfo("America/Chicago")
-        ).isoformat(),
+        "generated_at": datetime.now(ZoneInfo("America/Chicago")).isoformat(),
         "status": "PASS" if robustness_passed else "FAIL",
         "plain_language_question": (
             "What did the complete Fusion v2 research program establish, and "
@@ -262,6 +292,8 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
         ),
         "evaluation_partition": "rolling-selection",
         "protocol": "docs/FUSION_V2_PROGRAM.md",
+        "best_custom_candidate_id": best_custom_candidate_id,
+        "best_custom_candidate_label": best_custom_candidate_label,
         "cycles": cycles,
         "ledger_events": ledger["events"],
         "screen_evidence": {
@@ -282,6 +314,7 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
         "stronger_neural_control": robustness["stronger_neural_control"],
         "checks": checks,
         "relationship_to_lightgbm": {
+            "best_custom_candidate_id": best_custom_candidate_id,
             "selected_primary_rmse": selected_rmse,
             "diagnostic_lightgbm_primary_rmse": lightgbm_rmse,
             "relative_improvement_over_lightgbm": relationship_to_lightgbm,
@@ -294,14 +327,13 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
                     "neural candidate on rolling development."
                 )
             ),
-            "claim_boundary": (
-                "LightGBM is diagnostic only and is not the intended flagship."
-            ),
+            "claim_boundary": ("LightGBM is diagnostic only and is not the intended flagship."),
         },
         "provenance": {
             "source_sha256": robustness["data_identity"]["source_sha256"],
             "split_sha256": robustness["data_identity"]["split_sha256"],
             "repository_revision": robustness["repository_revision"],
+            "best_candidate_repository_revision": robustness["repository_revision"],
             "official_mlo_test_loaded": False,
             "usna_confirmation_labels_loaded": False,
             "raw_data_edited": False,
@@ -309,9 +341,7 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
         "rolling_split": {
             "id": split["id"],
             "strategy": split["strategy"],
-            "minimum_boundary_purge_minutes": split[
-                "minimum_boundary_purge_minutes"
-            ],
+            "minimum_boundary_purge_minutes": split["minimum_boundary_purge_minutes"],
             "folds": split["folds"],
             "confirmation": {
                 "consumption_id": split["confirmation"]["consumption_id"],
@@ -330,9 +360,7 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
             },
             "seeds": experiment["seeds"],
             "rolling_folds": experiment["rolling_folds"],
-            "primary_horizons_minutes": experiment[
-                "primary_horizons_minutes"
-            ],
+            "primary_horizons_minutes": experiment["primary_horizons_minutes"],
             "anchor_horizon_minutes": experiment["anchor_horizon_minutes"],
             "bootstrap": experiment["bootstrap"],
             "budget": experiment["budget"],
@@ -342,9 +370,7 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
                 "raw_features": data["features"]["raw_allowlist"],
                 "derived_features": data["features"]["derived_allowlist"],
                 "contexts": data["sampling"]["contexts"],
-                "maximum_source_gap_minutes": data["sampling"][
-                    "maximum_source_gap_minutes"
-                ],
+                "maximum_source_gap_minutes": data["sampling"]["maximum_source_gap_minutes"],
             },
             "model": {
                 "name": model["name"],
@@ -352,9 +378,7 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
                 "num_heads": model["num_heads"],
                 "num_experts": model["num_experts"],
                 "dropout": model["dropout"],
-                "horizon_fourier_bands": model[
-                    "horizon_fourier_bands"
-                ],
+                "horizon_fourier_bands": model["horizon_fourier_bands"],
                 "parameter_budget_min": model["parameter_budget_min"],
                 "parameter_budget_max": model["parameter_budget_max"],
                 "distribution_head": "Student-t plus quantiles",
@@ -364,20 +388,12 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
                 "precision": trainer["precision"],
                 "full_max_epochs": trainer["full_max_epochs"],
                 "batch_size": trainer["batch_size"],
-                "gradient_accumulation": trainer[
-                    "gradient_accumulation"
-                ],
+                "gradient_accumulation": trainer["gradient_accumulation"],
                 "learning_rate": trainer["learning_rate"],
                 "weight_decay": trainer["weight_decay"],
-                "early_stopping_patience": trainer[
-                    "early_stopping_patience"
-                ],
-                "full_max_train_examples": trainer[
-                    "full_max_train_examples"
-                ],
-                "full_max_evaluation_examples": trainer[
-                    "full_max_evaluation_examples"
-                ],
+                "early_stopping_patience": trainer["early_stopping_patience"],
+                "full_max_train_examples": trainer["full_max_train_examples"],
+                "full_max_evaluation_examples": trainer["full_max_evaluation_examples"],
                 "full_max_seconds": trainer["full_max_seconds"],
                 "deterministic": trainer["deterministic"],
                 "num_workers": trainer["num_workers"],
@@ -396,15 +412,20 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
             "The reserved confirmation labels and official MLO test were not loaded.",
             "Logged attention, expert, and timescale weights are diagnostic, not causal.",
             "A failed development gate cannot support champion promotion.",
+            (
+                "Fusion v2.5 improved primary RMSE over MLP by 1.32%, but the "
+                "preregistered margin was 2% and its tail MAE exceeded the "
+                "immutable limit."
+            ),
         ],
         "next_phase": (
-            "Run the frozen confirmation protocol only after explicit human "
-            "authorization."
+            "Run the frozen confirmation protocol only after explicit human authorization."
             if robustness_passed
             else (
-                "Expand clearly open training evidence or test a newly "
-                "preregistered architecture family without reopening failed "
-                "development gates."
+                "Treat the near-miss as data- and objective-limited evidence: "
+                "expand clearly open training coverage with provenance-checked "
+                "adapters, then preregister a new architecture family that does "
+                "not reopen the closed shortcut, loss, scale, or cap searches."
             )
         ),
         "report_pdf": None,
@@ -416,8 +437,9 @@ def write_program_summary(root: Path | None = None) -> Path:
     destination = root / PROGRAM_ROOT / "program-summary.json"
     existing = _load_object(destination) if destination.is_file() else {}
     summary = build_program_summary(root)
-    if isinstance(existing.get("evidence_run_id"), str):
-        summary["evidence_run_id"] = existing["evidence_run_id"]
+    for key in ("evidence_run_id", "report_pdf"):
+        if isinstance(existing.get(key), str):
+            summary[key] = existing[key]
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(
         json.dumps(summary, indent=2) + "\n",
@@ -433,24 +455,24 @@ def log_program_evidence(summary_path: Path, report_path: Path) -> str:
         root = find_repo_root(summary_path.parent)
     summary = _load_object(summary_path)
     existing = summary.get("evidence_run_id")
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000"))
     if isinstance(existing, str) and existing:
-        return existing
-    mlflow.set_tracking_uri(
-        os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
-    )
-    mlflow.set_experiment("strata-ot-fusion-v2-program")
-    with mlflow.start_run(
-        run_name="fusion-v2-program-synthesis",
-        tags={
-            "program_id": PROGRAM_ID,
-            "run_kind": "program_evidence",
-            "evidence_role": "final-synthesis",
-            "task_kind": summary["task_kind"],
-            "gate_status": summary["status"],
-            "confirmation_labels_loaded": "false",
-            "official_mlo_test_loaded": "false",
-        },
-    ) as run:
+        run_context = mlflow.start_run(run_id=existing)
+    else:
+        mlflow.set_experiment("strata-ot-fusion-v2-program")
+        run_context = mlflow.start_run(
+            run_name="fusion-v2-program-synthesis",
+            tags={
+                "program_id": PROGRAM_ID,
+                "run_kind": "program_evidence",
+                "evidence_role": "final-synthesis",
+                "task_kind": summary["task_kind"],
+                "gate_status": summary["status"],
+                "confirmation_labels_loaded": "false",
+                "official_mlo_test_loaded": "false",
+            },
+        )
+    with run_context as run:
         summary["evidence_run_id"] = run.info.run_id
         summary_path.write_text(
             json.dumps(summary, indent=2) + "\n",
@@ -471,9 +493,7 @@ def log_program_evidence(summary_path: Path, report_path: Path) -> str:
                     summary["result"]["relative_improvement_over_persistence"]
                 ),
                 "program/improvement_over_lightgbm": float(
-                    summary["relationship_to_lightgbm"][
-                        "relative_improvement_over_lightgbm"
-                    ]
+                    summary["relationship_to_lightgbm"]["relative_improvement_over_lightgbm"]
                 ),
             }
         )
@@ -507,16 +527,11 @@ def log_program_evidence(summary_path: Path, report_path: Path) -> str:
 
 def main() -> None:
     _configure_utf8_output()
-    parser = argparse.ArgumentParser(
-        description="Build the final Fusion v2 program synthesis"
-    )
+    parser = argparse.ArgumentParser(description="Build the final Fusion v2 program synthesis")
     parser.add_argument("--log-mlflow", action="store_true")
     parser.add_argument(
         "--report",
-        default=(
-            "reports/generated/fusion-v2-program/"
-            "fusion-v2-program-report.pdf"
-        ),
+        default=("reports/generated/fusion-v2-program/fusion-v2-program-report.pdf"),
     )
     args = parser.parse_args()
     root = find_repo_root()

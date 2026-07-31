@@ -17,9 +17,7 @@ def test_latex_number_handles_missing_values() -> None:
 
 def test_experiment_template_renders_complete_summary() -> None:
     root = Path(__file__).resolve().parents[1]
-    template = _environment(root / "reports" / "templates").get_template(
-        "experiment_report.tex.j2"
-    )
+    template = _environment(root / "reports" / "templates").get_template("experiment_report.tex.j2")
     neural_metrics = {
         "rmse_log10_cn2": 0.4,
         "mae_log10_cn2": 0.3,
@@ -139,7 +137,7 @@ def test_experiment_template_renders_complete_summary() -> None:
                     "mean_rmse_log10_cn2": 0.4,
                     "std_rmse_log10_cn2": None,
                     "relative_seed_std": None,
-                }
+                },
             ],
             "strata_interval_coverages": [0.8, 0.8],
             "peak_vram_gb": 1.0,
@@ -182,9 +180,7 @@ def test_completed_report_templates_do_not_render_open_gate_states() -> None:
         "fusion_horizon_bilinear_report.tex.j2",
         "fusion_program_report.tex.j2",
     ):
-        source = (root / "reports" / "templates" / name).read_text(
-            encoding="utf-8"
-        )
+        source = (root / "reports" / "templates" / name).read_text(encoding="utf-8")
         assert r"\newcommand{\open}" not in source
         assert r"\open" not in source
         assert "OPEN" not in source
@@ -243,10 +239,10 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
         },
     }
     rendered = template.render(
-            summary={
-                "generated_at": "2026-07-30T20:00:00-05:00",
-                "report_short_title": "Fusion v2 robustness",
-                "report_model_label": "Strata-OT Fusion v2",
+        summary={
+            "generated_at": "2026-07-30T20:00:00-05:00",
+            "report_short_title": "Fusion v2 robustness",
+            "report_model_label": "Strata-OT Fusion v2",
             "plain_language_question": "Does the model remain stable?",
             "plain_language_conclusion": "No; one frozen condition failed.",
             "hypothesis": "The candidate will improve every rolling period.",
@@ -277,9 +273,7 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
                     "blocks": 90,
                     "excluded_incomplete_blocks": 3,
                 },
-                "bootstrap_vs_stronger_neural": {
-                    "relative_improvement_ci95": [-0.02, 0.03]
-                },
+                "bootstrap_vs_stronger_neural": {"relative_improvement_ci95": [-0.02, 0.03]},
                 "seed_directions": {"17": 0.03, "41": -0.01, "73": 0.02},
             },
             "stronger_neural_control": "control-tcn",
@@ -307,10 +301,10 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
                     }
                 ],
             },
-                "frozen_configuration": {
-                    "candidate": {"id": "selected-fusion-v2"},
-                    "parameters": 3_611_530,
-                    "feature_names": ["T_3m", "P_3m"],
+            "frozen_configuration": {
+                "candidate": {"id": "selected-fusion-v2"},
+                "parameters": 3_611_530,
+                "feature_names": ["T_3m", "P_3m"],
                 "trainer": {
                     "precision": "bf16-mixed",
                     "full_max_epochs": 12,
@@ -324,7 +318,7 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
                     "full_max_seconds": 1800,
                 },
             },
-                "aggregates": {
+            "aggregates": {
                 candidate: (
                     {**aggregate, "operational": {}}
                     if candidate == "control-persistence"
@@ -337,18 +331,18 @@ def test_fusion_robustness_template_renders_terminal_evidence() -> None:
                     "control-tcn",
                     "control-horizon-v1",
                     "selected-fusion-v2",
-                    )
-                },
-                "selected_aggregate": aggregate,
+                )
+            },
+            "selected_aggregate": aggregate,
             "checks": {
                 "matrix_complete": "PASS",
                 "confirmation_evaluation": "NOT_EVALUATED",
             },
-                "excluded_dirty_runs": [],
-                "resource_narrative": "No unsafe resource event occurred.",
-                "next_cycle_narrative": "Confirmation remains sealed.",
-            }
-        )
+            "excluded_dirty_runs": [],
+            "resource_narrative": "No unsafe resource event occurred.",
+            "next_cycle_narrative": "Confirmation remains sealed.",
+        }
+    )
     assert "NOT\\_EVALUATED" in rendered
     assert "No; one frozen condition failed." in rendered
     assert "TimeXer" in rendered
@@ -455,8 +449,8 @@ def test_fusion_program_template_renders_complete_claim_boundary() -> None:
                 "split_sha256": "b" * 64,
                 "repository_revision": "c" * 40,
             },
-                "rolling_split": {
-                    "minimum_boundary_purge_minutes": 2880,
+            "rolling_split": {
+                "minimum_boundary_purge_minutes": 2880,
                 "folds": [
                     {
                         "id": "fold-1",
@@ -469,63 +463,63 @@ def test_fusion_program_template_renders_complete_claim_boundary() -> None:
                             "start": "2020-04-01",
                             "end": "2020-04-30",
                         },
-                        }
-                    ],
+                    }
+                ],
+            },
+            "frozen_configuration": {
+                "seeds": [17, 41, 73],
+                "rolling_folds": ["fold-1", "fold-2", "fold-3"],
+                "primary_horizons_minutes": [15, 30, 60],
+                "anchor_horizon_minutes": 5,
+                "bootstrap": {
+                    "block_minutes": 1440,
+                    "resamples": 2000,
+                    "seed": 20260730,
                 },
-                "frozen_configuration": {
-                    "seeds": [17, 41, 73],
-                    "rolling_folds": ["fold-1", "fold-2", "fold-3"],
-                    "primary_horizons_minutes": [15, 30, 60],
-                    "anchor_horizon_minutes": 5,
-                    "bootstrap": {
-                        "block_minutes": 1440,
-                        "resamples": 2000,
-                        "seed": 20260730,
-                    },
-                    "data": {
-                        "raw_features": ["T_3m", "P_3m"],
-                        "contexts": {
-                            "short": {
-                                "rows": 6,
-                                "spacing_minutes": 5,
-                            },
-                            "medium": {
-                                "rows": 12,
-                                "spacing_minutes": 15,
-                            },
-                            "slow": {
-                                "rows": 24,
-                                "spacing_minutes": 60,
-                            },
+                "data": {
+                    "raw_features": ["T_3m", "P_3m"],
+                    "contexts": {
+                        "short": {
+                            "rows": 6,
+                            "spacing_minutes": 5,
+                        },
+                        "medium": {
+                            "rows": 12,
+                            "spacing_minutes": 15,
+                        },
+                        "slow": {
+                            "rows": 24,
+                            "spacing_minutes": 60,
                         },
                     },
-                    "model": {
-                        "hidden_dim": 192,
-                        "num_heads": 6,
-                        "num_experts": 4,
-                        "dropout": 0.1,
-                        "horizon_fourier_bands": 8,
-                        "distribution_head": "Student-t plus quantiles",
-                        "prediction_anchor": "persistence residual",
-                    },
-                    "trainer": {
-                        "precision": "bf16-mixed",
-                        "full_max_epochs": 12,
-                        "batch_size": 128,
-                        "gradient_accumulation": 2,
-                        "learning_rate": 0.0003,
-                        "weight_decay": 0.01,
-                        "early_stopping_patience": 4,
-                        "full_max_train_examples": 50_000,
-                        "full_max_evaluation_examples": 12_000,
-                        "full_max_seconds": 1800,
-                    },
-                    "deadline": {
-                        "no_new_work_after": "2026-07-31T06:06:00-05:00",
-                        "timezone": "America/Chicago",
-                    },
                 },
-                "resources": {
+                "model": {
+                    "hidden_dim": 192,
+                    "num_heads": 6,
+                    "num_experts": 4,
+                    "dropout": 0.1,
+                    "horizon_fourier_bands": 8,
+                    "distribution_head": "Student-t plus quantiles",
+                    "prediction_anchor": "persistence residual",
+                },
+                "trainer": {
+                    "precision": "bf16-mixed",
+                    "full_max_epochs": 12,
+                    "batch_size": 128,
+                    "gradient_accumulation": 2,
+                    "learning_rate": 0.0003,
+                    "weight_decay": 0.01,
+                    "early_stopping_patience": 4,
+                    "full_max_train_examples": 50_000,
+                    "full_max_evaluation_examples": 12_000,
+                    "full_max_seconds": 1800,
+                },
+                "deadline": {
+                    "no_new_work_after": "2026-07-31T06:06:00-05:00",
+                    "timezone": "America/Chicago",
+                },
+            },
+            "resources": {
                 "neural_wall_clock_hours": 1.0,
                 "prior_cycle0_neural_wall_clock_hours": 0.25,
                 "total_evidence_neural_wall_clock_hours": 1.25,
@@ -541,6 +535,8 @@ def test_fusion_program_template_renders_complete_claim_boundary() -> None:
                     "conclusion": "Partial evidence only.",
                 }
             ],
+            "best_custom_candidate_id": "selected-fusion-v2",
+            "best_custom_candidate_label": "Fusion v2",
             "screen_evidence": {
                 "run_count": 1,
                 "runs": [
@@ -554,9 +550,7 @@ def test_fusion_program_template_renders_complete_claim_boundary() -> None:
                         "primary_coverage_80": 0.8,
                     }
                 ],
-                "closed_hypothesis_families": {
-                    "context": "Three frozen arms did not advance."
-                },
+                "closed_hypothesis_families": {"context": "Three frozen arms did not advance."},
             },
             "ledger_events": [
                 {
@@ -567,36 +561,36 @@ def test_fusion_program_template_renders_complete_claim_boundary() -> None:
                 }
             ],
             "aggregates": {
-                    "selected-fusion-v2": {
-                        "runs": [{"run_id": "run"}],
-                        "primary": primary,
-                        "by_horizon": {
-                            "5": {
-                                "rmse_log10_cn2": 0.2,
-                                "mae_log10_cn2": 0.15,
-                                "bias_log10_cn2": 0.01,
-                                "tail_mae_top_decile": 0.16,
-                                "crps_gaussian": 0.12,
-                                "interval_80_coverage": 0.8,
-                            }
-                        },
-                        "diagnostics": {
-                            "5": {
-                                "residual_mean": 0.01,
-                                "residual_std": 0.1,
-                                "scale_weights_mean": [0.4, 0.35, 0.25],
-                                "expert_weights_mean": [
-                                    0.25,
-                                    0.25,
-                                    0.25,
-                                    0.25,
-                                ],
-                                "weather_attention_mean": 0.1,
-                                "physics_token_norm_mean": 1.0,
-                                "modulation_norm_mean": 0.2,
-                            }
-                        },
-                        "operational": {
+                "selected-fusion-v2": {
+                    "runs": [{"run_id": "run"}],
+                    "primary": primary,
+                    "by_horizon": {
+                        "5": {
+                            "rmse_log10_cn2": 0.2,
+                            "mae_log10_cn2": 0.15,
+                            "bias_log10_cn2": 0.01,
+                            "tail_mae_top_decile": 0.16,
+                            "crps_gaussian": 0.12,
+                            "interval_80_coverage": 0.8,
+                        }
+                    },
+                    "diagnostics": {
+                        "5": {
+                            "residual_mean": 0.01,
+                            "residual_std": 0.1,
+                            "scale_weights_mean": [0.4, 0.35, 0.25],
+                            "expert_weights_mean": [
+                                0.25,
+                                0.25,
+                                0.25,
+                                0.25,
+                            ],
+                            "weather_attention_mean": 0.1,
+                            "physics_token_norm_mean": 1.0,
+                            "modulation_norm_mean": 0.2,
+                        }
+                    },
+                    "operational": {
                         "selective_80_rmse_log10_cn2": 0.2,
                         "ood_top_quintile_rmse_log10_cn2": 0.3,
                         "ood_score_mean": 1.0,
@@ -611,12 +605,8 @@ def test_fusion_program_template_renders_complete_claim_boundary() -> None:
                 "stronger_neural_primary_rmse": 0.255,
                 "relative_improvement_over_persistence": 0.03,
                 "relative_improvement_over_stronger_neural": 0.01,
-                "bootstrap_vs_persistence": {
-                    "relative_improvement_ci95": [-0.01, 0.05]
-                },
-                "bootstrap_vs_stronger_neural": {
-                    "relative_improvement_ci95": [-0.02, 0.03]
-                },
+                "bootstrap_vs_persistence": {"relative_improvement_ci95": [-0.01, 0.05]},
+                "bootstrap_vs_stronger_neural": {"relative_improvement_ci95": [-0.02, 0.03]},
             },
             "relationship_to_lightgbm": {
                 "interpretation": "LightGBM remained stronger.",

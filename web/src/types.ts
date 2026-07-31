@@ -67,6 +67,8 @@ export type FusionSummary = {
   plain_language_question: string;
   plain_language_conclusion: string;
   evaluation_partition: string;
+  best_custom_candidate_id?: string;
+  best_custom_candidate_label?: string;
   stronger_neural_control?: string;
   aggregates?: Record<string, FusionAggregate>;
   result?: {
@@ -88,6 +90,7 @@ export type FusionSummary = {
     question: string;
     conclusion: string;
     report_pdf?: string | null;
+    drive_url?: string | null;
   }>;
   ledger_events?: Array<{
     sequence: number;

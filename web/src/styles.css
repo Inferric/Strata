@@ -153,6 +153,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--cyan); outline-
 .cycle-rail li span { color: #718a95; font: 8px ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
 .cycle-rail li strong { display: block; margin-top: 2px; color: #d3e4e8; font-size: 12px; font-weight: 600; text-transform: capitalize; }
 .cycle-rail li p { margin: 4px 0 0; color: #91a7b0; font-size: 10px; line-height: 1.5; }
+.artifact-link { display: inline-flex; margin-top: 7px; color: var(--cyan); font: 8px ui-monospace, monospace; letter-spacing: .07em; text-transform: uppercase; text-decoration: none; }
+.artifact-link:hover { color: var(--mint); }
 .program-gates { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 7px; }
 .program-gates > div { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 8px 9px; border: 1px solid rgba(119,157,179,.14); border-radius: 7px; color: #91a7b0; font-size: 9px; text-transform: capitalize; }
 .ledger-stream { display: grid; gap: 0; margin-top: 17px; }

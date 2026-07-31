@@ -58,9 +58,7 @@ def _serialize_run(run: Any) -> dict[str, Any]:
         "feature_set": run.data.tags.get("feature_set"),
         "horizon_rows": run.data.tags.get("horizon_rows"),
         "horizon_minutes": run.data.tags.get("horizon_minutes"),
-        "forecast_horizon_minutes": run.data.tags.get(
-            "forecast_horizon_minutes"
-        ),
+        "forecast_horizon_minutes": run.data.tags.get("forecast_horizon_minutes"),
         "evaluation_partition": run.data.tags.get("evaluation_partition"),
         "metrics": run.data.metrics,
         "parameters": run.data.params,
@@ -102,10 +100,7 @@ async def datasets() -> dict[str, Any]:
             try:
                 item = json.loads(path.read_text(encoding="utf-8"))
                 qc_path = (
-                    root
-                    / "artifacts"
-                    / "data-qc"
-                    / f"{item.get('dataset_id', path.stem)}.json"
+                    root / "artifacts" / "data-qc" / f"{item.get('dataset_id', path.stem)}.json"
                 )
                 if qc_path.is_file():
                     qc = json.loads(qc_path.read_text(encoding="utf-8"))
@@ -132,8 +127,7 @@ async def overview() -> dict[str, Any]:
         (
             item
             for item in completed
-            if "test/rmse_log10_cn2" in item["metrics"]
-            or "rmse_log10_cn2" in item["metrics"]
+            if "test/rmse_log10_cn2" in item["metrics"] or "rmse_log10_cn2" in item["metrics"]
         ),
         key=lambda item: item["metrics"].get(
             "rmse_log10_cn2", item["metrics"].get("test/rmse_log10_cn2", float("inf"))
@@ -141,11 +135,7 @@ async def overview() -> dict[str, Any]:
         default=None,
     )
     summary_path = _root_or_app() / "artifacts" / "latest" / "summary.json"
-    latest = (
-        json.loads(summary_path.read_text(encoding="utf-8"))
-        if summary_path.exists()
-        else None
-    )
+    latest = json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.exists() else None
     return {
         "run_count": len(run_items),
         "completed_count": len(completed),
@@ -189,12 +179,7 @@ async def horizon() -> dict[str, Any]:
 @app.get("/api/fusion")
 async def fusion() -> dict[str, Any]:
     root = _root_or_app()
-    program_root = (
-        root
-        / "artifacts"
-        / "experiments"
-        / "strata-fusion-v2-program"
-    )
+    program_root = root / "artifacts" / "experiments" / "strata-fusion-v2-program"
     candidates = (
         program_root / "program-summary.json",
         program_root / "robustness-summary.json",
@@ -226,11 +211,7 @@ async def fusion() -> dict[str, Any]:
 async def latest_report() -> FileResponse:
     root = _root_or_app()
     summary_candidates = (
-        root
-        / "artifacts"
-        / "experiments"
-        / "strata-fusion-v2-program"
-        / "program-summary.json",
+        root / "artifacts" / "experiments" / "strata-fusion-v2-program" / "program-summary.json",
         root / "artifacts" / "latest" / "summary.json",
     )
     summary_path = next(
@@ -247,6 +228,37 @@ async def latest_report() -> FileResponse:
     reports_root = (root / "reports" / "generated").resolve()
     if not candidate.is_relative_to(reports_root) or not candidate.is_file():
         raise HTTPException(status_code=404, detail="Report artifact is unavailable")
+    return FileResponse(
+        candidate,
+        media_type="application/pdf",
+        filename=candidate.name,
+    )
+
+
+@app.get("/api/reports/cycle/{cycle_id}", response_class=FileResponse)
+async def cycle_report(cycle_id: str) -> FileResponse:
+    root = _root_or_app()
+    summary_path = (
+        root / "artifacts" / "experiments" / "strata-fusion-v2-program" / "program-summary.json"
+    )
+    if not summary_path.is_file():
+        raise HTTPException(status_code=404, detail="No program synthesis")
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    cycle = next(
+        (
+            item
+            for item in summary.get("cycles", [])
+            if isinstance(item, dict) and item.get("cycle_id") == cycle_id
+        ),
+        None,
+    )
+    report_path = cycle.get("report_pdf") if isinstance(cycle, dict) else None
+    if not isinstance(report_path, str):
+        raise HTTPException(status_code=404, detail="Cycle report unavailable")
+    candidate = (root / report_path.replace("\\", "/")).resolve()
+    reports_root = (root / "reports" / "generated").resolve()
+    if not candidate.is_relative_to(reports_root) or not candidate.is_file():
+        raise HTTPException(status_code=404, detail="Cycle report unavailable")
     return FileResponse(
         candidate,
         media_type="application/pdf",
