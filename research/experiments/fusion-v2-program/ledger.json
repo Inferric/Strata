@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "v25_robustness_complete_next_cycle_pending",
+  "status": "v26_tail_objective_frozen",
   "events": [
     {
       "sequence": 0,
@@ -497,6 +497,17 @@
       "evidence": "research/experiments/fusion-v2-program/v25-robustness-report-inspection.json",
       "drive_url": "https://drive.google.com/file/d/1KzuoDHZK5KwIID3vmC8zY2LjaaJNlyQP/view?usp=drivesdk",
       "notes": "The final six-page LaTeX robustness report was compiled, rendered at 2x, visually inspected, logged to a finished MLflow evidence run, uploaded to the private program folder, and verified as a 73,274-byte owner-only PDF."
+    },
+    {
+      "sequence": 36,
+      "recorded_at": "2026-07-31T00:32:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "training_only_tail_objective",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "7af406bdddf94dd5a355bfbd46f7d94c",
+      "evidence": "docs/FUSION_V26_TAIL_OBJECTIVE.md",
+      "notes": "A paired 0/0.5/1/2 masked tail-Huber screen is frozen before metrics. The threshold is the 90th percentile of capped fold-training targets only; the fixed v2.5 architecture, nine-epoch cap, probability head, data roles, and full robustness gates remain unchanged."
     }
   ]
 }
