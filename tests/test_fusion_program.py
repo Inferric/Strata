@@ -469,6 +469,55 @@ def test_program_synthesis_prefers_completed_v25_robustness(
     assert summary["checks"]["three_seed_multifold_evidence"] == "PASS"
 
 
+def test_program_synthesis_resolves_cycle_reports_from_drive_index(
+    tmp_path: Path,
+) -> None:
+    _synthesis_fixture(tmp_path)
+    program = tmp_path / "artifacts" / "experiments" / "strata-fusion-v2-program"
+    _write_json(
+        program / "point-loss-summary.json",
+        {
+            "program_id": "strata-fusion-v2-program",
+            "task_kind": "fusion_v21_point_loss",
+            "status": "FAIL",
+            "plain_language_conclusion": "Point-loss cycle failed.",
+            "resources": {
+                "neural_wall_clock_hours": 0.1,
+                "peak_total_board_vram_gib": 2.0,
+                "artifact_storage_bytes": 50,
+            },
+        },
+    )
+    report_path = (
+        "reports/generated/fusion-v21-point-loss/"
+        "fusion-v21-point-loss-report.pdf"
+    )
+    drive_url = "https://drive.google.com/file/d/point-loss/view"
+    _write_json(
+        tmp_path
+        / "research"
+        / "experiments"
+        / "fusion-v2-program"
+        / "drive-upload-index.json",
+        {
+            "uploads": [
+                {
+                    "role": "fusion_v21_point_loss",
+                    "local_path": report_path,
+                    "drive_url": drive_url,
+                }
+            ]
+        },
+    )
+
+    summary = build_program_summary(tmp_path)
+    cycle = next(
+        item for item in summary["cycles"] if item["cycle_id"] == "point-loss"
+    )
+    assert cycle["report_pdf"] == report_path
+    assert cycle["drive_url"] == drive_url
+
+
 def test_program_run_index_excludes_bulky_and_sensitive_fields(
     tmp_path: Path,
 ) -> None:

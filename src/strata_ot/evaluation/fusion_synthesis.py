@@ -16,6 +16,19 @@ from strata_ot.training.train import _configure_utf8_output
 PROGRAM_ID = "strata-fusion-v2-program"
 PROGRAM_ROOT = Path("artifacts/experiments") / PROGRAM_ID
 RESEARCH_ROOT = Path("research/experiments/fusion-v2-program")
+CYCLE_UPLOAD_ROLES = {
+    "fusion-v2-screen": "fusion_v2_selection_screen",
+    "fusion-v2-rolling-robustness": "fusion_v2_rolling_robustness",
+    "point-loss": "fusion_v21_point_loss",
+    "data-scale": "fusion_v22_data_scale",
+    "residual-scale": "fusion_v23_residual_scaling",
+    "shortcut": "fusion_v24_direct_shortcut",
+    "convergence": "fusion_v25_convergence",
+    "v25-robustness": "fusion_v25_rolling_robustness",
+    "v26-tail-objective": "fusion_v26_tail_objective",
+    "v27-residual-cap": "fusion_v27_residual_cap",
+    "v28-horizon-bilinear": "fusion_v28_horizon_bilinear",
+}
 
 
 def _load_object(path: Path) -> dict[str, Any]:
@@ -180,7 +193,21 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
         }
         for cycle in cycles:
             report = cycle.get("report_pdf")
-            cycle["drive_url"] = drive_urls.get(report) if isinstance(report, str) else None
+            upload = drive_uploads_by_role.get(
+                CYCLE_UPLOAD_ROLES.get(str(cycle["cycle_id"]), ""),
+                {},
+            )
+            if not isinstance(report, str) and isinstance(
+                upload.get("local_path"),
+                str,
+            ):
+                report = str(upload["local_path"])
+                cycle["report_pdf"] = report
+            cycle["drive_url"] = (
+                drive_urls.get(report)
+                if isinstance(report, str)
+                else upload.get("drive_url")
+            )
     aggregates = robustness["aggregates"]
     selected = aggregates[best_custom_candidate_id]
     lightgbm = aggregates["diagnostic-lightgbm"]
