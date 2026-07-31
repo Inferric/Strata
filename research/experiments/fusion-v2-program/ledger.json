@@ -760,6 +760,16 @@
       "result": "PASS",
       "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
       "notes": "Primary RMSE was independently recalculated from the stored prediction archives for persistence, MLP, diagnostic LightGBM, Fusion v2, and Fusion v2.5. A fresh deterministic build exactly reproduced the frozen Fusion v2.5 checks and both 2,000-resample paired bootstrap records with seed 20260730. The positive [0.53%, 2.13%] bootstrap interval versus MLP does not rescue the 1.32% point improvement below the immutable 2% rule; tail MAE also remains failed."
+    },
+    {
+      "sequence": 55,
+      "recorded_at": "2026-07-31T03:19:00-05:00",
+      "kind": "clean_checkout_validation",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "reproducibility",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/final-handoff.json",
+      "notes": "PR head 3b85304 was checked out into a clean detached worktree with no raw data or ignored run artifacts. Ruff, mypy, the repository contract, frontend lint/build, and 85 tests passed; the sole skip correctly reported that the public MLO raw snapshot is intentionally absent from Git. The validation worktree was clean and then removed without touching shared dependencies or unrelated services."
     }
   ]
 }

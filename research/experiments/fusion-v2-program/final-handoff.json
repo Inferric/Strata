@@ -111,6 +111,20 @@
       "checkpoints_or_mlflow_internals_changed": false,
       "credential_like_patterns_detected": false,
       "changed_tracked_files_over_5_mib": 0
+    },
+    "clean_checkout": {
+      "status": "PASS",
+      "validated_head": "3b85304d7bd678fad58098f4297799041e0d8a96",
+      "ruff": "PASS",
+      "mypy_source_files": 52,
+      "pytest_passed": 85,
+      "pytest_skipped": 1,
+      "skip_reason": "Verified public MLO snapshot is intentionally not tracked in Git",
+      "repository_contract": "PASS",
+      "frontend_lint": "PASS",
+      "frontend_build": "PASS",
+      "tracked_worktree_changes": false,
+      "temporary_worktree_removed": true
     }
   },
   "reports": {
@@ -131,6 +145,8 @@
     "folder_url": "https://drive.google.com/drive/folders/1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
     "run_index_url": "https://drive.google.com/file/d/1BGZAJq_7YtddZ0i16arzQ8kwBZpFatSO/view?usp=drivesdk",
     "indexed_uploads_verified": 14,
+    "observed_folder_children": 14,
+    "folder_contains_only_thirteen_pdfs_and_run_index": true,
     "all_names_sizes_parents_and_owner_only_permissions_match": true,
     "sharing_permissions_changed": false
   },
