@@ -405,6 +405,14 @@ def log_shortcut_evidence(summary_path: Path, report_path: Path) -> str:
                 "evidence",
             ),
             (
+                root
+                / "research"
+                / "experiments"
+                / "fusion-v2-program"
+                / "shortcut-report-inspection.json",
+                "evidence",
+            ),
+            (
                 root / "docs" / "FUSION_V24_DIRECT_SHORTCUT.md",
                 "protocol",
             ),
