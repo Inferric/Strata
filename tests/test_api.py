@@ -98,3 +98,42 @@ def test_cycle_report_serves_only_recorded_program_artifact(
     assert response.status_code == 200
     assert response.content.startswith(b"%PDF-1.4")
     assert client.get("/api/reports/cycle/not-recorded").status_code == 404
+
+
+def test_datasets_normalizes_profile_qc_gate_states(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    manifests = tmp_path / "data" / "manifests"
+    manifests.mkdir(parents=True)
+    (manifests / "profile.json").write_text(
+        json.dumps({"dataset_id": "profile"}),
+        encoding="utf-8",
+    )
+    qc_root = tmp_path / "artifacts" / "data-qc"
+    qc_root.mkdir(parents=True)
+    (qc_root / "profile.json").write_text(
+        json.dumps(
+            {
+                "checks": {
+                    "manifest_checksum_verification": "PASS",
+                    "geometry": "PASS",
+                    "column_training_authorized": "NOT_EVALUATED",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(api_main, "_root_or_app", lambda: tmp_path)
+
+    response = TestClient(api_main.app).get("/api/datasets")
+
+    assert response.status_code == 200
+    verification = response.json()["items"][0]["verification"]
+    assert verification == {
+        "manifest_verified": True,
+        "checks_passed": 2,
+        "checks_total": 2,
+        "split_id": None,
+        "split_sha256": None,
+    }

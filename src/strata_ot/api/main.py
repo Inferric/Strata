@@ -65,6 +65,18 @@ def _serialize_run(run: Any) -> dict[str, Any]:
     }
 
 
+def _evaluated_check(value: object) -> bool:
+    return isinstance(value, bool) or (
+        isinstance(value, str) and value.upper() in {"PASS", "FAIL"}
+    )
+
+
+def _passed_check(value: object) -> bool:
+    return value is True or (
+        isinstance(value, str) and value.upper() == "PASS"
+    )
+
+
 @app.get("/health")
 async def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -105,10 +117,27 @@ async def datasets() -> dict[str, Any]:
                 if qc_path.is_file():
                     qc = json.loads(qc_path.read_text(encoding="utf-8"))
                     checks = qc.get("checks", {})
+                    evaluated_checks = [
+                        value
+                        for value in checks.values()
+                        if _evaluated_check(value)
+                    ]
+                    manifest_verified = qc.get("manifest_verified")
+                    if not isinstance(manifest_verified, bool):
+                        manifest_verified = any(
+                            _passed_check(checks.get(key))
+                            for key in (
+                                "manifest_checksum_verification",
+                                "manifest_valid",
+                                "dataset_manifest_valid",
+                            )
+                        )
                     item["verification"] = {
-                        "manifest_verified": qc.get("manifest_verified", False),
-                        "checks_passed": sum(bool(value) for value in checks.values()),
-                        "checks_total": len(checks),
+                        "manifest_verified": manifest_verified,
+                        "checks_passed": sum(
+                            _passed_check(value) for value in evaluated_checks
+                        ),
+                        "checks_total": len(evaluated_checks),
                         "split_id": qc.get("split", {}).get("id"),
                         "split_sha256": qc.get("split", {}).get("sealed_sha256"),
                     }
