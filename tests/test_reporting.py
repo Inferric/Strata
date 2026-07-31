@@ -178,6 +178,7 @@ def test_completed_report_templates_do_not_render_open_gate_states() -> None:
         "fusion_robustness_report.tex.j2",
         "fusion_point_loss_report.tex.j2",
         "fusion_tail_objective_report.tex.j2",
+        "fusion_residual_cap_report.tex.j2",
         "fusion_program_report.tex.j2",
     ):
         source = (root / "reports" / "templates" / name).read_text(

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "report_pdf": "reports/generated/fusion-v27-residual-cap/fusion-v27-residual-cap-report.pdf",
+  "report_tex": "reports/generated/fusion-v27-residual-cap/fusion-v27-residual-cap-report.tex",
+  "inspected_at": "2026-07-31T01:21:45-05:00",
+  "page_count": 4,
+  "render_scale": 2,
+  "pdf_bytes": 60867,
+  "pdf_sha256": "75ba7ca16131b411c7f7cc4afc38ba8c4e536e23f8ad074282ed7c81c104f87a",
+  "rendered_pages": [
+    "tmp/pdfs/fusion-v27-residual-cap-final-v2/page-01.png",
+    "tmp/pdfs/fusion-v27-residual-cap-final-v2/page-02.png",
+    "tmp/pdfs/fusion-v27-residual-cap-final-v2/page-03.png",
+    "tmp/pdfs/fusion-v27-residual-cap-final-v2/page-04.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "tables_fit_page": "PASS",
+    "text_legible": "PASS",
+    "headers_and_footers_consistent": "PASS",
+    "no_overlap_or_clipping": "PASS",
+    "negative_result_visible": "PASS",
+    "raw_and_final_residuals_visible": "PASS",
+    "sealed_confirmation_visible": "PASS"
+  },
+  "notes": "All four final pages were visually inspected at 2x. The paired screen, horizon, raw-to-final residual, probabilistic, OOD, cap-provenance, resource, and gate tables are legible; manual headers on both longtable pages restore consistent headers and page numbers; the FAIL result and sealed-confirmation statement are visible; and the final compile log contains no overfull-box warning."
+}

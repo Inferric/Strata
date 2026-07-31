@@ -600,6 +600,10 @@ def render_report(summary_path: Path, output_dir: Path) -> Path:
             "fusion_tail_objective_report.tex.j2",
             "fusion-v26-tail-objective-report.tex",
         ),
+        "fusion_v27_residual_cap": (
+            "fusion_residual_cap_report.tex.j2",
+            "fusion-v27-residual-cap-report.tex",
+        ),
         "fusion_v2_program": (
             "fusion_program_report.tex.j2",
             "fusion-v2-program-report.tex",

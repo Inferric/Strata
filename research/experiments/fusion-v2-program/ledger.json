@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "v27_residual_cap_frozen",
+  "status": "v27_residual_cap_complete_next_cycle_pending",
   "events": [
     {
       "sequence": 0,
@@ -557,6 +557,44 @@
       "parent_run_id": "f6993c836f6f4708aa340ac5d989a861",
       "evidence": "docs/FUSION_V27_RESIDUAL_CAP.md",
       "notes": "A paired unbounded/0.20/0.35/0.60 hard-residual-cap screen is frozen before metrics. Bounds bracket the target-free 95th/99th/99.9th absolute residual percentiles from completed v2.5 runs; architecture inputs, objective, probability head, data roles, nine-epoch cap, and full gates remain fixed."
+    },
+    {
+      "sequence": 40,
+      "recorded_at": "2026-07-31T01:19:27-05:00",
+      "kind": "bounded_pivot_assessed",
+      "hypothesis_family": "bounded_residual_architecture",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "run_ids": [
+        "e16df460d716433c88e8f011f6552ecc",
+        "49f333a243044cb08dd3c644c6e64382",
+        "96493718437a4d28b7957193e1bdc2a4",
+        "aabcccf1ca7a4e29965d1e2c9058d7fa"
+      ],
+      "control_primary_rmse": 0.28857593436713513,
+      "relative_rmse_improvements": {
+        "residual-cap-0p20": -0.0077746813956425295,
+        "residual-cap-0p35": -0.00011726702094365474,
+        "residual-cap-0p60": 0.0008812516932240305
+      },
+      "relative_tail_improvements": {
+        "residual-cap-0p20": -0.13723387908747886,
+        "residual-cap-0p35": -0.007951874955076849,
+        "residual-cap-0p60": -0.06764897247330415
+      },
+      "notes": "No residual cap passed the frozen joint point/tail gate. Cap 0.60 changed RMSE by only +0.09% and worsened tail MAE 6.8%; cap 0.35 was effectively neutral and cap 0.20 regressed both metrics. Three non-improvements close this bounded-residual family without robustness or confirmation release."
+    },
+    {
+      "sequence": 41,
+      "recorded_at": "2026-07-31T01:22:09-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "bounded_residual_architecture",
+      "evidence_role": "report-and-mlflow-evidence",
+      "result": "PASS",
+      "run_id": "5164a7dec2854bb28439ced00b78227e",
+      "evidence": "research/experiments/fusion-v2-program/v27-residual-cap-report-inspection.json",
+      "drive_url": "https://drive.google.com/file/d/1HdCbTIg8d9fABb6bRpsgepOA4far6u8h/view?usp=drivesdk",
+      "notes": "The final four-page LaTeX residual-cap report was compiled without overflow warnings, rendered at 2x, visually inspected, logged to MLflow, uploaded to the private program folder, and verified as a 60,867-byte owner-only PDF."
     }
   ]
 }

@@ -152,7 +152,23 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "fusion_v27_residual_cap",
+      "local_path": "reports/generated/fusion-v27-residual-cap/fusion-v27-residual-cap-report.pdf",
+      "local_bytes": 60867,
+      "local_sha256": "75ba7ca16131b411c7f7cc4afc38ba8c4e536e23f8ad074282ed7c81c104f87a",
+      "drive_id": "1HdCbTIg8d9fABb6bRpsgepOA4far6u8h",
+      "drive_url": "https://drive.google.com/file/d/1HdCbTIg8d9fABb6bRpsgepOA4far6u8h/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v27-residual-cap-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 60867,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-31T00:46:38-05:00"
+  "updated_at": "2026-07-31T01:22:09-05:00"
 }

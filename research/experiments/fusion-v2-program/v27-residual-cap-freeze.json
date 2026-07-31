@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "program_id": "strata-fusion-v2-program",
+  "cycle_id": "fusion-v27-residual-cap",
+  "frozen_at": "2026-07-31T01:19:27.549654-05:00",
+  "protocol": "docs/FUSION_V27_RESIDUAL_CAP.md",
+  "repository_revision": "bb0731907356add2d2696ab077c064ed5727469e",
+  "fold_id": "fold-1",
+  "seed": 17,
+  "run_ids": {
+    "residual-cap-unbounded": "e16df460d716433c88e8f011f6552ecc",
+    "residual-cap-0p20": "49f333a243044cb08dd3c644c6e64382",
+    "residual-cap-0p35": "96493718437a4d28b7957193e1bdc2a4",
+    "residual-cap-0p60": "aabcccf1ca7a4e29965d1e2c9058d7fa"
+  },
+  "residual_caps": {
+    "residual-cap-unbounded": 0.0,
+    "residual-cap-0p20": 0.2,
+    "residual-cap-0p35": 0.35,
+    "residual-cap-0p60": 0.6
+  },
+  "official_mlo_test_loaded": false,
+  "usna_confirmation_labels_loaded": false
+}
