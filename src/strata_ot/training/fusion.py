@@ -30,13 +30,17 @@ from strata_ot.models import (
     StrataOTFusionV2,
 )
 from strata_ot.models.components import pinball_loss
-from strata_ot.models.fusion_controls import flatten_fusion_batch
+from strata_ot.models.fusion_controls import (
+    flatten_fusion_batch,
+    flatten_fusion_feature_names,
+)
 from strata_ot.models.strata_fusion import student_t_nll
 from strata_ot.training.forecast import fit_scale_factor
 from strata_ot.training.horizon import _tracked_artifact_bytes
 from strata_ot.training.safety import (
     HardwareSafetyCallback,
     TrainingProcessLock,
+    hardware_snapshot,
     preflight_hardware,
     resource_peaks,
 )
@@ -503,6 +507,7 @@ def _baseline_run(
         raise RuntimeError("Fusion baseline data roles are unavailable")
     family = str(candidate["family"])
     started = time.monotonic()
+    hardware_samples = [hardware_snapshot(root)]
     evaluation_x, target, horizons = _dataset_matrix(
         evaluation, batch_size=datamodule.batch_size
     )
@@ -536,19 +541,29 @@ def _baseline_run(
         )
         model.fit(train_x, train_target)
         prediction = np.asarray(model.predict(evaluation_x))
-        names = [f"flattened_{index}" for index in range(evaluation_x.shape[1])]
+        names = flatten_fusion_feature_names(datamodule.feature_names)
+        if len(names) != evaluation_x.shape[1]:
+            raise RuntimeError("Semantic LightGBM feature map does not match matrix")
         importance = np.asarray(model.feature_importances_, dtype=float)
         order = np.argsort(importance)[::-1][:25]
+        permutation_rows = np.linspace(
+            0,
+            len(train_x) - 1,
+            min(1500, len(train_x)),
+            dtype=np.int64,
+        )
         permutation = permutation_importance(
             model,
-            evaluation_x[: min(1500, len(evaluation_x))],
-            target[: min(1500, len(target))],
+            train_x[permutation_rows],
+            train_target[permutation_rows],
             n_repeats=2,
             random_state=20260730,
             n_jobs=4,
             scoring="neg_root_mean_squared_error",
         )
         extra["lightgbm_diagnostic_only"] = True
+        extra["permutation_fit_role"] = "train"
+        extra["permutation_samples"] = len(permutation_rows)
         extra["top_gain_features"] = [
             {"name": names[index], "importance": float(importance[index])}
             for index in order
@@ -618,9 +633,8 @@ def _baseline_run(
         ood_score=None,
     )
     metrics["wall_clock_seconds"] = time.monotonic() - started
-    metrics["peak_total_board_vram_gib"] = 0.0
-    metrics["peak_process_allocated_vram_gib"] = 0.0
-    metrics["peak_process_reserved_vram_gib"] = 0.0
+    hardware_samples.append(hardware_snapshot(root))
+    metrics.update(resource_peaks(hardware_samples))
     mlflow.set_tracking_uri(
         os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
     )
@@ -647,11 +661,24 @@ def _baseline_run(
             component_summary=component_summary,
             extra=extra,
         )
+        telemetry_path = (
+            root
+            / "artifacts"
+            / "runs"
+            / run.info.run_id
+            / "hardware-telemetry.json"
+        )
+        telemetry_path.write_text(
+            json.dumps({"samples": hardware_samples}, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        artifacts["hardware_telemetry"] = telemetry_path.relative_to(root).as_posix()
         artifact_bytes = _tracked_artifact_bytes(root, artifacts)
         metrics["artifact_storage_bytes"] = float(artifact_bytes)
         metrics["storage_delta_gib"] = artifact_bytes / (1024**3)
         mlflow.log_metrics(metrics)
         mlflow.log_dict(extra, "model-diagnostics.json")
+        mlflow.log_dict({"samples": hardware_samples}, "hardware-telemetry.json")
         for relative in artifacts.values():
             mlflow.log_artifact(str(root / relative), artifact_path="diagnostics")
         result = {
@@ -672,6 +699,24 @@ def _baseline_run(
             },
             "component_summary": component_summary,
             "artifacts": artifacts,
+            "resolved_configuration": {
+                "candidate": candidate,
+                "fold_id": fold_id,
+                "seed": seed,
+                "feature_names": datamodule.feature_names,
+                "flattened_feature_names": (
+                    names if family == "lightgbm" else None
+                ),
+                "normalization": {
+                    "fit_fold": datamodule.normalization.fit_fold,
+                    "fit_role": datamodule.normalization.fit_role,
+                }
+                if datamodule.normalization is not None
+                else None,
+                "split_sha256": datamodule.materialized_split["sha256"],
+                "source_sha256": experiment["data_config"]["source_sha256"],
+            },
+            "hardware_telemetry": hardware_samples,
             "repository": repository,
             "environment": environment,
         }
@@ -688,7 +733,7 @@ def _neural_run(
     experiment: dict[str, Any],
     candidate: dict[str, Any],
     datamodule: FusionDataModule,
-    evaluation: FusionSequenceDataset,
+    evaluation: FusionSequenceDataset | None,
     *,
     fold_id: str,
     seed: int,
@@ -716,10 +761,15 @@ def _neural_run(
         model_config["parameter_budget_min"]
     ) <= parameters <= int(model_config["parameter_budget_max"]):
         raise ValueError(f"Fusion v2 parameter budget violation: {parameters}")
+    final_fit = fold_id == "final"
     max_epochs = int(
-        trainer_config["screen_max_epochs"]
-        if screen
-        else trainer_config["full_max_epochs"]
+        trainer_config["confirmation_max_epochs"]
+        if final_fit
+        else (
+            trainer_config["screen_max_epochs"]
+            if screen
+            else trainer_config["full_max_epochs"]
+        )
     )
     pretraining = str(candidate["pretraining"])
     policy = model_config["pretraining_policy"]
@@ -744,17 +794,21 @@ def _neural_run(
     )
     checkpoint = ModelCheckpoint(
         dirpath=checkpoint_dir,
-        monitor="validation/rmse_log10_cn2",
+        monitor=None if final_fit else "validation/rmse_log10_cn2",
         mode="min",
         save_top_k=1,
         filename="{epoch:03d}-{step:06d}",
         auto_insert_metric_name=False,
     )
-    early_stop = EarlyStopping(
-        monitor="validation/rmse_log10_cn2",
-        mode="min",
-        patience=int(trainer_config["early_stopping_patience"]),
-    )
+    callbacks: list[L.Callback] = [checkpoint]
+    if not final_fit:
+        callbacks.append(
+            EarlyStopping(
+                monitor="validation/rmse_log10_cn2",
+                mode="min",
+                patience=int(trainer_config["early_stopping_patience"]),
+            )
+        )
     max_seconds = float(
         trainer_config["screen_max_seconds"]
         if screen
@@ -766,6 +820,7 @@ def _neural_run(
         safety=experiment["safety"],
         emergency_checkpoint=checkpoint_dir / "safety-stop.ckpt",
     )
+    callbacks.extend((timer, safety_callback))
     tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
     tags = {
         "program_id": str(experiment["id"]),
@@ -835,7 +890,7 @@ def _neural_run(
         deterministic=bool(trainer_config["deterministic"]),
         benchmark=bool(trainer_config["benchmark"]),
         log_every_n_steps=int(trainer_config["log_every_n_steps"]),
-        callbacks=[checkpoint, early_stop, timer, safety_callback],
+        callbacks=callbacks,
         logger=logger,
         enable_progress_bar=False,
         enable_model_summary=False,
@@ -844,7 +899,13 @@ def _neural_run(
     if run_id is None:
         raise RuntimeError("MLflow did not assign the Fusion run identity")
     try:
-        trainer.fit(module, datamodule=datamodule)
+        if final_fit:
+            trainer.fit(
+                module,
+                train_dataloaders=datamodule.train_dataloader(),
+            )
+        else:
+            trainer.fit(module, datamodule=datamodule)
         if safety_callback.stop_reason:
             raise RuntimeError(f"Hardware safety stop: {safety_callback.stop_reason}")
         if checkpoint.best_model_path:
@@ -865,6 +926,8 @@ def _neural_run(
             batch_size=datamodule.batch_size,
             device=device,
         )
+        if evaluation is None:
+            evaluation = datamodule.release_confirmation_data()
         calibration_method = str(candidate["calibration"])
         raw_scale = calibration_payload["student_t_scale"]
         scale_factor = (
@@ -1092,11 +1155,19 @@ def run_fusion_candidate(
     if release_confirmation:
         if fold_id != "final":
             raise ValueError("Confirmation release requires fold_id=final")
+        if screen:
+            raise ValueError("Confirmation release requires the frozen full-fit policy")
+        if candidate["family"] in {"persistence", "climatology", "lightgbm"}:
+            raise ValueError(
+                "One-shot confirmation release requires a frozen neural candidate"
+            )
         repository = _repository_identity(root)
         if repository["git_dirty"]:
             raise RuntimeError(
                 "Confirmation release requires committed protocol and implementation"
             )
+    elif fold_id == "final":
+        raise ValueError("Final-fold evaluation requires --release-confirmation")
     else:
         repository = _repository_identity(root)
     deadline = datetime.fromisoformat(str(experiment["deadline"]["no_new_work_after"]))
@@ -1131,15 +1202,13 @@ def run_fusion_candidate(
     )
     datamodule.prepare_data()
     datamodule.setup("fit")
-    evaluation = (
-        datamodule.confirmation_set
-        if release_confirmation
-        else datamodule.selection_set
-    )
-    if evaluation is None:
+    evaluation = None if release_confirmation else datamodule.selection_set
+    if not release_confirmation and evaluation is None:
         raise RuntimeError("Requested Fusion evaluation role is unavailable")
     environment = _environment_fingerprint()
+    preflight_hardware(root, experiment["safety"])
     if candidate["family"] in {"persistence", "climatology", "lightgbm"}:
+        assert evaluation is not None
         return _baseline_run(
             root,
             experiment,
@@ -1151,7 +1220,6 @@ def run_fusion_candidate(
             repository=repository,
             environment=environment,
         )
-    preflight_hardware(root, experiment["safety"])
     with TrainingProcessLock(
         root / "artifacts" / "locks" / "fusion-training.lock"
     ):

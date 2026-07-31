@@ -9,8 +9,10 @@ from strata_ot.config import load_yaml
 from strata_ot.data.fusion import (
     FusionDataModule,
     _point_features,
+    _RoleArrays,
     identity_sha256,
 )
+from strata_ot.models.fusion_controls import flatten_fusion_feature_names
 
 
 def _repository() -> Path:
@@ -67,3 +69,57 @@ def test_confirmation_requires_release_flag() -> None:
     )
     with pytest.raises(RuntimeError, match="explicit --release-confirmation"):
         module.confirmation_dataloader()
+
+
+def test_final_setup_does_not_consume_or_load_confirmation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _repository()
+    data = load_yaml("configs/data/otbench_usna_lg_fusion_v2.yaml", root=root)
+    split = load_yaml(str(data["split_config"]), root=root)
+    module = FusionDataModule(
+        data,
+        split,
+        fold_id="final",
+        physics_tokens="none",
+        batch_size=4,
+        num_workers=0,
+        max_train_examples=8,
+        max_evaluation_examples=8,
+        release_confirmation=True,
+    )
+    timestamps = np.arange(
+        np.datetime64("2020-01-01T00:00"),
+        np.datetime64("2020-01-03T00:00"),
+        np.timedelta64(1, "m"),
+    )
+    arrays = _RoleArrays(
+        timestamps=timestamps,
+        target=np.full(len(timestamps), 1e-14),
+        features=np.ones((len(timestamps), 1)),
+        feature_present=np.ones((len(timestamps), 1)),
+        feature_names=["T_3m"],
+        raw_start_offset=0,
+    )
+    loaded_roles: list[str] = []
+
+    def fake_load_role(role: str, *, labels: bool) -> _RoleArrays:
+        assert labels
+        loaded_roles.append(role)
+        return arrays
+
+    monkeypatch.setattr(module, "_load_role", fake_load_role)
+    module.materialized_split = {"sha256": "test"}
+    module.setup("fit")
+    assert loaded_roles == ["train", "calibration"]
+    assert module.confirmation_set is None
+    assert module.confirmation_consumption is None
+
+
+def test_flattened_feature_names_match_control_matrix_width() -> None:
+    weather = ["temperature", "humidity"]
+    names = flatten_fusion_feature_names(weather)
+    expected = 6 * 5 + 12 * 5 + 24 * 5 + 1
+    assert len(names) == expected
+    assert names[15] == "short/lag_0000m/cn2_level"
+    assert names[-1] == "forecast/horizon_minutes_scaled"

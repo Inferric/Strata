@@ -242,3 +242,14 @@ candidates:
     physics_tokens: full
     pretraining: full_multitask
     calibration: student_t_conformal
+  - id: selected-fusion-v2
+    category: robustness
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    screen_program: false

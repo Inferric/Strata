@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "implementation_validated",
+  "status": "screen_complete_candidate_frozen",
   "events": [
     {
       "sequence": 0,
@@ -56,6 +56,118 @@
       "candidate_id": "capacity-256",
       "failure": "hidden_dim=256 is not divisible by six attention heads",
       "disposition": "Non-trainable configuration corrected to width 240 within the same preregistered high-capacity hypothesis; no metric or threshold informed the correction."
+    },
+    {
+      "sequence": 5,
+      "recorded_at": "2026-07-30T19:07:30-05:00",
+      "kind": "ablation_category_complete",
+      "hypothesis_family": "context",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "candidates": [
+        "context-short",
+        "context-short-medium",
+        "context-all"
+      ],
+      "notes": "Short context had the lowest Fusion v2 point RMSE (0.300070), but tail MAE regressed 12.87% versus persistence. Three consecutive complete-rule failures close the context family."
+    },
+    {
+      "sequence": 6,
+      "recorded_at": "2026-07-30T19:07:30-05:00",
+      "kind": "ablation_category_complete",
+      "hypothesis_family": "fusion",
+      "evidence_role": "fold-1-selection",
+      "result": "PASS",
+      "candidate_id": "fusion-concat",
+      "run_id": "9adaae107ef34ad9b8dcbc0a5eafc612",
+      "primary_rmse": 0.30082541675299396,
+      "relative_improvement_over_persistence": 0.0097057206538531,
+      "notes": "Concatenation was the best constraint-respecting Fusion v2 screen: RMSE and tail MAE improved over persistence and coverage degradation stayed within the advancement tolerance. It does not meet the final 2% success threshold."
+    },
+    {
+      "sequence": 7,
+      "recorded_at": "2026-07-30T19:07:30-05:00",
+      "kind": "ablation_category_complete",
+      "hypothesis_family": "physics",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "candidates": [
+        "physics-none",
+        "physics-base",
+        "physics-full"
+      ],
+      "notes": "None of the three physics-token variants improved on the current balanced Fusion v2 candidate; the family is closed for this cycle."
+    },
+    {
+      "sequence": 8,
+      "recorded_at": "2026-07-30T19:07:30-05:00",
+      "kind": "ablation_category_complete",
+      "hypothesis_family": "pretraining",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "candidates": [
+        "pretrain-none",
+        "pretrain-reconstruction",
+        "pretrain-full"
+      ],
+      "notes": "Reconstruction and full multitask initialization did not improve the balanced Fusion v2 screen; three non-improvements close this pretraining recipe, while the implemented machinery remains valid."
+    },
+    {
+      "sequence": 9,
+      "recorded_at": "2026-07-30T19:07:30-05:00",
+      "kind": "ablation_category_complete",
+      "hypothesis_family": "capacity_regularization",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "candidates": [
+        "capacity-144",
+        "capacity-192",
+        "capacity-240"
+      ],
+      "notes": "The corrected 2.03M, 3.60M, and 5.60M parameter arms all trailed the current balanced Fusion v2 candidate; the capacity family is closed."
+    },
+    {
+      "sequence": 10,
+      "recorded_at": "2026-07-30T19:07:30-05:00",
+      "kind": "ablation_category_complete",
+      "hypothesis_family": "probabilistic_calibration",
+      "evidence_role": "fold-1-calibration-to-selection",
+      "result": "PASS",
+      "candidate_id": "calibration-raw",
+      "run_id": "70a4ee63b85648a78f2cb024016885d9",
+      "notes": "For identical point forecasts, raw learned Student-t scale had 74.58% mean primary coverage and lower CRPS than pooled conformal calibration at 70.80%; raw scale is frozen for robustness characterization."
+    },
+    {
+      "sequence": 11,
+      "recorded_at": "2026-07-30T19:10:00-05:00",
+      "kind": "screen_matrix_frozen",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "fold-1-selection",
+      "result": "FAIL",
+      "candidate_id": "selected-fusion-v2",
+      "evidence": "research/experiments/fusion-v2-program/screen-freeze.json",
+      "notes": "All 24 arms completed. Horizon v1 remained slightly stronger (0.299778 primary RMSE) than balanced Fusion v2 (0.300825). The balanced candidate is frozen for required multi-fold, three-seed robustness evidence, not confirmation or promotion."
+    },
+    {
+      "sequence": 12,
+      "recorded_at": "2026-07-30T19:10:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "rolling_robustness",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "candidate_id": "selected-fusion-v2",
+      "evidence": "docs/FUSION_V2_ROBUSTNESS.md",
+      "notes": "The full three-fold, three-seed custom and control matrix, unchanged gates, and confirmation eligibility rule were frozen before full-run metrics."
+    },
+    {
+      "sequence": 13,
+      "recorded_at": "2026-07-30T19:20:00-05:00",
+      "kind": "substantial_experiment_report",
+      "hypothesis_family": "fusion-v2-screen",
+      "evidence_role": "report",
+      "result": "PASS",
+      "evidence": "research/experiments/fusion-v2-program/screen-report-inspection.json",
+      "notes": "The complete 24-arm screen report compiled from LaTeX to a four-page PDF. All pages were rendered and visually inspected after correcting one long path and one category-label overlap."
     }
   ]
 }

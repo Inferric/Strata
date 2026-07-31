@@ -24,6 +24,27 @@ def flatten_fusion_batch(batch: dict[str, Tensor]) -> Tensor:
     )
 
 
+def flatten_fusion_feature_names(weather_names: list[str]) -> list[str]:
+    """Return the exact semantic ordering used by ``flatten_fusion_batch``."""
+    names: list[str] = []
+    for scale, rows, spacing in (
+        ("short", 6, 5),
+        ("medium", 12, 15),
+        ("slow", 24, 60),
+    ):
+        for row in range(rows):
+            lag = (rows - 1 - row) * spacing
+            for field in ("cn2_level", "cn2_first_difference", "cadence"):
+                names.append(f"{scale}/lag_{lag:04d}m/{field}")
+        for row in range(rows):
+            lag = (rows - 1 - row) * spacing
+            names.extend(
+                f"{scale}/lag_{lag:04d}m/{field}" for field in weather_names
+            )
+    names.append("forecast/horizon_minutes_scaled")
+    return names
+
+
 class FusionControlHead(nn.Module):
     def __init__(self, hidden_dim: int) -> None:
         super().__init__()

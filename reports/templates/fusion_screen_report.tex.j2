@@ -1,0 +1,211 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.66in]{geometry}
+\usepackage{booktabs,longtable,tabularx,array,microtype,xcolor,enumitem,fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{stratablue}{HTML}{0B5FFF}
+\definecolor{stratateal}{HTML}{087F75}
+\definecolor{stratared}{HTML}{A63232}
+\definecolor{stratagray}{HTML}{59636E}
+\definecolor{stratalight}{HTML}{EEF3F8}
+\newcommand{\pass}{\textcolor{stratateal}{\textbf{PASS}}}
+\newcommand{\fail}{\textcolor{stratared}{\textbf{FAIL}}}
+\newcommand{\notevaluated}{\textcolor{stratagray}{\textbf{NOT\_EVALUATED}}}
+\newcommand{\cn}{\(C_n^2\)}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.45em}
+\renewcommand{\arraystretch}{1.12}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{stratagray}{Strata-OT / bounded development evidence}}
+\rhead{\textcolor{stratagray}{Fusion v2 screen}}
+\cfoot{\thepage}
+\title{\textbf{\textcolor{stratablue}{Strata-OT Fusion v2}}\\
+\large Complete six-category selection screen}
+\author{Generated from frozen run manifests and exact public-data identities}
+\date{\VAR{summary.generated_at|latex}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fcolorbox{stratablue}{stratalight}{
+\begin{minipage}{0.93\linewidth}
+\textbf{Executive summary for a new reader.}
+\VAR{summary.plain_language_question|latex}
+\VAR{summary.plain_language_conclusion|latex}
+This is rolling-development evidence, not a champion decision. The official
+MLO test and the new USNA confirmation labels remained sealed.
+\end{minipage}}
+\end{center}
+
+\section{Frozen question and verdict}
+\textbf{Hypothesis.} \VAR{summary.hypothesis|latex}
+
+The primary endpoint is mean RMSE at 15, 30, and 60 minutes; 5 minutes is an
+anchor. A screen candidate advances only if it improves the current custom
+candidate, remains numerically stable, and does not worsen coverage distance
+or tail MAE beyond the frozen tolerance. Final success still requires at least
+2\% improvement plus multi-fold, multi-seed, bootstrap, uncertainty, and
+stability evidence.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.33\linewidth}X}
+\toprule
+Screen matrix & 24 / 24 arms completed\\
+Best point Fusion v2 & context-short, RMSE
+\VAR{summary.runs|selectattr("candidate_id", "equalto", "context-short")|map(attribute="primary_rmse")|first|num}\\
+Constraint-respecting Fusion v2 & fusion-concat, RMSE
+\VAR{summary.result.selected_fusion_primary_rmse|num}\\
+Persistence RMSE & \VAR{summary.result.persistence_primary_rmse|num}\\
+Horizon v1 RMSE & \VAR{summary.result.horizon_v1_primary_rmse|num}\\
+Fusion v2 gain over persistence &
+\VAR{summary.result.selected_relative_improvement_over_persistence|pct}\\
+Final 2\% threshold & \fail\\
+Confirmation eligibility & \fail\\
+Champion promoted & No; prohibited\\
+\bottomrule
+\end{tabularx}
+
+\section{Public-data provenance and leakage boundary}
+The target is the direct USNA-large \cn{} observation
+\texttt{\VAR{summary.data_identity.target|latex}}. Raw bytes were never edited.
+Preprocessing was fit on each training role only; uncertainty handling used
+the corresponding calibration role; selection controlled iteration. The
+March--April 2022 confirmation interval was represented by time identities
+only and its labels were not loaded.
+
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.29\linewidth}X}
+\toprule
+Dataset & \VAR{summary.data_identity.dataset_id|latex}\\
+Source path & \path{\VAR{summary.data_identity.source_path}}\\
+Source SHA-256 & \texttt{\VAR{summary.data_identity.source_sha256|shortid}}\\
+Split & \VAR{summary.data_identity.split_id|latex}\\
+Materialized split SHA-256 &
+\texttt{\VAR{summary.data_identity.materialized_split_sha256|shortid}}\\
+Label provenance & \VAR{summary.data_identity.label_provenance|latex}\\
+Repository commit & \texttt{\VAR{summary.repository_identity.git_revision|shortid}}\\
+Official MLO test loaded & No\\
+USNA confirmation labels loaded & No\\
+\bottomrule
+\end{tabularx}
+
+\section{Architecture and controlled factors}
+Fusion v2 predicts an interpretable residual from persistence. It provides
+short (six samples at five minutes), medium (12 samples at 15 minutes), and
+slow (24 samples at 60 minutes) Cn²/weather branches; horizon Fourier features;
+causal temporal blocks; optional FiLM and cross-attention weather interaction;
+four routed experts; physical refractivity/stability tokens; ordered
+quantiles; a learned Student-t scale; and OOD diagnostics.
+
+Only one factor changed inside each preregistered category: context, fusion
+mechanism, physics tokens, pretraining, capacity/regularization, or probability
+calibration. Controls used the same endpoints and fold-only preprocessing.
+LightGBM is diagnostic only.
+
+\section{Complete screen matrix}
+\small
+\begin{longtable}{p{0.22\linewidth}p{0.13\linewidth}rrrrrr}
+\toprule
+Candidate & Category & Params & RMSE & Tail MAE & CRPS & Cov.\ 80 & Seconds\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\VAR{run.candidate_id|latex} &
+\BLOCK{ if run.category == "capacity_regularization" }capacity
+\BLOCK{ else }\VAR{run.category|latex}\BLOCK{ endif } &
+\BLOCK{ if run.parameters is not none }\VAR{run.parameters|latex}\BLOCK{ else }--\BLOCK{ endif } &
+\VAR{run.primary_rmse|num} &
+\VAR{run.primary_tail_mae|num} &
+\VAR{run.primary_crps|num} &
+\VAR{run.primary_coverage_80|pct} &
+\VAR{run.wall_clock_seconds|num(1)}\\
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Horizon-resolved focus comparison}
+\begin{longtable}{llrrrr}
+\toprule
+Candidate & Horizon & RMSE & Bias & Tail MAE & Coverage\\
+\midrule
+\endhead
+\BLOCK{ for run in summary.runs }
+\BLOCK{ if run.candidate_id in ["control-persistence", "diagnostic-lightgbm", "control-mlp", "control-tcn", "control-horizon-v1", "fusion-concat"] }
+\BLOCK{ for horizon, values in run.by_horizon.items() }
+\VAR{run.candidate_id|latex} & \VAR{horizon|latex} min &
+\VAR{values.rmse_log10_cn2|num} &
+\VAR{values.bias_log10_cn2|num} &
+\VAR{values.tail_mae_top_decile|num} &
+\VAR{values.interval_80_coverage|pct}\\
+\BLOCK{ endfor }
+\BLOCK{ endif }
+\BLOCK{ endfor }
+\bottomrule
+\end{longtable}
+
+\section{Negative results and family closures}
+\begin{itemize}
+\BLOCK{ for family, reason in summary.closed_hypothesis_families.items() }
+\item \textbf{\VAR{family|latex}.} \VAR{reason|latex}
+\BLOCK{ endfor }
+\end{itemize}
+
+Atmospheric multitask pretraining was implemented and executed, but neither
+masked reconstruction alone nor the full reconstruction/future-weather/
+cadence-Cn² recipe improved this screen. Larger capacity also did not rescue
+the model. These are preserved negative results; no thresholds were changed.
+
+\section{Failure and correction}
+\BLOCK{ for failure in summary.screen_failures }
+\textbf{\VAR{failure.candidate_id|latex}: \VAR{failure.status|latex}.}
+\VAR{failure.reason|latex} \VAR{failure.resolution|latex}
+\BLOCK{ endfor }
+
+\section{Resources and evidence state}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{0.36\linewidth}X}
+\toprule
+Neural wall-clock hours & \VAR{summary.resources.neural_wall_clock_hours|num(3)}\\
+Peak total board VRAM & \VAR{summary.resources.peak_total_board_vram_gib|num(3)} GiB\\
+Peak process allocated VRAM &
+\VAR{summary.resources.peak_process_allocated_vram_gib|num(3)} GiB\\
+Recorded artifact bytes & \VAR{summary.resources.artifact_storage_bytes|latex}\\
+Cloud cost & \$\VAR{summary.resources.cloud_cost_usd|num(2)}\\
+\bottomrule
+\end{tabularx}
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Condition & State\\
+\midrule
+\BLOCK{ for name, state in summary.checks.items() }
+\VAR{name|latex} &
+\BLOCK{ if state == "PASS" }\pass
+\BLOCK{ elif state == "FAIL" }\fail
+\BLOCK{ else }\notevaluated
+\BLOCK{ endif }\\
+\BLOCK{ endfor }
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Frozen next experiment}
+The balanced all-scale concatenation candidate and raw learned Student-t scale
+are frozen for three rolling folds and seeds 17, 41, and 73. Persistence,
+climatology, diagnostic LightGBM, MLP, TCN, and Horizon v1 remain honest
+controls. Confirmation stays sealed unless the unchanged rolling gates make
+the candidate eligible. The exact next-cycle protocol is
+\texttt{\VAR{summary.next_protocol|latex}}.
+
+\section{Limitations and claim boundary}
+This is a single-site selection screen with capped examples and one seed. The
+small point gain is not confirmation, universal superiority, operational
+readiness, or evidence of causal atmospheric regimes. Component weights are
+diagnostics only. The correct claim is narrower: the implementation is
+reproducible, the complete screen is negative/partial, and balanced Fusion v2
+merits the already frozen robustness characterization.
+
+\end{document}

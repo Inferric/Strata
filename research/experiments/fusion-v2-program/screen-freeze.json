@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "program_id": "strata-fusion-v2-program",
+  "frozen_at": "2026-07-30T19:10:00-05:00",
+  "evaluation_role": "fold-1/selection",
+  "seed": 17,
+  "screen_contract": {
+    "maximum_training_examples": 12000,
+    "maximum_evaluation_examples": 4000,
+    "maximum_forecast_epochs": 3,
+    "primary_horizons_minutes": [
+      15,
+      30,
+      60
+    ]
+  },
+  "run_ids": {
+    "control-persistence": "64175d5ce6c64235b0ea268cc0ed4a6b",
+    "control-climatology": "cbc769d2c4ac41da809021f5e8a340c8",
+    "diagnostic-lightgbm": "302ed2f32ace41db97a8766b82fd1058",
+    "control-mlp": "aebc7810f4da4c0eaffd886a1ea8af0a",
+    "control-tcn": "69e24bf2814c40f5b23595f7d783984d",
+    "control-horizon-v1": "ab31cd7ea046488ead9c4045ba470b72",
+    "context-short": "1eea1264fcaf4683b4430c6c4d5e7c20",
+    "context-short-medium": "ae8261284abd4cbf888bd06ef46200eb",
+    "context-all": "e307077092d644ca906c7597ee944416",
+    "fusion-concat": "9adaae107ef34ad9b8dcbc0a5eafc612",
+    "fusion-film": "73383a1892544958b7474bd6bc5a6bd0",
+    "fusion-film-cross": "98dfb87a147844b58a55ca114d8df2e5",
+    "physics-none": "d4d2875132fb4b74aa9a840408153173",
+    "physics-base": "4e2489601b5942bcbf61c6c502062ad0",
+    "physics-full": "52a51687d0f047f9bb4ec834b457d291",
+    "pretrain-none": "8819921e90ce4fc28654edd751ac17d2",
+    "pretrain-reconstruction": "40721b375afb4b8a9841876324d0d80e",
+    "pretrain-full": "754e450fb04e4c01a48b94d07dc6f2f7",
+    "capacity-144": "b5b96a970bfd4ad585d13c2d71ddb6be",
+    "capacity-192": "f9ff17535ac94182a85bd19704b7d2a1",
+    "capacity-240": "dd13c850656b4a189fbafa99710b478d",
+    "calibration-raw": "70a4ee63b85648a78f2cb024016885d9",
+    "calibration-conformal": "9ab689164b274be0ba5f35d3d25a3b01",
+    "calibration-student-t": "5f1346adf998490db1d40ca42ef62ee7"
+  },
+  "screen_failures": [
+    {
+      "candidate_id": "capacity-256",
+      "status": "NOT_EVALUATED",
+      "reason": "The preregistered width was not divisible by the frozen six attention heads, so construction failed before training or metric release.",
+      "resolution": "The high-capacity arm was corrected to width 240 without using metrics; all other factors remained fixed.",
+      "evidence": "research/experiments/fusion-v2-program/ledger.json"
+    }
+  ],
+  "observed_primary_results": {
+    "persistence_rmse": 0.3037737600096179,
+    "horizon_v1_rmse": 0.29977750714862644,
+    "best_point_fusion_v2": {
+      "candidate_id": "context-short",
+      "rmse": 0.30006988906485516,
+      "tail_mae": 0.1892309904712383,
+      "coverage_80": 0.7076568674412881,
+      "advancement_status": "FAIL",
+      "reason": "RMSE improved 1.22 percent over persistence, below the final 2 percent success threshold, and tail MAE regressed 12.87 percent."
+    },
+    "best_constraint_respecting_fusion_v2": {
+      "candidate_id": "fusion-concat",
+      "rmse": 0.30082541675299396,
+      "tail_mae": 0.16691715133192517,
+      "coverage_80": 0.7046305108691121,
+      "advancement_status": "PASS",
+      "reason": "RMSE improved 0.97 percent over persistence, tail MAE improved 0.44 percent, and coverage distance worsened by only 0.23 percentage point. This passes the screen advancement rule but not the final 2 percent success rule."
+    },
+    "probability_selection": {
+      "candidate_id": "calibration-raw",
+      "coverage_80": 0.7458316786865481,
+      "crps": 0.1549522343088723,
+      "status": "PASS",
+      "reason": "On identical point forecasts, raw heavy-tail scale was closer to nominal coverage and had lower CRPS than pooled conformal calibration."
+    }
+  },
+  "closed_hypothesis_families": {
+    "context": "Three consecutive candidates failed the complete screen advancement rule.",
+    "physics": "Three consecutive candidates did not improve on the current constraint-respecting Fusion v2 candidate.",
+    "pretraining": "Three consecutive candidates did not improve on the current constraint-respecting Fusion v2 candidate.",
+    "capacity_regularization": "Three consecutive candidates did not improve on the current constraint-respecting Fusion v2 candidate."
+  },
+  "selected_for_robustness_characterization": {
+    "candidate_id": "selected-fusion-v2",
+    "family": "fusion_v2",
+    "hidden_dim": 192,
+    "dropout": 0.1,
+    "active_scales": [
+      "short",
+      "medium",
+      "slow"
+    ],
+    "fusion": "concat",
+    "physics_tokens": "full",
+    "pretraining": "none",
+    "calibration": "none",
+    "selection_basis": [
+      "fusion-concat point forecast run 9adaae107ef34ad9b8dcbc0a5eafc612",
+      "calibration-raw uncertainty run 70a4ee63b85648a78f2cb024016885d9"
+    ],
+    "confirmation_eligible": false,
+    "plain_language": "Fusion v2 did not clear the final success bar. The balanced variant is frozen for the required multi-fold, three-seed robustness test; confirmation remains sealed unless that broader evidence changes eligibility under the already frozen rules."
+  },
+  "official_mlo_test_loaded": false,
+  "usna_confirmation_labels_loaded": false
+}

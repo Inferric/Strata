@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report": "reports/generated/fusion-v2-screen/fusion-v2-screen-report.pdf",
+  "latex_source": "reports/generated/fusion-v2-screen/fusion-v2-screen-report.tex",
+  "inspected_at": "2026-07-30T19:20:00-05:00",
+  "pages": 4,
+  "bytes": 52730,
+  "sha256": "4cda3a8564df4366b294f70146dfbc0c88ab78ac4c9884dfe2831ad5741bae52",
+  "render_scale": 1.5,
+  "rendered_pages": [
+    "tmp/pdfs/fusion-v2-screen/page-01.png",
+    "tmp/pdfs/fusion-v2-screen/page-02.png",
+    "tmp/pdfs/fusion-v2-screen/page-03.png",
+    "tmp/pdfs/fusion-v2-screen/page-04.png"
+  ],
+  "checks": {
+    "all_pages_rendered": "PASS",
+    "text_not_clipped": "PASS",
+    "tables_readable": "PASS",
+    "headers_and_footers_consistent": "PASS",
+    "no_overlap": "PASS",
+    "no_placeholder_tokens": "PASS"
+  },
+  "corrections_before_pass": [
+    "Allowed the long public source path to wrap at path separators.",
+    "Shortened the capacity_regularization table label to prevent overlap."
+  ],
+  "status": "PASS"
+}

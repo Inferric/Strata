@@ -605,33 +605,7 @@ class FusionDataModule(L.LightningDataModule):
             horizons=horizons,
             max_examples=self.max_evaluation_examples,
         )
-        if self.fold_id == "final":
-            if self.release_confirmation:
-                if self.confirmation_consumption is None:
-                    confirmation_config = self.split_config["confirmation"]
-                    self.confirmation_consumption = consume_partition(
-                        {
-                            "consumption_id": confirmation_config[
-                                "consumption_id"
-                            ],
-                            "dataset_id": self.data_config["id"],
-                            "split_id": self.split_config["id"],
-                            "role": "confirmation",
-                            "identities_sha256": confirmation_config[
-                                "identities_sha256"
-                            ],
-                            "candidate_commit_required": True,
-                            "official_mlo_test_loaded": False,
-                        }
-                    )
-                confirmation = self._load_role("confirmation", labels=True)
-                self.confirmation_set = FusionSequenceDataset(
-                    confirmation,
-                    self.normalization,
-                    horizons=horizons,
-                    max_examples=self.max_evaluation_examples,
-                )
-        else:
+        if self.fold_id != "final":
             selection = self._load_role("selection", labels=True)
             self.selection_set = FusionSequenceDataset(
                 selection,
@@ -639,6 +613,45 @@ class FusionDataModule(L.LightningDataModule):
                 horizons=horizons,
                 max_examples=self.max_evaluation_examples,
             )
+
+    def release_confirmation_data(self) -> FusionSequenceDataset:
+        """Atomically consume and then load confirmation labels exactly once.
+
+        Final-fit training and calibration call ``setup`` without ever constructing
+        this dataset. The explicit release happens only after the frozen model has
+        finished fitting, which keeps confirmation labels out of trainer state.
+        """
+        if self.fold_id != "final" or not self.release_confirmation:
+            raise RuntimeError(
+                "Confirmation labels require final fold and explicit release"
+            )
+        if self.normalization is None:
+            raise RuntimeError("Final-fit normalization is unavailable")
+        if self.confirmation_set is not None:
+            return self.confirmation_set
+        confirmation_config = self.split_config["confirmation"]
+        self.confirmation_consumption = consume_partition(
+            {
+                "consumption_id": confirmation_config["consumption_id"],
+                "dataset_id": self.data_config["id"],
+                "split_id": self.split_config["id"],
+                "role": "confirmation",
+                "identities_sha256": confirmation_config["identities_sha256"],
+                "candidate_commit_required": True,
+                "official_mlo_test_loaded": False,
+            }
+        )
+        confirmation = self._load_role("confirmation", labels=True)
+        horizons = [
+            int(value) for value in self.data_config["sampling"]["horizons_minutes"]
+        ]
+        self.confirmation_set = FusionSequenceDataset(
+            confirmation,
+            self.normalization,
+            horizons=horizons,
+            max_examples=self.max_evaluation_examples,
+        )
+        return self.confirmation_set
 
     def _loader(
         self,

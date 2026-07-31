@@ -265,7 +265,9 @@ def fusion_screen_program_flow(
 
     experiment = yaml.safe_load((root / config_path).read_text(encoding="utf-8"))
     candidate_ids = [
-        str(candidate["id"]) for candidate in experiment["candidates"]
+        str(candidate["id"])
+        for candidate in experiment["candidates"]
+        if bool(candidate.get("screen_program", True))
     ]
     results: list[dict[str, Any]] = []
     for candidate_id in candidate_ids:
