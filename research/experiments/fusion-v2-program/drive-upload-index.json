@@ -184,7 +184,39 @@
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
       }
+    },
+    {
+      "role": "fusion_v2_program_synthesis",
+      "local_path": "reports/generated/fusion-v2-program/fusion-v2-program-report.pdf",
+      "local_bytes": 85653,
+      "local_sha256": "39f10d637e608859c57b92d7191d3b381e75d8b122b7b8c2fd82c53e015d6c38",
+      "drive_id": "1GNgQYmh1R79xru3ezP5XNTWUjnK-N0YA",
+      "drive_url": "https://drive.google.com/file/d/1GNgQYmh1R79xru3ezP5XNTWUjnK-N0YA/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v2-program-report.pdf",
+        "mime_type": "application/pdf",
+        "size": 85653,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
+    },
+    {
+      "role": "fusion_v2_compact_run_index",
+      "local_path": "reports/generated/fusion-v2-program/fusion-v2-run-index.json",
+      "local_bytes": 28285,
+      "local_sha256": "10e6204ddde73f5a90853d8e7afb6ecf63ca5ab38c1630bdb225fee141e4ba82",
+      "drive_id": "1BGZAJq_7YtddZ0i16arzQ8kwBZpFatSO",
+      "drive_url": "https://drive.google.com/file/d/1BGZAJq_7YtddZ0i16arzQ8kwBZpFatSO/view?usp=drivesdk",
+      "verified_metadata": {
+        "name": "fusion-v2-run-index.json",
+        "mime_type": "application/json",
+        "size": 28285,
+        "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
+        "shared": false,
+        "source_visibility_status": "permission_metadata_available"
+      }
     }
   ],
-  "updated_at": "2026-07-31T01:48:15-05:00"
+  "updated_at": "2026-07-31T02:04:56-05:00"
 }

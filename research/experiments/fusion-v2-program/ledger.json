@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "v28_horizon_bilinear_complete_program_synthesis_pending",
+  "status": "program_complete_no_promotion",
   "events": [
     {
       "sequence": 0,
@@ -644,6 +644,44 @@
       "evidence": "research/experiments/fusion-v2-program/v28-horizon-bilinear-report-inspection.json",
       "drive_url": "https://drive.google.com/file/d/1mHb0CCSln6Ky9zhDjut_rk_a-k8z_wM0/view?usp=drivesdk",
       "notes": "The final five-page LaTeX horizon-bilinear report was compiled, rendered at 2x, visually inspected, logged to MLflow, uploaded to the private program folder, and verified as a 62,264-byte owner-only PDF."
+    },
+    {
+      "sequence": 45,
+      "recorded_at": "2026-07-31T02:01:57-05:00",
+      "kind": "program_synthesis_completed",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "final-synthesis",
+      "result": "PASS",
+      "run_id": "f391ae16ea31499cbeb62fb21e40ee43",
+      "evidence": "research/experiments/fusion-v2-program/program-report-inspection.json",
+      "scientific_status": "FAIL",
+      "best_custom_candidate_id": "selected-fusion-v25",
+      "notes": "Program execution completed with an honest scientific FAIL. Fusion v2.5 was the strongest custom candidate: 6.51% better than persistence and 1.32% better than MLP, but below the immutable 2% MLP margin and slightly outside the tail-MAE condition. All 111 indexed training runs and 12 evidence runs retain sealed official-test and confirmation boundaries."
+    },
+    {
+      "sequence": 46,
+      "recorded_at": "2026-07-31T02:02:46-05:00",
+      "kind": "program_report_uploaded",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "drive-delivery",
+      "result": "PASS",
+      "run_id": "f391ae16ea31499cbeb62fb21e40ee43",
+      "evidence": "research/experiments/fusion-v2-program/drive-upload-index.json",
+      "drive_url": "https://drive.google.com/file/d/1GNgQYmh1R79xru3ezP5XNTWUjnK-N0YA/view?usp=drivesdk",
+      "run_index_drive_url": "https://drive.google.com/file/d/1BGZAJq_7YtddZ0i16arzQ8kwBZpFatSO/view?usp=drivesdk",
+      "notes": "The visually inspected 85,653-byte synthesis PDF and 28,285-byte compact run index were uploaded to the existing private program folder. Exact parent, MIME type, size, shared=false state, and sole owner permission were verified; sharing permissions were unchanged."
+    },
+    {
+      "sequence": 47,
+      "recorded_at": "2026-07-31T02:04:00-05:00",
+      "kind": "program_closed",
+      "hypothesis_family": "fusion-v2",
+      "evidence_role": "terminal-decision",
+      "result": "PASS",
+      "scientific_status": "FAIL",
+      "confirmation_evaluation": "NOT_EVALUATED",
+      "champion_promotion": "NOT_EVALUATED",
+      "notes": "The bounded Fusion v2 research program is closed without confirmation release, official MLO test access, or champion promotion. The next recommendation is provenance-checked expansion of clearly open training coverage followed by a separately preregistered architecture family; closed shortcut, loss, scale, cap, and bilinear searches are not reopened."
     }
   ]
 }

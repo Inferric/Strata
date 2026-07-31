@@ -163,8 +163,14 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
         _cycle_record(cycle_id, summary, role="bounded-pivot") for cycle_id, summary in optional
     )
     drive_index_path = root / RESEARCH_ROOT / "drive-upload-index.json"
+    drive_uploads_by_role: dict[str, dict[str, Any]] = {}
     if drive_index_path.is_file():
         drive_index = _load_object(drive_index_path)
+        drive_uploads_by_role = {
+            str(upload["role"]): upload
+            for upload in drive_index.get("uploads", [])
+            if isinstance(upload, dict) and isinstance(upload.get("role"), str)
+        }
         drive_urls = {
             str(upload["local_path"]): str(upload["drive_url"])
             for upload in drive_index.get("uploads", [])
@@ -429,6 +435,18 @@ def build_program_summary(root: Path | None = None) -> dict[str, Any]:
             )
         ),
         "report_pdf": None,
+        "drive_url": drive_uploads_by_role.get("fusion_v2_program_synthesis", {}).get(
+            "drive_url"
+        ),
+        "run_index": {
+            "local_path": (
+                "reports/generated/fusion-v2-program/fusion-v2-run-index.json"
+            ),
+            "drive_url": drive_uploads_by_role.get(
+                "fusion_v2_compact_run_index",
+                {},
+            ).get("drive_url"),
+        },
     }
 
 
