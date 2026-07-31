@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "report": "reports/generated/eso-paranal-mass-qc/eso-paranal-mass-qc-report.pdf",
-  "inspected_at": "2026-07-31T02:29:04-05:00",
-  "sha256": "d476a3e1bf6c05b9724f9ca6a29a2ab6e53724820909b29d0d0e5f69cd06b3d2",
-  "bytes": 45799,
+  "inspected_at": "2026-07-31T02:43:38-05:00",
+  "sha256": "bc68e4d0763a4c87c6135d6c9fc47d720ac5ba7da8bbd91d120fd6bea0ebbecb",
+  "bytes": 45787,
   "pages": 3,
   "render_engine": "PyMuPDF 1.28.0 (Poppler unavailable)",
   "render_scale": 2.0,
   "rendered_pages": [
-    "artifacts/pdf-inspection/eso-paranal-mass-qc-final/page-1.png",
-    "artifacts/pdf-inspection/eso-paranal-mass-qc-final/page-2.png",
-    "artifacts/pdf-inspection/eso-paranal-mass-qc-final/page-3.png"
+    "artifacts/pdf-inspection/eso-paranal-mass-qc-recompiled/page-1.png",
+    "artifacts/pdf-inspection/eso-paranal-mass-qc-recompiled/page-2.png",
+    "artifacts/pdf-inspection/eso-paranal-mass-qc-recompiled/page-3.png"
   ],
   "checks": {
     "all_pages_rendered": "PASS",

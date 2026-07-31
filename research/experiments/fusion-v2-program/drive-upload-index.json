@@ -188,14 +188,14 @@
     {
       "role": "fusion_v2_program_synthesis",
       "local_path": "reports/generated/fusion-v2-program/fusion-v2-program-report.pdf",
-      "local_bytes": 85653,
-      "local_sha256": "39f10d637e608859c57b92d7191d3b381e75d8b122b7b8c2fd82c53e015d6c38",
+      "local_bytes": 86039,
+      "local_sha256": "39a086e6ae6428716e5102594b522b7516717b511ebd3208318d688c56ef8784",
       "drive_id": "1GNgQYmh1R79xru3ezP5XNTWUjnK-N0YA",
       "drive_url": "https://drive.google.com/file/d/1GNgQYmh1R79xru3ezP5XNTWUjnK-N0YA/view?usp=drivesdk",
       "verified_metadata": {
         "name": "fusion-v2-program-report.pdf",
         "mime_type": "application/pdf",
-        "size": 85653,
+        "size": 86039,
         "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
         "shared": false,
         "source_visibility_status": "permission_metadata_available"
@@ -220,14 +220,14 @@
     {
       "role": "eso_paranal_mass_dataset_qc",
       "local_path": "reports/generated/eso-paranal-mass-qc/eso-paranal-mass-qc-report.pdf",
-      "local_bytes": 45799,
-      "local_sha256": "d476a3e1bf6c05b9724f9ca6a29a2ab6e53724820909b29d0d0e5f69cd06b3d2",
+      "local_bytes": 45787,
+      "local_sha256": "bc68e4d0763a4c87c6135d6c9fc47d720ac5ba7da8bbd91d120fd6bea0ebbecb",
       "drive_id": "1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8",
       "drive_url": "https://drive.google.com/file/d/1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8/view?usp=drivesdk",
       "verified_metadata": {
         "name": "eso-paranal-mass-qc-report.pdf",
         "mime_type": "application/pdf",
-        "size": 45799,
+        "size": 45787,
         "parent_id": "1hHKeI2Jpf-HDUewW17Sh5rDT7ITyvxcA",
         "shared": false,
         "owned_by_current_user": true,
@@ -237,5 +237,5 @@
       }
     }
   ],
-  "updated_at": "2026-07-31T02:30:59-05:00"
+  "updated_at": "2026-07-31T02:43:38-05:00"
 }

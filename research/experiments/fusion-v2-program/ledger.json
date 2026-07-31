@@ -718,6 +718,18 @@
       "evidence": "research/experiments/fusion-v2-program/eso-mass-report-inspection.json",
       "drive_url": "https://drive.google.com/file/d/1osTkhOkCk8H0TZLno6RhyYPX7_FEANc8/view?usp=drivesdk",
       "notes": "The final three-page LaTeX dataset-QC report was compiled, rendered at 2x, visually inspected, logged to MLflow without raw data, uploaded to the existing private program folder, and verified as a 45,799-byte owner-only PDF. Column training, confirmation evaluation, and promotion remain unevaluated."
+    },
+    {
+      "sequence": 51,
+      "recorded_at": "2026-07-31T02:43:38-05:00",
+      "kind": "final_report_binaries_verified",
+      "hypothesis_family": "evidence-delivery",
+      "evidence_role": "latex-visual-drive",
+      "result": "PASS",
+      "program_report_sha256": "39a086e6ae6428716e5102594b522b7516717b511ebd3208318d688c56ef8784",
+      "dataset_qc_report_sha256": "bc68e4d0763a4c87c6135d6c9fc47d720ac5ba7da8bbd91d120fd6bea0ebbecb",
+      "evidence": "research/experiments/fusion-v2-program/drive-upload-index.json",
+      "notes": "Final validation recompiled both reports. All ten program pages and all three dataset-QC pages were rerendered at 2x and visually reinspected; one selection-table spacing issue was corrected. The existing Drive objects were replaced in place and exact final size, parent, MIME type, shared=false state, and sole-owner permission were reverified without changing sharing."
     }
   ]
 }
