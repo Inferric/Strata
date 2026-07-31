@@ -30,8 +30,14 @@ datasets:
     access: open_query
     auto_acquire: false
     best_use: long temporal holdouts and multitask learning
-    risk: nighttime astronomical selection and vertical geometry
+    risk: nighttime astronomical selection, cadence gaps, and vertical geometry
     source: https://archive.eso.org/wdb/help/eso/ambient_paranal.html
+    adapter_config: configs/data/eso_paranal_mass_profile_v1.yaml
+    manifest: data/manifests/eso-paranal-mass-profile-2020-01-v1.json
+    qc_status: pass_adapter_and_geometry_only
+    acquired_rows: 7857
+    acquired_interval: 2020-01-01..2020-02-01
+    column_training_authorized: false
   - id: otprof
     priority: A-minus
     label_class: numerical_weather_model_teacher

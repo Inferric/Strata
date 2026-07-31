@@ -80,10 +80,12 @@ narrowly failed; no confirmation labels were released and no model was
 promoted. The visually inspected program synthesis is available through the
 research API and console.
 
-The next bounded data-QC cycle is preregistered in
+The completed bounded data-QC cycle is preregistered in
 [`docs/ESO_PARANAL_MASS_DATASET.md`](docs/ESO_PARANAL_MASS_DATASET.md). It
-tests an anonymous, public ESO MASS profile snapshot without starting a Column
-training experiment or weakening any sealed boundary.
+materialized 7,857 anonymous, public ESO MASS profile observations from January
+2020. Provenance, checksum, schema, timestamps, seven-layer geometry, and
+nonnegative-value checks passed. The snapshot remains too narrow and gappy for
+Column training, which was not started, and no sealed boundary was weakened.
 
 The acquisition adapter checks out the public `otbench` repository at commit
 `53cab9d53648b4870b43e35d48f19143786fa12e` and calls its `TaskApi`. This pin is

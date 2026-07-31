@@ -95,9 +95,7 @@ Coordinates & \VAR{summary.geometry.latitude_deg|num(4)},
 Observatory altitude & \VAR{summary.geometry.observatory_altitude_m|num(0)} m\\
 Instrument & \VAR{summary.instrument.name|latex}\\
 Profile heights &
-\BLOCK{ for height in summary.geometry.layer_heights_m }
-\VAR{height|num(0)}\BLOCK{ if not loop.last }, \BLOCK{ endif }
-\BLOCK{ endfor } m\\
+\VAR{summary.geometry.layer_heights_m|join(", ")|latex} m\\
 \bottomrule
 \end{tabularx}
 
@@ -136,7 +134,7 @@ No requested field contains missing values.
 \BLOCK{ endif }
 
 \section{Frozen claim-to-evidence map}
-\begin{longtable}{p{0.46\linewidth}p{0.11\linewidth}p{0.35\linewidth}}
+\begin{longtable}{p{0.42\linewidth}p{0.12\linewidth}p{0.36\linewidth}}
 \toprule
 Condition & State & Evidence\\
 \midrule

@@ -1,7 +1,7 @@
 # ESO Paranal MASS profile acquisition protocol
 
-Status: **frozen 2026-07-31 02:18 America/Chicago; no snapshot has been
-materialized**
+Status: **completed 2026-07-31; dataset QC PASS, Column training not
+authorized**
 
 ## Purpose and boundary
 
@@ -109,3 +109,29 @@ Strata-OT Column may train, a new protocol must freeze:
 This one-month snapshot is deliberately too narrow for a promotion claim. It
 can validate the adapter and profile geometry; a longer multi-season snapshot
 requires a separate frozen acquisition plan after this QC result is reviewed.
+
+## Materialized result
+
+The frozen anonymous request completed without changing its interval, fields,
+limits, or checks. The checked-in manifest is
+`data/manifests/eso-paranal-mass-profile-2020-01-v1.json`; raw response bytes
+remain ignored by Git and immutable on disk.
+
+- 7,857 unique observations and 38 returned columns span
+  `2020-01-01T00:34:31` through `2020-01-31T09:23:57`.
+- The CSV contains 1,655,957 bytes with SHA-256
+  `737430b9fd764f5732664c02a16ae2601261c10dc9fb1b58edcb3dab631e7afc`.
+- Median cadence is 79 seconds, p95 cadence is 98 seconds, and the maximum gap
+  is 400,830 seconds; any future model protocol must define a strict gap
+  policy.
+- All populated layer strengths and uncertainties are finite and
+  nonnegative. `MASS-DIMM Tau0` and `MASS-DIMM Turb Velocity` each have 72
+  missing rows (0.92%); no other requested field has missing values.
+- Immediate checksum verification and the frozen provenance, schema,
+  timestamp, geometry, and boundary checks passed.
+
+The visually inspected LaTeX dataset-QC report is
+`reports/generated/eso-paranal-mass-qc/eso-paranal-mass-qc-report.pdf`.
+This PASS applies only to adapter and geometry validation. The one-month,
+single-site, nighttime sample and multi-day cadence gap leave Column training,
+confirmation evaluation, and champion promotion explicitly unevaluated.

@@ -57,10 +57,12 @@ custom candidate but missed the frozen MLP-margin and tail-MAE conditions, so
 confirmation remained sealed and the program closed without promotion.
 
 The bounded public-profile adapter/QC step in
-`docs/ESO_PARANAL_MASS_DATASET.md` is the next Phase 2-to-3 bridge. It may
-materialize and verify one month of anonymous ESO Paranal MASS profiles, but it
-does not authorize Column training. A multi-season purged profile protocol
-must be frozen separately before Phase 3 model work.
+`docs/ESO_PARANAL_MASS_DATASET.md` completed as the Phase 2-to-3 bridge. Its
+7,857-row January 2020 ESO Paranal MASS snapshot passed frozen provenance,
+checksum, schema, timestamp, seven-layer geometry, and nonnegative-value
+checks. The one-month nighttime sample and multi-day cadence gap do not
+authorize Column training. A multi-season purged profile protocol must be
+frozen separately before Phase 3 model work.
 
 Exit criteria: no promotion from a single seed/site/metric; tail and OOD
 evidence are reported; inference latency and VRAM are measured.
