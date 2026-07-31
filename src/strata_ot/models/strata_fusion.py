@@ -160,6 +160,7 @@ class StrataOTFusionV2(nn.Module):
         physics_start: int | None = None,
         residual_horizon_exponent: float = 0.0,
         residual_shortcut: str = "none",
+        residual_cap: float = 0.0,
     ) -> None:
         super().__init__()
         if fusion not in {"concat", "film", "film_cross_attention"}:
@@ -174,6 +175,8 @@ class StrataOTFusionV2(nn.Module):
             raise ValueError(
                 "residual_horizon_exponent must be between 0 and 1.5"
             )
+        if not 0.0 <= residual_cap <= 1.5:
+            raise ValueError("residual_cap must be between 0 and 1.5")
         if residual_shortcut not in {
             "none",
             "history_linear",
@@ -189,6 +192,7 @@ class StrataOTFusionV2(nn.Module):
         self.residual_horizon_exponent = float(
             residual_horizon_exponent
         )
+        self.residual_cap = float(residual_cap)
         self.residual_shortcut_mode = residual_shortcut
         self.scale_encoders = nn.ModuleDict(
             {
@@ -341,10 +345,15 @@ class StrataOTFusionV2(nn.Module):
                 shortcut_input
             ).squeeze(-1)
         raw_residual = base_residual + shortcut_residual
+        bounded_residual = (
+            raw_residual.clamp(-self.residual_cap, self.residual_cap)
+            if self.residual_cap > 0.0
+            else raw_residual
+        )
         residual_scale = (
             batch["horizon_minutes"].clamp_min(5.0) / 5.0
         ).pow(self.residual_horizon_exponent)
-        residual = raw_residual * residual_scale
+        residual = bounded_residual * residual_scale
         location = batch["persistence"] + residual
         predictive_scale = 1e-3 + F.softplus(
             self.raw_scale(routed).squeeze(-1)

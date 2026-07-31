@@ -97,6 +97,7 @@ def test_fusion_v2_multiscale_outputs_and_parameter_budget() -> None:
         physics_start=8,
         residual_horizon_exponent=0.5,
         residual_shortcut="all_linear",
+        residual_cap=0.2,
     )
     batch_size = 3
     batch = {
@@ -126,7 +127,7 @@ def test_fusion_v2_multiscale_outputs_and_parameter_budget() -> None:
     )
     assert torch.allclose(
         output["residual"],
-        output["raw_residual"] * output["residual_scale"],
+        output["raw_residual"].clamp(-0.2, 0.2) * output["residual_scale"],
     )
     assert torch.allclose(
         output["raw_residual"],

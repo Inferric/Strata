@@ -604,3 +604,71 @@ candidates:
     residual_shortcut: history_linear
     screen_max_epochs: 9
     screen_program: false
+  - id: residual-cap-unbounded
+    category: residual_cap
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.00
+    screen_max_epochs: 9
+    screen_program: false
+  - id: residual-cap-0p20
+    category: residual_cap
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.20
+    screen_max_epochs: 9
+    screen_program: false
+  - id: residual-cap-0p35
+    category: residual_cap
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.35
+    screen_max_epochs: 9
+    screen_program: false
+  - id: residual-cap-0p60
+    category: residual_cap
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    tail_huber_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    residual_cap: 0.60
+    screen_max_epochs: 9
+    screen_program: false

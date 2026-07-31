@@ -308,6 +308,12 @@ def _build_model(
                     model_config.get("residual_shortcut", "none"),
                 )
             ),
+            residual_cap=float(
+                candidate.get(
+                    "residual_cap",
+                    model_config.get("residual_cap", 0.0),
+                )
+            ),
         )
     if family == "mlp":
         return FusionMLPControl(
@@ -943,6 +949,7 @@ def _neural_run(
         "point_loss_weight": str(candidate.get("point_loss_weight", 0.0)),
         "tail_huber_weight": str(candidate.get("tail_huber_weight", 0.0)),
         "tail_huber_threshold": str(training_tail_threshold),
+        "residual_cap": str(candidate.get("residual_cap", 0.0)),
         "evaluation_partition": (
             "confirmation" if fold_id == "final" else "selection"
         ),
@@ -1251,6 +1258,7 @@ def _neural_run(
                         model_config.get("residual_shortcut", "none"),
                     )
                 ),
+                "residual_cap": float(candidate.get("residual_cap", 0.0)),
                 "max_epochs_requested": max_epochs,
                 "epochs_completed": int(trainer.current_epoch),
                 "optimizer_steps": int(trainer.global_step),
