@@ -26,6 +26,7 @@ ALLOWED_MODEL_PARAMETERS = {
     "pretraining",
     "calibration",
     "point_loss_weight",
+    "tail_huber_weight",
     "max_train_examples",
     "residual_horizon_exponent",
     "residual_shortcut",
@@ -59,6 +60,7 @@ NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
     "learning_rate": (1e-5, 3e-3),
     "weight_decay": (0.0, 0.2),
     "point_loss_weight": (0.0, 2.0),
+    "tail_huber_weight": (0.0, 2.0),
     "max_train_examples": (1000, 500000),
     "residual_horizon_exponent": (0.0, 1.5),
     "screen_max_epochs": (1, 20),
@@ -145,6 +147,7 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
             "scale_parameterization": "clamp",
             "mlp_flatten_context": False,
             "point_loss_weight": 0.0,
+            "tail_huber_weight": 0.0,
         }
         old_value = source.get(parameter, defaults.get(parameter))
         if old_value is None or change["old"] != old_value:

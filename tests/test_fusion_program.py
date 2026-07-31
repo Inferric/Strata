@@ -26,6 +26,7 @@ from strata_ot.training.fusion import (
     FusionLightningModule,
     _ensure_program_gpu_budget,
     _resolve_max_epochs,
+    masked_tail_huber_loss,
 )
 
 
@@ -120,6 +121,46 @@ def test_explicit_point_loss_changes_forecast_objective() -> None:
         point_loss_weight=1.0,
     )._forecast_loss(batch, "test")
     assert float(weighted) > float(unweighted)
+
+
+def test_masked_tail_huber_changes_only_training_defined_tail() -> None:
+    location = torch.zeros(4)
+    target = torch.tensor([-1.0, 0.0, 0.9, 1.1])
+    loss, fraction = masked_tail_huber_loss(
+        location,
+        target,
+        threshold=0.8,
+        beta=0.1,
+    )
+    expected = torch.nn.functional.smooth_l1_loss(
+        location[2:],
+        target[2:],
+        beta=0.1,
+        reduction="sum",
+    ) / len(target)
+    assert float(loss) == pytest.approx(float(expected))
+    assert float(fraction) == pytest.approx(0.5)
+
+
+def test_tail_huber_weight_changes_forecast_objective() -> None:
+    batch = {"target": torch.tensor([0.5, 1.0])}
+    control = FusionLightningModule(
+        _FixedDistribution(),
+        learning_rate=3e-4,
+        weight_decay=0.01,
+        max_epochs=1,
+        tail_huber_weight=0.0,
+        tail_huber_threshold=0.75,
+    )._forecast_loss(batch, "test")
+    weighted = FusionLightningModule(
+        _FixedDistribution(),
+        learning_rate=3e-4,
+        weight_decay=0.01,
+        max_epochs=1,
+        tail_huber_weight=1.0,
+        tail_huber_threshold=0.75,
+    )._forecast_loss(batch, "test")
+    assert float(weighted) > float(control)
 
 
 def test_point_loss_screen_requires_point_and_constraint_gates() -> None:

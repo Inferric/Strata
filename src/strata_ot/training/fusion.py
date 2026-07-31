@@ -73,6 +73,24 @@ PREDICTION_OUTPUT_KEYS = (
 )
 
 
+def masked_tail_huber_loss(
+    location: Tensor,
+    target: Tensor,
+    *,
+    threshold: float,
+    beta: float,
+) -> tuple[Tensor, Tensor]:
+    """Smooth L1 on training-defined upper-tail targets, averaged over the batch."""
+    per_example = F.smooth_l1_loss(
+        location,
+        target,
+        beta=beta,
+        reduction="none",
+    )
+    tail = target >= threshold
+    return (per_example * tail.to(per_example.dtype)).mean(), tail.float().mean()
+
+
 class FusionLightningModule(L.LightningModule):
     def __init__(
         self,
@@ -88,6 +106,9 @@ class FusionLightningModule(L.LightningModule):
         cadence_cn2_weight: float = 0.5,
         point_loss_weight: float = 0.0,
         point_loss_beta: float = 0.1,
+        tail_huber_weight: float = 0.0,
+        tail_huber_threshold: float | None = None,
+        tail_huber_beta: float = 0.1,
     ) -> None:
         super().__init__()
         self.save_hyperparameters(ignore=["model"])
@@ -102,6 +123,13 @@ class FusionLightningModule(L.LightningModule):
         self.cadence_cn2_weight = cadence_cn2_weight
         self.point_loss_weight = point_loss_weight
         self.point_loss_beta = point_loss_beta
+        self.tail_huber_weight = tail_huber_weight
+        self.tail_huber_threshold = tail_huber_threshold
+        self.tail_huber_beta = tail_huber_beta
+        if self.tail_huber_weight < 0.0:
+            raise ValueError("Tail Huber weight must be non-negative")
+        if self.tail_huber_weight > 0.0 and self.tail_huber_threshold is None:
+            raise ValueError("Positive tail Huber weight requires a training threshold")
         self.phase = "forecast"
 
     def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:
@@ -166,7 +194,22 @@ class FusionLightningModule(L.LightningModule):
             target,
             beta=self.point_loss_beta,
         )
-        loss = nll + 0.20 * quantile + self.point_loss_weight * point
+        if self.tail_huber_threshold is None:
+            tail_point = target.new_zeros(())
+            tail_fraction = target.new_zeros(())
+        else:
+            tail_point, tail_fraction = masked_tail_huber_loss(
+                output["location"],
+                target,
+                threshold=self.tail_huber_threshold,
+                beta=self.tail_huber_beta,
+            )
+        loss = (
+            nll
+            + 0.20 * quantile
+            + self.point_loss_weight * point
+            + self.tail_huber_weight * tail_point
+        )
         error = output["location"] - target
         self.log_dict(
             {
@@ -174,6 +217,8 @@ class FusionLightningModule(L.LightningModule):
                 f"{stage}/student_t_nll": nll,
                 f"{stage}/pinball": quantile,
                 f"{stage}/point_huber": point,
+                f"{stage}/tail_huber": tail_point,
+                f"{stage}/tail_fraction": tail_fraction,
                 f"{stage}/rmse_log10_cn2": error.square().mean().sqrt(),
                 f"{stage}/mae_log10_cn2": error.abs().mean(),
                 f"{stage}/bias_log10_cn2": error.mean(),
@@ -823,6 +868,10 @@ def _neural_run(
         screen=screen,
         final_fit=final_fit,
     )
+    training_tail_threshold = datamodule.train_set.target_quantile(0.90)
+    training_tail_fraction = datamodule.train_set.target_fraction_at_or_above(
+        training_tail_threshold
+    )
     pretraining = str(candidate["pretraining"])
     policy = model_config["pretraining_policy"]
     module = FusionLightningModule(
@@ -837,6 +886,9 @@ def _neural_run(
         cadence_cn2_weight=float(policy["cadence_cn2_weight"]),
         point_loss_weight=float(candidate.get("point_loss_weight", 0.0)),
         point_loss_beta=float(candidate.get("point_loss_beta", 0.1)),
+        tail_huber_weight=float(candidate.get("tail_huber_weight", 0.0)),
+        tail_huber_threshold=training_tail_threshold,
+        tail_huber_beta=float(candidate.get("tail_huber_beta", 0.1)),
     )
     checkpoint_dir = (
         root
@@ -889,6 +941,8 @@ def _neural_run(
         "pretraining": pretraining,
         "calibration": str(candidate["calibration"]),
         "point_loss_weight": str(candidate.get("point_loss_weight", 0.0)),
+        "tail_huber_weight": str(candidate.get("tail_huber_weight", 0.0)),
+        "tail_huber_threshold": str(training_tail_threshold),
         "evaluation_partition": (
             "confirmation" if fold_id == "final" else "selection"
         ),
@@ -1100,6 +1154,15 @@ def _neural_run(
                 )
             ),
             "training_examples_actual": len(datamodule.train_set),
+            "training_tail_objective": {
+                "threshold_fit_fold": fold_id,
+                "threshold_fit_role": "train",
+                "threshold_quantile": 0.90,
+                "threshold_log10_cn2": training_tail_threshold,
+                "training_fraction_at_or_above": training_tail_fraction,
+                "weight": float(candidate.get("tail_huber_weight", 0.0)),
+                "beta": float(candidate.get("tail_huber_beta", 0.1)),
+            },
             "max_epochs_requested": max_epochs,
             "epochs_completed": int(trainer.current_epoch),
             "optimizer_steps": int(trainer.global_step),
@@ -1157,6 +1220,11 @@ def _neural_run(
                 "point_loss_weight": float(
                     candidate.get("point_loss_weight", 0.0)
                 ),
+                "tail_huber_weight": float(
+                    candidate.get("tail_huber_weight", 0.0)
+                ),
+                "tail_huber_threshold": training_tail_threshold,
+                "training_tail_fraction": training_tail_fraction,
                 "training_example_cap": int(
                     candidate.get(
                         "max_train_examples",
