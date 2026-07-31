@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Iterable
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from strata_ot.data.schema import DatasetFile, DatasetManifest
 
@@ -19,12 +19,25 @@ def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
 def file_records(paths: Iterable[Path], root: Path) -> list[DatasetFile]:
     return [
         DatasetFile(
-            relative_path=str(path.relative_to(root)),
+            relative_path=path.relative_to(root).as_posix(),
             sha256=sha256_file(path),
             bytes=path.stat().st_size,
         )
         for path in sorted(paths)
     ]
+
+
+def _portable_manifest_path(relative_path: str) -> Path:
+    portable = PurePosixPath(relative_path.replace("\\", "/"))
+    if (
+        not portable.parts
+        or portable.is_absolute()
+        or portable.parts[0] in {"", "."}
+        or ":" in portable.parts[0]
+        or ".." in portable.parts
+    ):
+        raise ValueError(f"Unsafe dataset-manifest path: {relative_path}")
+    return Path(*portable.parts)
 
 
 def write_manifest(manifest: DatasetManifest, path: Path) -> None:
@@ -41,7 +54,11 @@ def verify_manifest(manifest_path: Path, repository_root: Path) -> list[str]:
     manifest = DatasetManifest.model_validate_json(manifest_path.read_text(encoding="utf-8"))
     failures: list[str] = []
     for record in manifest.files:
-        path = repository_root / record.relative_path
+        try:
+            path = repository_root / _portable_manifest_path(record.relative_path)
+        except ValueError:
+            failures.append(f"unsafe-path:{record.relative_path}")
+            continue
         if not path.exists():
             failures.append(f"missing:{record.relative_path}")
         elif path.stat().st_size != record.bytes:

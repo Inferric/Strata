@@ -150,10 +150,12 @@ def _record_or_verify_manifest(manifest: DatasetManifest, path: Path) -> None:
         return
     expected = DatasetManifest.model_validate_json(path.read_text(encoding="utf-8"))
     expected_files = {
-        record.relative_path: (record.sha256, record.bytes) for record in expected.files
+        record.relative_path.replace("\\", "/"): (record.sha256, record.bytes)
+        for record in expected.files
     }
     observed_files = {
-        record.relative_path: (record.sha256, record.bytes) for record in manifest.files
+        record.relative_path.replace("\\", "/"): (record.sha256, record.bytes)
+        for record in manifest.files
     }
     expected_commit = expected.qc.get("upstream_commit")
     observed_commit = manifest.qc.get("upstream_commit")

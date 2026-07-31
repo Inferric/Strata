@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 import strata_ot.evaluation.profile_dataset as profile_dataset
-from strata_ot.data.registry import file_records, write_manifest
+from strata_ot.data.registry import file_records, verify_manifest, write_manifest
 from strata_ot.data.schema import DatasetManifest, DatasetTerms
 from strata_ot.reporting.render import _environment
 
@@ -81,6 +81,21 @@ def test_profile_dataset_summary_and_latex_preserve_claim_boundary(
         },
     )
     write_manifest(manifest, tmp_path / manifest_path)
+    manifest_payload = json.loads(
+        (tmp_path / manifest_path).read_text(encoding="utf-8")
+    )
+    assert all(
+        "\\" not in record["relative_path"]
+        for record in manifest_payload["files"]
+    )
+    manifest_payload["files"][0]["relative_path"] = manifest_payload["files"][0][
+        "relative_path"
+    ].replace("/", "\\")
+    (tmp_path / manifest_path).write_text(
+        json.dumps(manifest_payload),
+        encoding="utf-8",
+    )
+    assert verify_manifest(tmp_path / manifest_path, tmp_path) == []
     monkeypatch.setattr(profile_dataset, "CONFIG_PATH", config_path)
     monkeypatch.setattr(profile_dataset, "PROTOCOL_PATH", protocol_path)
     monkeypatch.setattr(profile_dataset, "MANIFEST_PATH", manifest_path)
@@ -99,3 +114,12 @@ def test_profile_dataset_summary_and_latex_preserve_claim_boundary(
     )
     assert "pointwise" in rendered
     assert "Strata-OT Column" in rendered
+
+    manifest_payload["files"][0]["relative_path"] = "../outside.csv"
+    (tmp_path / manifest_path).write_text(
+        json.dumps(manifest_payload),
+        encoding="utf-8",
+    )
+    assert verify_manifest(tmp_path / manifest_path, tmp_path) == [
+        "unsafe-path:../outside.csv"
+    ]
