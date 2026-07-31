@@ -70,11 +70,20 @@ Cycle 0 is in
 [`docs/NEXT_EXPERIMENT.md`](docs/NEXT_EXPERIMENT.md). It preregisters the
 selection/calibration/assessment split, feature allowlists, custom Horizon v1
 architecture, success rules, resource limits, and assessment-release gate.
-The active rolling-origin **Strata-OT Fusion v2** research program is frozen in
+The completed rolling-origin **Strata-OT Fusion v2** research program is frozen in
 [`docs/FUSION_V2_PROGRAM.md`](docs/FUSION_V2_PROGRAM.md). It preserves the
 negative Cycle 0 result, uses public USNA-large training periods for ablations,
 and protects a one-shot 2022 confirmation slice behind an explicit release
-gate.
+gate. Fusion v2.5 was the strongest custom candidate, but its 1.32% rolling
+RMSE gain over MLP did not meet the immutable 2% margin and its tail MAE
+narrowly failed; no confirmation labels were released and no model was
+promoted. The visually inspected program synthesis is available through the
+research API and console.
+
+The next bounded data-QC cycle is preregistered in
+[`docs/ESO_PARANAL_MASS_DATASET.md`](docs/ESO_PARANAL_MASS_DATASET.md). It
+tests an anonymous, public ESO MASS profile snapshot without starting a Column
+training experiment or weakening any sealed boundary.
 
 The acquisition adapter checks out the public `otbench` repository at commit
 `53cab9d53648b4870b43e35d48f19143786fa12e` and calls its `TaskApi`. This pin is

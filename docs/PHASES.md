@@ -47,12 +47,20 @@ validation block; compares history-only and allowlisted operational-weather
 inputs at 5--60 minutes; and tests the custom 2--5M-parameter Strata-OT Horizon
 v1 without opening the official MLO test or retuning after assessment release.
 
-That experiment is now Cycle 0 of the rolling-origin Fusion v2 program frozen
+That experiment is now Cycle 0 of the completed rolling-origin Fusion v2 program frozen
 in `docs/FUSION_V2_PROGRAM.md`. Fusion v2 uses three seasonal USNA-large
 development folds, multi-timescale context, deep weather conditioning,
 training-only atmospheric pretraining, structured ablations, and a
 preregistered one-shot 2022 confirmation. The MLO test stays sealed and no
-model can be promoted by this autonomous program.
+model can be promoted by this autonomous program. Fusion v2.5 was the strongest
+custom candidate but missed the frozen MLP-margin and tail-MAE conditions, so
+confirmation remained sealed and the program closed without promotion.
+
+The bounded public-profile adapter/QC step in
+`docs/ESO_PARANAL_MASS_DATASET.md` is the next Phase 2-to-3 bridge. It may
+materialize and verify one month of anonymous ESO Paranal MASS profiles, but it
+does not authorize Column training. A multi-season purged profile protocol
+must be frozen separately before Phase 3 model work.
 
 Exit criteria: no promotion from a single seed/site/metric; tail and OOD
 evidence are reported; inference latency and VRAM are measured.
