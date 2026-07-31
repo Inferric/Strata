@@ -29,6 +29,7 @@ ALLOWED_MODEL_PARAMETERS = {
     "max_train_examples",
     "residual_horizon_exponent",
     "residual_shortcut",
+    "screen_max_epochs",
 }
 
 REQUIRED_STOP_CONDITIONS = {
@@ -59,6 +60,7 @@ NUMERIC_BOUNDS: dict[str, tuple[float, float]] = {
     "point_loss_weight": (0.0, 2.0),
     "max_train_examples": (1000, 500000),
     "residual_horizon_exponent": (0.0, 1.5),
+    "screen_max_epochs": (1, 20),
 }
 
 INTEGER_PARAMETERS = {
@@ -68,6 +70,7 @@ INTEGER_PARAMETERS = {
     "num_experts",
     "context",
     "max_train_examples",
+    "screen_max_epochs",
 }
 
 
@@ -123,6 +126,12 @@ def validate_proposal(proposal: dict[str, Any], root: Path | None = None) -> Non
             source = {
                 "max_train_examples": fusion_trainer_config[
                     "screen_max_train_examples"
+                ]
+            }
+        elif parameter == "screen_max_epochs":
+            source = {
+                "screen_max_epochs": fusion_trainer_config[
+                    "screen_max_epochs"
                 ]
             }
         else:

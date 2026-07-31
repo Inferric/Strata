@@ -465,3 +465,63 @@ candidates:
     residual_horizon_exponent: 0.00
     residual_shortcut: all_mlp
     screen_program: false
+  - id: convergence-3
+    category: convergence_duration
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 3
+    screen_program: false
+  - id: convergence-6
+    category: convergence_duration
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 6
+    screen_program: false
+  - id: convergence-9
+    category: convergence_duration
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 9
+    screen_program: false
+  - id: convergence-12
+    category: convergence_duration
+    family: fusion_v2
+    hidden_dim: 192
+    dropout: 0.10
+    active_scales: [short, medium, slow]
+    fusion: concat
+    physics_tokens: full
+    pretraining: none
+    calibration: none
+    point_loss_weight: 0.00
+    residual_horizon_exponent: 0.00
+    residual_shortcut: history_linear
+    screen_max_epochs: 12
+    screen_program: false

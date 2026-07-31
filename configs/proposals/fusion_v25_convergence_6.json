@@ -1,0 +1,33 @@
+{
+  "proposal_id": "fusion-v25-convergence-6",
+  "hypothesis": "Six fixed-architecture epochs will retain the history-shortcut point gain while allowing the deep uncertainty representation to recover tail and coverage constraints.",
+  "parent_run_id": "0e8b0f954fa14af9a714cd67adbecbd7",
+  "dataset_manifest_id": "otbench-usna-cn2-lg-v1",
+  "split_id": "otbench-usna-lg-fusion-v2",
+  "horizon_minutes": [5, 15, 30, 60],
+  "model": {
+    "family": "strata_ot_fusion",
+    "config_path": "configs/model/strata_fusion_v2.yaml"
+  },
+  "changes": [
+    {
+      "parameter": "screen_max_epochs",
+      "old": 3,
+      "new": 6,
+      "reason": "Test convergence of the frozen partially promising architecture."
+    }
+  ],
+  "evaluation_gate_id": "public-evidence-gates-v1",
+  "budget": {
+    "max_runs": 1,
+    "max_local_gpu_hours": 0.5,
+    "max_cloud_cost_usd": 0
+  },
+  "stop_conditions": [
+    "budget_exhausted",
+    "nan_or_divergence",
+    "oom_after_one_recovery",
+    "data_or_split_gate_failure",
+    "no_validation_improvement"
+  ]
+}

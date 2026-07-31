@@ -25,6 +25,7 @@ from strata_ot.evaluation.fusion_synthesis import build_program_summary
 from strata_ot.training.fusion import (
     FusionLightningModule,
     _ensure_program_gpu_budget,
+    _resolve_max_epochs,
 )
 
 
@@ -42,6 +43,33 @@ def test_paired_block_bootstrap_resamples_time_not_seed_replicates() -> None:
     assert result["blocks"] == 6
     assert result["relative_improvement"] == pytest.approx(0.2)
     assert result["relative_improvement_ci95"][0] > 0
+
+
+def test_candidate_screen_epoch_cap_does_not_change_full_or_final_fit() -> None:
+    candidate = {"screen_max_epochs": 9}
+    trainer = {
+        "screen_max_epochs": 3,
+        "full_max_epochs": 12,
+        "confirmation_max_epochs": 16,
+    }
+    assert _resolve_max_epochs(
+        candidate,
+        trainer,
+        screen=True,
+        final_fit=False,
+    ) == 9
+    assert _resolve_max_epochs(
+        candidate,
+        trainer,
+        screen=False,
+        final_fit=False,
+    ) == 12
+    assert _resolve_max_epochs(
+        candidate,
+        trainer,
+        screen=False,
+        final_fit=True,
+    ) == 16
 
 
 def test_paired_block_bootstrap_rejects_unpaired_shapes() -> None:

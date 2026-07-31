@@ -286,6 +286,25 @@ def _build_model(
     raise ValueError(f"Candidate family is not neural: {family}")
 
 
+def _resolve_max_epochs(
+    candidate: dict[str, Any],
+    trainer_config: dict[str, Any],
+    *,
+    screen: bool,
+    final_fit: bool,
+) -> int:
+    if final_fit:
+        return int(trainer_config["confirmation_max_epochs"])
+    if screen:
+        return int(
+            candidate.get(
+                "screen_max_epochs",
+                trainer_config["screen_max_epochs"],
+            )
+        )
+    return int(trainer_config["full_max_epochs"])
+
+
 def _device_batch(batch: dict[str, Tensor], device: torch.device) -> dict[str, Tensor]:
     return {name: value.to(device, non_blocking=True) for name, value in batch.items()}
 
@@ -793,14 +812,11 @@ def _neural_run(
     ) <= parameters <= int(model_config["parameter_budget_max"]):
         raise ValueError(f"Fusion v2 parameter budget violation: {parameters}")
     final_fit = fold_id == "final"
-    max_epochs = int(
-        trainer_config["confirmation_max_epochs"]
-        if final_fit
-        else (
-            trainer_config["screen_max_epochs"]
-            if screen
-            else trainer_config["full_max_epochs"]
-        )
+    max_epochs = _resolve_max_epochs(
+        candidate,
+        trainer_config,
+        screen=screen,
+        final_fit=final_fit,
     )
     pretraining = str(candidate["pretraining"])
     policy = model_config["pretraining_policy"]
@@ -1079,6 +1095,9 @@ def _neural_run(
                 )
             ),
             "training_examples_actual": len(datamodule.train_set),
+            "max_epochs_requested": max_epochs,
+            "epochs_completed": int(trainer.current_epoch),
+            "optimizer_steps": int(trainer.global_step),
             "calibration_examples_actual": len(datamodule.calibration_set),
             "evaluation_examples_actual": (
                 len(evaluation) if evaluation is not None else 0
@@ -1159,6 +1178,9 @@ def _neural_run(
                         model_config.get("residual_shortcut", "none"),
                     )
                 ),
+                "max_epochs_requested": max_epochs,
+                "epochs_completed": int(trainer.current_epoch),
+                "optimizer_steps": int(trainer.global_step),
             }
         )
         logger.log_metrics(metrics, step=trainer.global_step)

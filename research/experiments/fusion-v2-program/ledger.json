@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "strata-fusion-v2-program",
-  "status": "direct_shortcut_complete_next_cycle_pending",
+  "status": "direct_shortcut_complete_convergence_frozen",
   "events": [
     {
       "sequence": 0,
@@ -403,6 +403,17 @@
       "evidence": "research/experiments/fusion-v2-program/shortcut-report-inspection.json",
       "drive_url": "https://drive.google.com/file/d/1NVO1KUTnEdq9N1hf2IjOIIBQ6z-nYQXQ/view?usp=drivesdk",
       "notes": "The final four-page LaTeX shortcut report was compiled without overflow warnings, rendered at 2x, visually inspected, logged to the finished MLflow evidence run, uploaded to the private program folder, and verified as a 51,119-byte owner-only PDF."
+    },
+    {
+      "sequence": 30,
+      "recorded_at": "2026-07-30T23:25:00-05:00",
+      "kind": "next_cycle_preregistered",
+      "hypothesis_family": "fixed_architecture_convergence",
+      "evidence_role": "protocol",
+      "result": "NOT_EVALUATED",
+      "parent_run_id": "0e8b0f954fa14af9a714cd67adbecbd7",
+      "evidence": "docs/FUSION_V25_CONVERGENCE.md",
+      "notes": "A paired 3/6/9/12-epoch convergence screen is frozen before metrics. It changes only the optimization cap for the fixed 3,611,849-parameter history-linear shortcut architecture and retains the same baseline, data, objective, and evidence gates."
     }
   ]
 }

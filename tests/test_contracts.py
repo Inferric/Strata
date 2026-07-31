@@ -100,6 +100,30 @@ def test_fusion_proposal_allows_bounded_training_sequence_scale() -> None:
     validate_proposal(proposal)
 
 
+def test_fusion_proposal_allows_bounded_screen_epoch_cap() -> None:
+    proposal = valid_proposal()
+    proposal.update(
+        {
+            "proposal_id": "fusion-v25-convergence-9",
+            "dataset_manifest_id": "otbench-usna-cn2-lg-v1",
+            "split_id": "otbench-usna-lg-fusion-v2",
+            "model": {
+                "family": "strata_ot_fusion",
+                "config_path": "configs/model/strata_fusion_v2.yaml",
+            },
+            "changes": [
+                {
+                    "parameter": "screen_max_epochs",
+                    "old": 3,
+                    "new": 9,
+                    "reason": "Test fixed-architecture convergence",
+                }
+            ],
+        }
+    )
+    validate_proposal(proposal)
+
+
 def test_repository_contract() -> None:
     root = Path(__file__).resolve().parents[1]
     assert validate_repository(root) == []
